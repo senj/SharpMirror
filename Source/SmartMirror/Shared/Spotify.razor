@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Hosting
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JSRuntime
+@inject IWebHostEnvironment environment
+
+<div class="container-fluid">
+    <div class="row card-1">
+        <div class="col-4">
+            <img id="spotify_image" height="150" width="150" src="/images/spotify/spotify.png" />
+        </div>
+        <div class="col-4">
+            <span id="spotify_track" style="font-weight: bold;"></span>
+        </div>
+        <div class="col-4">
+            <span id="spotify_artist"></span>
+        </div>
+    </div>
+</div>
+<br />
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!environment.IsDevelopment())
+        {
+            await JSRuntime.InvokeAsync<string>("onSpotifyWebPlaybackSDKReady");
+            await base.OnAfterRenderAsync(firstRender);
+        }
+    }
+}

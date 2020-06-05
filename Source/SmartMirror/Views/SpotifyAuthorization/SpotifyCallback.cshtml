@@ -1,0 +1,21 @@
+﻿@using SmartMirror.Data.Spotify
+@model SpotifyAuthResponse
+
+<script>
+    function setSpotifyToken() {
+        localStorage.setItem('spotify_access_token', '@Model.access_token');
+        localStorage.setItem('spotify_refresh_token', '@Model.refresh_token');
+        @{ 
+            var date = DateTime.Now.AddSeconds(Model.expires_in);
+        }
+
+        localStorage.setItem('spotify_expires_at', '@date.ToString("d.M.yyyy, HH:mm:ss")');
+        setTimeout(function () { window.close(); }, 100);
+    }
+</script>
+
+<html>
+<body onload="setSpotifyToken()">
+</body>
+
+</html>

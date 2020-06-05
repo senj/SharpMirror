@@ -1,0 +1,121 @@
+﻿@using SmartMirror.Data.Fuel
+@using SmartMirror.Data
+@using System.Globalization
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JSRuntime
+@inject FuelService FuelService
+
+<div class="container-fluid">
+    <div class="row card-1">
+        @if (FuelResponse == null || FuelResponse.Count == 0)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <div class="col-12">
+                <canvas id="fuelChart" width="400" height="150"></canvas>
+            </div>
+            <div class="col-12">
+                <table class="table" style="color:white;">
+                    <thead>
+                        <tr>
+                            <th>Station</th>
+                            <th>E5</th>
+                            <th>E10</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var status in FuelResponse.Last().Value.OrderBy(p => p.PriceStatus.E10))
+                        {
+                            <tr>
+                                <td>@status.Station.Brand - @CultureInfo.CurrentCulture.TextInfo.ToTitleCase(@status.Station.Place.ToLower())</td>
+                                @{
+                                    string[] e5array = @status.PriceStatus.E5.ToString("0.00-0").Split('-');
+                                    string[] e10array = @status.PriceStatus.E10.ToString("0.00-0").Split('-');
+                                }
+
+                                <td>@e5array[0]<sup style="font-size: 70%">@e5array[1]</sup></td>
+                                <td>@e10array[0]<sup style="font-size: 70%">@e10array[1]</sup></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public int Limit { get; set; }
+
+    private FuelResponse FuelResponse { get; set; }
+    private Dictionary<string, Dataset<float>> datasets { get; set; }
+    private string Time { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        FuelResponse = await FuelService.GetFuelResponseAsync(Limit);
+
+        datasets = new Dictionary<string, Dataset<float>>();
+        var timer = new System.Threading.Timer((_) =>
+        {
+            Time = DateTime.UtcNow.ToString();
+            InvokeAsync(async () =>
+            {
+                try
+                {
+                    FuelResponse = await FuelService.GetFuelResponseAsync(Limit);
+                    PopulateFuelDatasets();
+                    StateHasChanged();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            });
+        }, null, 0, 300 * 1000);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (datasets?.Any() == true)
+        {
+            await JSRuntime.InvokeAsync<string>("renderChart", "fuelChart", FuelResponse.Keys, datasets.Values);
+        }
+    }
+
+    private void PopulateFuelDatasets()
+    {
+        Random random = new Random();
+        foreach (var timestampEntry in FuelResponse.Values)
+        {
+            foreach (var stationPrice in timestampEntry.Where(p => p.PriceStatus.E10 != 0))
+            {
+                if (!datasets.ContainsKey(stationPrice.Station.Id))
+                {
+                    int r = random.Next(0, 256), g = random.Next(0, 256), b = random.Next(0, 256);
+                    datasets.Add(stationPrice.Station.Id, new Dataset<float>
+                    {
+                        id = stationPrice.Station.Id,
+                        label = stationPrice.Station.Brand + ", " + stationPrice.Station.Place,
+                        data = new List<float> { stationPrice.PriceStatus.E10 },
+                        fill = false,
+                        backgroundColor = new string[] { $"rgba({r}, {g}, {b}, 1)" },
+                        borderColor = new string[] { $"rgba({r}, {g}, {b}, 1)" },
+                        borderWidth = 1
+                    });
+                }
+                else
+                {
+                    var stationDataset = datasets[stationPrice.Station.Id];
+                    stationDataset.data.Add(stationPrice.PriceStatus.E10);
+                }
+            }
+        }
+    }
+}

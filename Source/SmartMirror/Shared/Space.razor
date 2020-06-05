@@ -1,0 +1,104 @@
+﻿<div class="container-fluid">
+    <div class="row card-1">
+        <div class="col-3">
+            <img src="/images/moon/@PictureUrl" height="100" width="100" />
+            @if (MoonPhase < 4)
+            {
+                <span style="padding-left:45px">nimmt zu</span> }
+            else if (MoonPhase > 5)
+            {
+                <span style="padding-left:45px">nimmt ab</span>
+            }
+        </div>
+        <div class="col-9">
+            <iframe src="https://ustream.tv/embed/17074538?html5ui=1&autoplay=true&volume=0" width="100%" allowfullscreen="" style="border: 0 none transparent;" title="IIS Live Stream"></iframe>
+        </div>
+    </div>
+</div>
+<br />
+
+<!-- 0 => New Moon
+     1 => Waxing Crescent Moon
+     2 => Quarter Moon
+     3 => Waxing Gibbous Moon
+     4 => Full Moon
+     5 => Waning Gibbous Moon
+     6 => Last Quarter Moon
+     7 => Waning Crescent Moon
+-->
+
+@code {
+    private string PictureUrl { get; set; }
+    private int MoonPhase { get; set; }
+    private string Time { get; set; }
+
+    protected override void OnInitialized()
+    {
+        MoonPhase = GetMoonPhase(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+        PictureUrl = $"{MoonPhase}.png";
+
+        var timer = new System.Threading.Timer((_) =>
+        {
+            Time = DateTime.UtcNow.ToString();
+            InvokeAsync(() =>
+            {
+                try
+                {
+                    StateHasChanged();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            });
+        }, null, 0, 86400000);
+
+        base.OnInitialized();
+    }
+
+    private int GetMoonPhase(int year, int month, int day)
+    {
+        double c = 0;
+        double e = 0;
+        double jd = 0;
+        int b = 0;
+        double moonPhase;
+
+        if (month < 3)
+        {
+            year--;
+            month += 12;
+        }
+
+        ++month;
+
+        c = 365.25 * year;
+
+        e = 30.6 * month;
+
+        jd = c + e + day - 694039.09; //jd is total days elapsed
+
+        jd /= 29.5305882; //divide by the moon cycle
+
+        b = (int) jd; //int(jd) -> b, take integer part of jd
+
+        jd -= b; //subtract integer part to leave fractional part of original jd
+
+        moonPhase = Math.Round(jd * 8); //scale fraction from 0-8 and round
+
+        if (moonPhase >= 8)
+        {
+            moonPhase = 0; //0 and 8 are the same so turn 8 into 0
+        }
+
+        // 0 => New Moon
+        // 1 => Waxing Crescent Moon
+        // 2 => Quarter Moon
+        // 3 => Waxing Gibbous Moon
+        // 4 => Full Moon
+        // 5 => Waning Gibbous Moon
+        // 6 => Last Quarter Moon
+        // 7 => Waning Crescent Moon
+
+        return (int) moonPhase;
+    }
+}

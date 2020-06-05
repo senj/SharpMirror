@@ -1,0 +1,192 @@
+﻿@using Microsoft.JSInterop
+@using SmartMirror.Data.Fitbit
+@using SmartMirror.Data
+
+@inject IJSRuntime JSRuntime
+@inject FitbitService FitbitService
+
+<div class="container-fluid">
+    <div class="row card-1">
+        @if (User == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"></h5>
+                    <small>@User.displayName</small>
+                </div>
+                <p class="mb-1">Schritte im Schnitt: @User.averageDailySteps</p>
+                <br />
+                <div>
+                    @*daily activity*@
+                    <canvas id="activityChart0" width="400" height="150"></canvas>
+                </div>
+                <br />
+                <p class="mb-1">Schlafeffizienz: @Sleep.sleep.Where(p => p.isMainSleep).FirstOrDefault()?.efficiency% - @Math.Round(Sleep.summary.totalMinutesAsleep / 60f, 1) / @Math.Round(Sleep.summary.totalTimeInBed / 60f, 1) Stunden geschlafen</p>
+                <small>@Device?.deviceVersion: @Device?.batteryLevel% geladen</small>
+            </div>
+        }
+    </div>
+</div>
+<br />
+
+@code {
+    private string Time { get; set; }
+    private Data.Fitbit.User User { get; set; }
+    private FitbitSleepResponse Sleep { get; set; }
+    private FitbitDevice Device { get; set; }
+    private Dictionary<string, ActiveMinutes> ActiveMinutes { get; set; }
+    private Dictionary<string, Dataset<float>> datasets { get; set; }
+    private static string Token { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Token = await JSRuntime.InvokeAsync<string>("getFitbitToken");
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            UpdateDataAsync();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var timer = new System.Threading.Timer((_) =>
+        {
+            Time = DateTime.UtcNow.ToString();
+            InvokeAsync(async () =>
+            {
+                try
+                {
+                    if (!string.IsNullOrEmpty(Token))
+                    {
+                        UpdateDataAsync();
+                    }
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            });
+        }, null, 0, 300 * 1000);
+
+        base.OnInitializedAsync();
+    }
+
+    private async Task UpdateDataAsync()
+    {
+        User = (await FitbitService.GetUserInfoAsync(Token))?.user;
+        Sleep = (await FitbitService.GetSleepOfAsync(Token, DateTime.UtcNow));
+        Device = (await FitbitService.GetDeviceAsync(Token))?.Last();
+
+        ActiveMinutes = new Dictionary<string, ActiveMinutes>();
+        datasets = new Dictionary<string, Dataset<float>>();
+
+        AddToDict("high", await FitbitService.GetActiveMinutes("minutesVeryActive", Token));
+        AddToDict("mid", await FitbitService.GetActiveMinutes("minutesFairlyActive", Token));
+        AddToDict("low", await FitbitService.GetActiveMinutes("minutesLightlyActive", Token));
+        AddToDict("verylow", await FitbitService.GetActiveMinutes("minutesSedentary", Token));
+
+        PopulateDatasets();
+        StateHasChanged();
+
+        if (datasets?.Any() == true)
+        {
+            JSRuntime.InvokeVoidAsync("renderPieChart", "activityChart0", new[] { "Very", "Fairly", "Lightly", "Sedentary" }, new Dataset<float>[] { datasets.Last().Value });
+        }
+    }
+
+    private void PopulateDatasets()
+    {
+        @foreach (var activityType in ActiveMinutes)
+        {
+            if (activityType.Key == "high")
+            {
+                if (activityType.Value?.VeryActive?.Any() == true)
+                {
+                    foreach (var record in activityType.Value.VeryActive)
+                    {
+                        SetRecord(activityType.Key, record);
+                    }
+                }
+            }
+
+            if (activityType.Key == "mid")
+            {
+                if (activityType.Value?.FairlyActive?.Any() == true)
+                {
+                    foreach (var record in activityType.Value.FairlyActive)
+                    {
+                        SetRecord(activityType.Key, record);
+                    }
+                }
+            }
+
+            if (activityType.Key == "low")
+            {
+                if (activityType.Value?.LightlyActive?.Any() == true)
+                {
+                    foreach (var record in activityType.Value.LightlyActive)
+                    {
+                        SetRecord(activityType.Key, record);
+                    }
+                }
+            }
+
+            if (activityType.Key == "verylow")
+            {
+                if (activityType.Value?.Sedentary?.Any() == true)
+                {
+                    foreach (var record in activityType.Value.Sedentary)
+                    {
+                        SetRecord(activityType.Key, record);
+                    }
+                }
+            }
+        }
+    }
+
+    private void SetRecord(string key, ActivitiesMinutes record)
+    {
+        int rActive = 255, gActive = 0, bActive = 0;
+        int rMidActive = 255, gMidActive = 127, bMidActive = 39;
+        int rLowActive = 206, gLowActive = 255, bLowActive = 38;
+        int rNotActive = 38, gNotActive = 103, bNotActive = 255;
+
+        if (!datasets.ContainsKey(record.dateTime))
+        {
+            datasets.Add(record.dateTime, new Dataset<float>
+            {
+                id = record.value,
+                label = key,
+                data = new List<float> { float.Parse(record.value) },
+                fill = false,
+                backgroundColor = new string[] { $"rgba({rActive}, {gActive}, {bActive}, 1)", $"rgba({rMidActive}, {gMidActive}, {bMidActive}, 1)",
+                                                 $"rgba({rLowActive}, {gLowActive}, {bLowActive}, 1)" , $"rgba({rNotActive}, {gNotActive}, {bNotActive}, 1)" },
+                borderColor = new string[] { $"rgba({rActive}, {gActive}, {bActive}, 1)", $"rgba({rMidActive}, {gMidActive}, {bMidActive}, 1)",
+                                                 $"rgba({rLowActive}, {gLowActive}, {bLowActive}, 1)" , $"rgba({rNotActive}, {gNotActive}, {bNotActive}, 1)" },
+                borderWidth = 1
+            });
+        }
+        else
+        {
+            var dateDataset = datasets[record.dateTime];
+            dateDataset.data.Add(float.Parse(record.value));
+        }
+    }
+
+    private void AddToDict(string key, ActiveMinutes activeMinutes)
+    {
+        if (ActiveMinutes.ContainsKey(key))
+        {
+            ActiveMinutes[key] = activeMinutes;
+        }
+        else
+        {
+            ActiveMinutes.Add(key, activeMinutes);
+        }
+    }
+}

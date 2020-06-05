@@ -1,0 +1,17 @@
+﻿<div class="container-fluid" style="font-size: 0.9rem">
+    <br />
+    <div class="row">
+        <div class="col-lg-4 col-sm-12">
+            <Profile ProfileName="@Profile"></Profile>
+            <Speech></Speech>           
+        </div>
+        <div class="col-lg-4">        
+        </div>
+        <div class="col-lg-4">           
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter(Name = "Profile")] protected string Profile { get; set; }
+}

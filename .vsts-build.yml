@@ -1,0 +1,28 @@
+name: $(Build.BuildId)-$(Build.SourceBranchName)
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - /
+
+steps:
+- task: Docker@1
+  displayName: 'Build application image'
+  inputs:
+    azureSubscriptionEndpoint: 'Visual Studio Enterprise Any'
+    azureContainerRegistry: zailregistry.azurecr.io
+    arguments: '--build-arg PROJECT_VERSION=$(Build.SourceBranchName)'
+    dockerFile: 'Dockerfile'
+    imageName: '$(Build.Repository.Name):$(Build.BuildId)'
+    includeLatestTag: true
+- task: Docker@1
+  displayName: 'Push application image to "container registry"'
+  inputs:
+    azureSubscriptionEndpoint: 'Visual Studio Enterprise Any'
+    azureContainerRegistry: zailregistry.azurecr.io
+    command: 'Push an image'
+    imageName: '$(Build.Repository.Name)'
+      

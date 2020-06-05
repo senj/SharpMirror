@@ -1,0 +1,66 @@
+﻿@using SmartMirror.Data.News;
+@inject NewsService NewsService
+
+<div class="container-fluid">
+    @if (NewsResponse == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        TimeSpan published = DateTime.Now.Date - NewsResponse.ElementAt(Index).Published.Date;
+        string publishedString = "heute";
+        if (published.Days > 0)
+        {
+            publishedString = $"Vor {published.Days} Tagen";
+        }
+
+        <div class="row card-1">
+            <div class="col-10">
+                <a href="@NewsResponse.ElementAt(Index).Id" target="_blank">
+                    <h5>@NewsResponse.ElementAt(Index).Title</h5>
+                    <p>@NewsResponse.ElementAt(Index).Description</p>
+                    <small>@string.Join(",", NewsResponse.ElementAt(Index).Categories.Select(p => p.Name))</small>
+                </a>
+            </div>           
+            <div class="col-2">
+                <small>@publishedString</small>
+            </div>
+        </div>
+    }
+</div>
+<br />
+
+@code {
+
+    private int Index { get; set; }
+    private string Time { get; set; }
+    private IEnumerable<NewsResponse> NewsResponse { get; set; }
+
+    [Parameter]
+    public int RefreshIntervalSeconds { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        NewsResponse = await NewsService.GetFeeds();
+        Random random = new Random();
+
+        var timer = new System.Threading.Timer((_) =>
+        {
+            Time = DateTime.UtcNow.ToString();
+            InvokeAsync(() =>
+            {
+                try
+                {
+                    Index = random.Next(0, NewsResponse.Count());
+                    StateHasChanged();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            });
+        }, null, 0, RefreshIntervalSeconds * 1000);
+
+        base.OnInitializedAsync();
+    }
+}

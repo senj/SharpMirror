@@ -1,0 +1,61 @@
+﻿@using SmartMirror.Data.Calendar;
+
+@inject CalendarService CalendarService
+
+<div class="container-fluid">
+    @if (Events == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="row card-1">
+            <div class="col-12">
+                @foreach (var calendarEvent in Events)
+                {
+                    string days, hours = string.Empty;
+                    if (calendarEvent.DtStart.Date != DateTime.Now.Date)
+                    {
+                        var diff = calendarEvent.DtStart.Date - DateTime.Now.Date;
+                        if (diff.Days < 4)
+                        {
+                            days = $"+{diff.Days}";
+                        }
+                        else
+                        {
+                            days = calendarEvent.DtStart.ToString("dd.MM.");
+                        }
+                    }
+                    else
+                    {
+                        days = string.Empty;
+                    }
+
+                    if (!@calendarEvent.IsAllDay)
+                    {
+                        hours = $"{calendarEvent.DtStart.ToString("HH:mm")} - {calendarEvent.DtEnd.ToString("HH:mm")}";
+                    }
+
+
+                    @days @if (!string.IsNullOrEmpty(days))
+                    {<span>:&nbsp;</span>} <span style="font-weight:bold;">@hours</span> @calendarEvent.Summary
+                    <br />
+                }
+            </div>
+        </div>
+    }
+</div>
+<br />
+
+@code {
+    IEnumerable<Event> Events { get; set; }
+
+    [Parameter]
+    public int NumberOfDays { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Events = await CalendarService.GetCalendarAsync(NumberOfDays);
+        await base.OnInitializedAsync();
+    }
+}

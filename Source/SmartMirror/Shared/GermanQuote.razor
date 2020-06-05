@@ -1,0 +1,48 @@
+﻿@using SmartMirror.Data.Jokes
+@inject JokesQuotesService JokesQuotesService
+
+<div class="container-fluid">
+    <div class="row card-1">
+        @if (Quotes == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <div class="caption">
+                <h3>&#128172; Confucius sagt</h3>
+                <p>@Quotes[Index]</p>
+            </div>
+        }
+    </div>
+</div>
+<br />
+
+@code {
+    string[] Quotes { get; set; }
+    int Index { get; set; }
+    private string Time { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Random random = new Random();
+        Quotes = await JokesQuotesService.GetQuotesAsync();
+        var timer = new System.Threading.Timer((_) =>
+        {
+            Time = DateTime.UtcNow.ToString();
+            InvokeAsync(() =>
+            {
+                try
+                {
+                    Index = random.Next(0, Quotes.Length);
+                    StateHasChanged();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            });
+        }, null, 0, 60000);
+
+        base.OnInitializedAsync();
+    }
+}

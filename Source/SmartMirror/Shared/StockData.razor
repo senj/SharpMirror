@@ -1,0 +1,88 @@
+﻿@using SmartMirror.Data
+@using SmartMirror.Data.StockData
+@using System.Globalization
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JSRuntime
+@inject StockDataService StockDataService
+
+<div class="container-fluid">
+    @if (StockDataModel == null)
+    {
+    <p><em>Loading...</em></p>
+    }
+    else
+    {
+    <div>
+        <h3>@Symbol</h3>
+        <canvas id="stockChart_@Symbol" width="400" height="150"></canvas>
+    </div>
+    }
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public string Symbol { get; set; }
+
+    StockViewModel StockDataModel { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        StockDataModel = await StockDataService.GetStockDataAsync(Symbol);
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (StockDataModel?.StockData == null)
+        {
+            await base.OnInitializedAsync();
+        }
+
+        if (StockDataModel?.StockData == null)
+        {
+            return;
+        }
+
+        IEnumerable<string> labels = StockDataModel.StockData.Select(p => DateTime.ParseExact(p.Name, "yyyy-MM-ddHH:mm:ss", null).ToString("dd. HH:mm"));
+
+        Dictionary<string, Dataset<double>> datasets = new Dictionary<string, Dataset<double>>();
+        Random random = new Random();
+        foreach (System.Text.Json.JsonProperty entry in StockDataModel.StockData)
+        {
+            foreach (var property in entry.Value.EnumerateObject())
+            {
+                // skip volume
+                if (property.Name == "5.volume") continue;
+
+                var value = property.Value.GetString();
+                if (!datasets.ContainsKey(property.Name))
+                {
+                    int r = random.Next(0, 256), g = random.Next(0, 256), b = random.Next(0, 256);
+                    datasets.Add(property.Name, new Dataset<double>
+                    {
+                        id = $"{entry.Name}_{property.Name}",
+                        label = property.Name,
+                        data = new List<double> { double.Parse(value, CultureInfo.InvariantCulture) },
+                        fill = false,
+                        backgroundColor = new string[] { $"rgba({r}, {g}, {b}, 1)" },
+                        borderColor = new string[] { $"rgba({r}, {g}, {b}, 1)" },
+                        borderWidth = 1
+                    });
+                }
+                else
+                {
+                    var existingdataset = datasets[property.Name];
+                    existingdataset.data.Add(double.Parse(value, CultureInfo.InvariantCulture));
+                }
+            }
+        }
+
+        if (datasets?.Any() == true)
+        {
+            var dataValues = datasets.Values.Reverse();
+            await JSRuntime.InvokeAsync<string>("renderChart", $"stockChart_{Symbol}", labels.Reverse(), dataValues);
+        }
+    }
+}

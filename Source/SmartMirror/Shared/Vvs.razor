@@ -1,0 +1,106 @@
+﻿@using SmartMirror.Data.VVS
+@inject VvsService VvsService
+
+<div class="container-fluid">
+    @if (VvsResponse == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="card-1 row">
+            <div class="col-12">
+                @foreach (var systemMessage in VvsResponse.SystemMessages)
+                {
+                    <p>@systemMessage</p>
+                }
+            </div>
+            @foreach (Stopevent stop in VvsResponse.StopEvents)
+            {
+                <div class="col-12">
+                    <b>@stop.DepartureTimePlanned.ToLocalTime().ToString("HH:mm")</b>
+                    @if (stop.IsRealtimeControlled)
+                    {
+                        if (stop.DepartureTimeEstimated == DateTime.MinValue)
+                        {
+                            <span class="badge badge-danger">X</span>
+                        }
+                        else
+                        {
+                            var late = stop.DepartureTimeEstimated - stop.DepartureTimePlanned;
+                            if (late.TotalMinutes <= 0)
+                            {
+                                <span class="badge badge-success">+@late.TotalMinutes</span>
+                            }
+                            else if (late.TotalMinutes <= 5)
+                            {
+                                <span class="badge badge-warning">+@late.TotalMinutes</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">+@late.TotalMinutes</span>
+                            }
+                        }
+                    }:
+                    @if (stop.Transportation.name.StartsWith("Bus"))
+                    {
+                        @stop.Transportation.name
+                    }
+                    else
+                    {
+                        @stop.Transportation.disassembledName
+                    }
+                    <small>@stop.Location.DisassembledName</small>
+
+                    <p>
+                        @stop.Transportation.origin.name - @stop.Transportation.destination.name
+                        @if (StuttgartDestinations.Any(s => stop.Transportation.destination.name.ToLower().Contains(s)))
+                        {
+                            <span>&#9734;</span>
+                        }
+                    </p>
+                </div>
+
+            }
+        </div>
+    }
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public int Limit { get; set; }
+
+    [Parameter]
+    public string[] StuttgartDestinations { get; set; }
+
+    /// <summary>
+    /// 0 R-Bahn, 1 S-Bahn, 3 Stadtbahn, 5 Bus, 7 Nachtbus, 10 Ruftaxi, 11 Sonstige
+    /// </summary>
+    [Parameter]
+    public int[] Filter { get; set; }
+
+    private VvsResponse VvsResponse { get; set; }
+    private string Time { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var timer = new System.Threading.Timer((_) =>
+        {
+            Time = DateTime.UtcNow.ToString();
+            InvokeAsync(async () =>
+            {
+                try
+                {
+                    VvsResponse = await VvsService.GetVvsResponseAsync(Limit, Filter);
+                    StateHasChanged();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            });
+        }, null, 0, 120 * 1000);
+
+        base.OnInitialized();
+    }
+}

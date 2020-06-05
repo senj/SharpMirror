@@ -1,0 +1,43 @@
+﻿@using SmartMirror.Data.Jokes
+@inject JokesQuotesService JokesQuotesService
+
+<div class="container-fluid">
+    <div class="row card-1">
+        @if (JokeModel == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <span>&#9786;&nbsp;@JokeModel.Value</span>
+        }
+    </div>
+</div>
+<br />
+
+@code {
+    ChuckNorrisJokesModel JokeModel { get; set; }
+    private string Time { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        JokeModel = await JokesQuotesService.GetNextChuckNorrisJokeAsync();
+        var timer = new System.Threading.Timer((_) =>
+        {
+            Time = DateTime.UtcNow.ToString();
+            InvokeAsync(async () =>
+            {
+                try
+                {
+                    JokeModel = await JokesQuotesService.GetNextChuckNorrisJokeAsync();
+                    StateHasChanged();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            });
+        }, null, 0, 60000);
+
+        base.OnInitializedAsync();
+    }
+}

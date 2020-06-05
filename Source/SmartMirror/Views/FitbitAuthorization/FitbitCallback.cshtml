@@ -1,0 +1,21 @@
+﻿@using SmartMirror.Data.Fitbit
+@model FitbitAuthResponse
+
+<script>
+    function setFitbitToken() {
+        localStorage.setItem('fitbit_access_token', '@Model.access_token');
+        localStorage.setItem('fitbit_refresh_token', '@Model.refresh_token');
+        @{ 
+            var date = DateTime.Now.AddSeconds(Model.expires_in);
+        }
+
+        localStorage.setItem('fitbit_expires_at', '@date.ToString("d.M.yyyy, HH:mm:ss")');
+        setTimeout(function () { window.close(); }, 100);
+    }
+</script>
+
+<html>
+<body onload="setFitbitToken()">
+</body>
+
+</html>

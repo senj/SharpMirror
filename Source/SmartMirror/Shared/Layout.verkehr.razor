@@ -1,0 +1,26 @@
+﻿<div class="container-fluid" style="font-size: 0.9rem">
+    <br />
+    <div class="row">
+        <div class="col-lg-4 col-sm-12">
+            <Clock></Clock>
+            <Profile ProfileName="@Profile"></Profile>
+            <Speech></Speech>
+            <Calendar NumberOfDays="5"></Calendar>
+            @*<GermanQuote></GermanQuote>*@
+            @code {
+                string[] stuttgartDestinations = new string[] { "stuttgart", "herrenberg" };
+            }
+            <Vvs Limit="5" Filter="new int[] { 0, 1 }" StuttgartDestinations="stuttgartDestinations"></Vvs> @*add 5 for bus*@      
+        </div>
+        <div class="col-lg-4">            
+        </div>
+        <div class="col-lg-4">
+            <CurrentWeather NumberOfDays="5"></CurrentWeather>
+            <Fuel Limit="5"></Fuel>
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter(Name = "Profile")] protected string Profile { get; set; }
+}

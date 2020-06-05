@@ -1,0 +1,89 @@
+﻿@using SmartMirror.Data.WeatherForecast
+@inject WeatherForecastService ForecastService
+
+<div class="container-fluid">
+    @if (Forecast?.Current == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="row card-1">
+            <div class="col-6">
+                <p class="important">@Forecast.Current.Temp °C</p>
+                <p class="small">Gefühlt wie: @Forecast.Current.Feels_like °C</p>
+            </div>
+            <div class="col-6">
+                <p class="important">@((MarkupString)ShowSimpleIcon(Forecast.Current.Weather.FirstOrDefault()?.Main))</p>
+                <p class="small">@Forecast.Current.Weather.FirstOrDefault()?.Description</p>
+                <p>Wind: @Forecast.Current.Wind_speed km/h</p>
+            </div>
+        </div>
+        <div class="row card-1">
+            <table class="table" style="color:white;">
+                <tbody>
+                    @foreach (Daily day in Forecast.Daily.Take(NumberOfDays))
+                    {
+                        TimeSpan timeSpan = TimeSpan.FromSeconds(day.Dt);
+                        DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                        string localDateTime = epoch.Add(timeSpan).ToLocalTime().ToString("ddd, dd.MM.");
+
+                        <tr>
+                            <th scope="row">@localDateTime</th>
+                            <td class="weatherIcon">@(@ShowSimpleIcon(day.Weather.FirstOrDefault()?.Main))</td>
+                            <td>&darr; @Math.Round(day.Temp.Min, 1) °C &nbsp;&nbsp; &uarr; @Math.Round(day.Temp.Max, 1) °C</td>
+                            <td>@day.Wind_speed km/h</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public int NumberOfDays { get; set; }
+
+    private OneCallWeatherForecast Forecast;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Forecast = await ForecastService.GetOneCallForecastAsync();
+    }
+
+    private MarkupString ShowSimpleIcon(string main)
+    {
+        if (main?.ToLower() == "clouds")
+        {
+            return (MarkupString) "&#9729;";
+        }
+        else if (main?.ToLower() == "thunderstorm")
+        {
+            return (MarkupString) "&#127785;";
+        }
+        else if (main?.ToLower() == "drizzle")
+        {
+            return (MarkupString) "&#127782;";
+        }
+        else if (main?.ToLower() == "rain")
+        {
+            return (MarkupString) "&#127783;";
+        }
+        else if (main?.ToLower() == "snow")
+        {
+            return (MarkupString) "&#127784;";
+        }
+        else if (main?.ToLower() == "mist" || main?.ToLower() == "fog")
+        {
+            return (MarkupString) "&#127787;";
+        }
+        else if (main?.ToLower() == "clear")
+        {
+            return (MarkupString) "&#9728;";
+        }
+
+        return (MarkupString) string.Empty;
+    }
+}

@@ -1,0 +1,86 @@
+﻿@using SmartMirror.Data.Soccer
+@inject BundesligaService BundesligaService
+
+<div class="container-fluid">
+    <div class="row card-1">
+        @if (Matches == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+
+            <div class="col-12">
+                <b>
+                    @Matches.First().LeagueName<br />
+                    @Matches.First().Group.GroupName: @Matches.First().MatchDateTime.ToString("dd.") - @Matches.Last().MatchDateTime.ToString("dd.MM.")
+                </b>
+            </div>
+
+            <div class="col-12">
+                @foreach (var match in Matches)
+                {
+                    @if (match.MatchIsFinished)
+                    {
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <img src="@match.Team1.TeamIconUrl" width="20" height="20" />
+                            </div>
+                            <div class="col-3">@match.Team1.TeamName</div>
+                            <div class="col-1">
+                                <span>@match.MatchResults.First().PointsTeam1</span>
+                            </div>
+                            <div class="col-1">
+                                <span>:</span>
+                            </div>
+                            <div class="col-1">
+                                <span>@match.MatchResults.First().PointsTeam2</span>
+                            </div>
+                            <div class="col-3">
+                                <span>@match.Team2.TeamName</span>
+                            </div>
+                            <div class="col-1">
+                                <img src="@match.Team2.TeamIconUrl" width="20" height="20" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <img src="@match.Team1.TeamIconUrl" width="20" height="20" />
+                            </div>
+                            <div class="col-3">@match.Team1.TeamName</div>
+                            <div class="col-1">
+                                <span>@match.Goals.LastOrDefault()?.ScoreTeam1</span>
+                            </div>
+                            <div class="col-1">
+                                <span>:</span>
+                            </div>
+                            <div class="col-1">
+                                <span>@match.Goals.LastOrDefault()?.ScoreTeam2</span>
+                            </div>
+                            <div class="col-3">
+                                <span>@match.Team2.TeamName</span>
+                            </div>
+                            <div class="col-1">
+                                <img src="@match.Team2.TeamIconUrl" width="20" height="20" />
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+</div>
+<br />
+
+@code {
+    BundesligaModel Matches { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Matches = await BundesligaService.GetCurrentPlayDayAsync();
+        await base.OnInitializedAsync();
+    }
+}

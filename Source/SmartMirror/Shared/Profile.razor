@@ -1,0 +1,17 @@
+﻿<div class="container-fluid">
+    <div class="row card-1">
+        <div class="col-8">
+            <span><b>Hallo, @ProfileName</b></span>
+        </div>
+        <div class="col-4">
+            Verfügbare Profile:<br />
+            Alisa, Lukas, Verkehr, Spiegel
+        </div>
+    </div>
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public string ProfileName { get; set; }
+}
