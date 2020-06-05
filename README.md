@@ -45,10 +45,10 @@ For most of the APIs, request limits apply. Therefore this project makes heavy u
 - Fitbit: login here and create a client application: https://dev.fitbit.com/login (Fitbit uses OAuth2)
 
 ## Build & Run
-This can be built and run as a docker container.
-Use the *Dockerfile* to build the docker container and *docker-compose.yml* to run the container.
-You can also run the project with ASP.NET Core tools (https://dotnet.microsoft.com/download)
+- This can be built and run as a docker container.
+- Use the *Dockerfile* to build the docker container and *docker-compose.yml* to run the container.
+- You can also run the project with ASP.NET Core tools (https://dotnet.microsoft.com/download)
 
 ## Design
-Inspired by: https://material.io/design/
-Because this application is used behind a mirror glass (e.g. https://www.brigla-shop.de/smart-mirror-1694.html) the background must be dark with high contrast to the content. 
+- Inspired by: https://material.io/design/
+- Because this application is used behind a mirror glass (e.g. https://www.brigla-shop.de/smart-mirror-1694.html) the background must be dark with high contrast to the content. 
