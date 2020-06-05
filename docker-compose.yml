@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  smartmirror:
+    image: zailregistry.azurecr.io/smartmirror:191
+    container_name: smartmirror
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=
+      - CalendarConfiguration__CalendarUrl=
+      - FuelConfiguration__ApiKey=
+      - SpotifyConfiguration__ClientSecret=
+      - WeatherConfiguration__ApiKey=
+      - FitbitConfiguration__ClientSecret=
+      - RedisConfiguration__Configuration=
