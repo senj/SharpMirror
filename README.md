@@ -1,5 +1,5 @@
 ## Sharpmirror
-### A C# Blazor smart mirror project
+### A smart mirror project build on ASP.NET Core blazor
 
 This is a blazor (service-side) web application.
 
