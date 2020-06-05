@@ -49,6 +49,14 @@ For most of the APIs, request limits apply. Therefore this project makes heavy u
 - Use the *Dockerfile* to build the docker container and *docker-compose.yml* to run the container.
 - You can also run the project with ASP.NET Core tools (https://dotnet.microsoft.com/download)
 
-## Design
+This project can be hosted in a docker container on a raspberry pi. It should run within your local network for features like Hue Lights to work. Speech input / output only works using HTTPS, right now the container must be deployed behind a nginx reverse proxy terminating TLS. 
+
+There is also no concept of different users/logins right now, so changes to the layout on the server affects each client.
+
+## Software Design
+- Each component must work on it's own and can be (de)activated at every time
+- There is no user input except speech. Therefore components must refresh themselfes on a regular basis or support speech commands.  
+
+## UI Design
 - Inspired by: https://material.io/design/
 - Because this application is used behind a mirror glass (e.g. https://www.brigla-shop.de/smart-mirror-1694.html) the background must be dark with high contrast to the content. 
