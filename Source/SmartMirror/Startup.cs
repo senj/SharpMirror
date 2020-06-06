@@ -114,7 +114,7 @@ namespace SmartMirror
             {
                 // NOTE: Set culture here. Your browser must also be in this culture.
                 // You can also set a cookie: .AspNetCore.Culture | c=en-US|uic=en-US
-                DefaultRequestCulture = new RequestCulture("de"),
+                DefaultRequestCulture = new RequestCulture("en"),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
             });
