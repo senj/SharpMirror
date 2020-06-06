@@ -59,6 +59,6 @@ There is also no concept of different users/logins right now, so changes to the 
 - Each component must work on it's own and can be (de)activated at every time
 - There is no user input except speech. Therefore components must refresh themselfes on a regular basis or support speech commands.  
 
-## UI Design
+## Interface Design
 - Inspired by: https://material.io/design/
 - Because this application is used behind a mirror glass (e.g. https://www.brigla-shop.de/smart-mirror-1694.html) the background must be dark with high contrast to the content. 
