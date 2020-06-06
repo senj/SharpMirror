@@ -106,13 +106,15 @@ namespace SmartMirror
 
             var supportedCultures = new[]
             {
-                new CultureInfo("de-DE"),
-                new CultureInfo("en-US"),
+                new CultureInfo("en"),
+                new CultureInfo("de"),
             };
 
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture("en-US"),
+                // NOTE: Set culture here. Your browser must also be in this culture.
+                // You can also set a cookie: .AspNetCore.Culture | c=en-US|uic=en-US
+                DefaultRequestCulture = new RequestCulture("de"),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
             });
