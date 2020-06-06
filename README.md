@@ -1,5 +1,5 @@
-## Sharpmirror
-### A smart mirror project build on ASP.NET Core 3.1 & Blazor
+## SharpMirror
+### A smart mirror project built on ASP.NET Core 3.1 & Blazor
 
 ![alt text](https://github.com/senj/SharpMirror/blob/master/example_1.png "Logo Title Text 1")
 
