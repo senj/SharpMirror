@@ -7,19 +7,18 @@
             <Speech></Speech>
             <Calendar NumberOfDays="5"></Calendar>
             <Fitbit></Fitbit>
+            @if (
+      (DateTime.UtcNow.DayOfWeek == DayOfWeek.Friday
+   || DateTime.UtcNow.DayOfWeek == DayOfWeek.Saturday
+   || DateTime.UtcNow.DayOfWeek == DayOfWeek.Sunday))
+            {
+                <Bundesliga></Bundesliga>
+            }
             @*<GermanQuote></GermanQuote>*@
         </div>
         <div class="col-lg-4">
             <News RefreshIntervalSeconds="30"></News>
             @*<ChuckNorrisJokes></ChuckNorrisJokes>*@
-            @if (
-         (DateTime.UtcNow.DayOfWeek == DayOfWeek.Friday
-      || DateTime.UtcNow.DayOfWeek == DayOfWeek.Saturday
-      || DateTime.UtcNow.DayOfWeek == DayOfWeek.Sunday))
-            {
-                <Bundesliga></Bundesliga>
-            }
-            
             @*<StockData Symbol="FRA:AMZ"></StockData>*@
         </div>
         <div class="col-lg-4">

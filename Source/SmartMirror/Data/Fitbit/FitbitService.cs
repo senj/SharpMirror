@@ -46,7 +46,16 @@ namespace SmartMirror.Data.Fitbit
 
             var stringResponse = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var userResponse = JsonSerializer.Deserialize<FitbitUserResponse>(stringResponse, options);
+            FitbitUserResponse userResponse;
+            try
+            {
+                userResponse = JsonSerializer.Deserialize<FitbitUserResponse>(stringResponse, options);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deserializing fitbit user response");
+                throw;
+            }
 
             if (userResponse != null)
             {

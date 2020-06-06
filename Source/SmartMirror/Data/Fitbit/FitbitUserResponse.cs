@@ -14,6 +14,7 @@
         public string avatar150 { get; set; }
         public string avatar640 { get; set; }
         public int averageDailySteps { get; set; }
+        public bool challengesBeta { get; set; }
         public string clockTimeDisplayFormat { get; set; }
         public bool corporate { get; set; }
         public bool corporateAdmin { get; set; }
@@ -22,24 +23,29 @@
         public string displayNameSetting { get; set; }
         public string distanceUnit { get; set; }
         public string encodedId { get; set; }
-        public bool familyGuidanceEnabled { get; set; }
         public Features features { get; set; }
         public string foodsLocale { get; set; }
         public string fullName { get; set; }
         public string gender { get; set; }
         public string glucoseUnit { get; set; }
-        public int height { get; set; }
+        public float height { get; set; }
         public string heightUnit { get; set; }
+        public bool isBugReportEnabled { get; set; }
         public bool isChild { get; set; }
         public bool isCoach { get; set; }
+        public string languageLocale { get; set; }
+        public bool legalTermsAcceptRequired { get; set; }
         public string locale { get; set; }
         public string memberSince { get; set; }
         public bool mfaEnabled { get; set; }
         public int offsetFromUTCMillis { get; set; }
+        public string phoneNumber { get; set; }
+        public bool sdkDeveloper { get; set; }
+        public string sleepTracking { get; set; }
         public string startDayOfWeek { get; set; }
         public float strideLengthRunning { get; set; }
         public string strideLengthRunningType { get; set; }
-        public int strideLengthWalking { get; set; }
+        public float strideLengthWalking { get; set; }
         public string strideLengthWalkingType { get; set; }
         public string swimUnit { get; set; }
         public string timezone { get; set; }
