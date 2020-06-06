@@ -1,6 +1,7 @@
 ﻿@using SmartMirror.Data.Fitbit
 @inject IJSRuntime JSRuntime
 @inject FitbitService FitbitService
+@inject IStringLocalizer<Fitbit> Localizer
 
 <div class="container-fluid">
     <div class="row card-1">
@@ -15,15 +16,15 @@
                     <h5 class="mb-1"></h5>
                     <small>@User.displayName</small>
                 </div>
-                <p class="mb-1">Schritte im Schnitt: @User.averageDailySteps</p>
+                <p class="mb-1">@Localizer["Average steps"]: @User.averageDailySteps</p>
                 <br />
                 <div>
                     @*daily activity*@
                     <canvas id="activityChart0" width="400" height="150"></canvas>
                 </div>
                 <br />
-                <p class="mb-1">Schlafeffizienz: @Sleep.sleep.Where(p => p.isMainSleep).FirstOrDefault()?.efficiency% - @Math.Round(Sleep.summary.totalMinutesAsleep / 60f, 1) / @Math.Round(Sleep.summary.totalTimeInBed / 60f, 1) Stunden geschlafen</p>
-                <small>@Device?.deviceVersion: @Device?.batteryLevel% geladen</small>
+                <p class="mb-1">@Localizer["Sleep efficiency"]: @Sleep.sleep.Where(p => p.isMainSleep).FirstOrDefault()?.efficiency% - @Math.Round(Sleep.summary.totalMinutesAsleep / 60f, 1) / @Math.Round(Sleep.summary.totalTimeInBed / 60f, 1) @Localizer["hours slept"]</p>
+                <small>@Device?.deviceVersion: @Device?.batteryLevel% @Localizer["charged"]</small>
             </div>
         }
     </div>

@@ -1,5 +1,6 @@
 ﻿@using SmartMirror.SmartHome.Hue;
 @inject HueService HueService
+@inject IStringLocalizer<HueLights> Localizer
 
 <div class="container-fluid">
     @if (LightInfo == null)
@@ -27,10 +28,10 @@
                     string color = $"hsl({ Math.Round(Convert.ToDouble(LightInfo.state.hue) / 178, 0) }, {sat}%, {bri}%)!important";
                 }
 
-                <span>Helligkeit: @bri%</span>
-                <span>Intensität: @sat%</span>
+                <span>@Localizer["Brightness"]: @bri%</span>
+                <span>@Localizer["Saturation"]: @sat%</span>
                 <br />
-                <span>Farbe: <span style="background-color: @color">&emsp;&emsp;</span></span>
+                <span>@Localizer["Color"]: <span style="background-color: @color">&emsp;&emsp;</span></span>
             </div>
         </div>
     }

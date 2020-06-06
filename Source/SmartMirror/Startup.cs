@@ -107,15 +107,12 @@ namespace SmartMirror
             var supportedCultures = new[]
             {
                 new CultureInfo("de-DE"),
-                new CultureInfo("de-AT"),
-                new CultureInfo("de-CH"),
-                new CultureInfo("en-GB"),
                 new CultureInfo("en-US"),
             };
 
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture("de-DE"),
+                DefaultRequestCulture = new RequestCulture("en-US"),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
             });

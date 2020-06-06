@@ -1,4 +1,5 @@
 ﻿@using SmartMirror.Data.WeatherForecast
+@inject IStringLocalizer<CurrentWeather> Localizer
 @inject WeatherForecastService ForecastService
 
 <div class="container-fluid">
@@ -11,7 +12,7 @@
         <div class="row card-1">
             <div class="col-6">
                 <p class="important">@Forecast.Current.Temp °C</p>
-                <p class="small">Gefühlt wie: @Forecast.Current.Feels_like °C</p>
+                <p class="small">@Localizer["Feels like"]: @Forecast.Current.Feels_like °C</p>
             </div>
             <div class="col-6">
                 <p class="important">@((MarkupString)ShowSimpleIcon(Forecast.Current.Weather.FirstOrDefault()?.Main))</p>

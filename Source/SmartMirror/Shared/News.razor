@@ -1,5 +1,6 @@
 ﻿@using SmartMirror.Data.News;
 @inject NewsService NewsService
+@inject IStringLocalizer<News> Localizer
 
 <div class="container-fluid">
     @if (NewsResponse == null)
@@ -9,10 +10,10 @@
     else
     {
         TimeSpan published = DateTime.Now.Date - NewsResponse.ElementAt(Index).Published.Date;
-        string publishedString = "heute";
+        string publishedString = Localizer["today"];
         if (published.Days > 0)
         {
-            publishedString = $"Vor {published.Days} Tagen";
+            publishedString = Localizer["{0} days ago", published.Days];
         }
 
         <div class="row card-1">
@@ -22,7 +23,7 @@
                     <p>@NewsResponse.ElementAt(Index).Description</p>
                     <small>@string.Join(",", NewsResponse.ElementAt(Index).Categories.Select(p => p.Name))</small>
                 </a>
-            </div>           
+            </div>
             <div class="col-2">
                 <small>@publishedString</small>
             </div>
