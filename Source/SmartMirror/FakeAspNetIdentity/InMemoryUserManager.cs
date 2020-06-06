@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 
-namespace SmartMirror
+namespace SmartMirror.FakeAspNetIdentity
 {
     public class InMemoryUserManager : UserManager<IdentityUser>
     {

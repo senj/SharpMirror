@@ -16,6 +16,7 @@ using SmartMirror.Data.Spotify;
 using SmartMirror.Data.StockData;
 using SmartMirror.Data.VVS;
 using SmartMirror.Data.WeatherForecast;
+using SmartMirror.FakeAspNetIdentity;
 using SmartMirror.SmartHome.Hue;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
@@ -25,21 +26,20 @@ namespace SmartMirror
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers().AddJsonOptions(p => p.JsonSerializerOptions.PropertyNameCaseInsensitive = true);
             services.AddRazorPages();
             services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
+            services.AddLocalization(p => p.ResourcesPath = "Resources");
 
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<VvsService>();
@@ -54,7 +54,7 @@ namespace SmartMirror
 
             services.AddSingleton<HttpClient>();
 
-            var redisSection = Configuration.GetSection(nameof(RedisConfiguration));
+            var redisSection = _configuration.GetSection(nameof(RedisConfiguration));
             RedisConfiguration redisConfiguration = new RedisConfiguration();
             redisSection.Bind(redisConfiguration);
 
@@ -71,12 +71,12 @@ namespace SmartMirror
                 });
             }
 
-            services.Configure<WeatherConfiguration>(Configuration.GetSection(nameof(WeatherConfiguration)));
-            services.Configure<FuelConfiguration>(Configuration.GetSection(nameof(FuelConfiguration)));
-            services.Configure<SpotifyConfiguration>(Configuration.GetSection(nameof(SpotifyConfiguration)));
-            services.Configure<FitbitConfiguration>(Configuration.GetSection(nameof(FitbitConfiguration)));
-            services.Configure<CalendarConfiguration>(Configuration.GetSection(nameof(CalendarConfiguration)));
-            services.Configure<NewsConfiguration>(Configuration.GetSection(nameof(NewsConfiguration)));
+            services.Configure<WeatherConfiguration>(_configuration.GetSection(nameof(WeatherConfiguration)));
+            services.Configure<FuelConfiguration>(_configuration.GetSection(nameof(FuelConfiguration)));
+            services.Configure<SpotifyConfiguration>(_configuration.GetSection(nameof(SpotifyConfiguration)));
+            services.Configure<FitbitConfiguration>(_configuration.GetSection(nameof(FitbitConfiguration)));
+            services.Configure<CalendarConfiguration>(_configuration.GetSection(nameof(CalendarConfiguration)));
+            services.Configure<NewsConfiguration>(_configuration.GetSection(nameof(NewsConfiguration)));
 
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
@@ -84,24 +84,10 @@ namespace SmartMirror
             .AddDefaultTokenProviders()
             .AddUserManager<InMemoryUserManager>()
             .AddUserStore<InMemoryUserStore>()
-            .AddRoleStore<InMemoryRoleStore>();
-
-            //services.AddAuthentication()
-            //    .AddCookie("cookie")
-            //    .AddOpenIdConnect("", p =>
-            //    {
-            //    });
-
-            //services.AddAuthorization(p =>
-            //    p.AddPolicy("spotify", p => p
-            //        .AddAuthenticationSchemes("spotify_scheme")
-            //        .RequireAuthenticatedUser()
-            //    )
-            //);
-
+            .AddRoleStore<InMemoryRoleStore>()
+            .AddSignInManager<InMemorySignInManager>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -112,13 +98,18 @@ namespace SmartMirror
             else
             {
                 app.UseExceptionHandler("/Error");
+
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             var supportedCultures = new[]
             {
-                new CultureInfo("de-DE")
+                new CultureInfo("de-DE"),
+                new CultureInfo("de-AT"),
+                new CultureInfo("de-CH"),
+                new CultureInfo("en-GB"),
+                new CultureInfo("en-US"),
             };
 
             app.UseRequestLocalization(new RequestLocalizationOptions
@@ -139,7 +130,7 @@ namespace SmartMirror
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapBlazorHub(); //.RequireAuthorization("spotify");
+                endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
         }

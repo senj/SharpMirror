@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SmartMirror
+namespace SmartMirror.FakeAspNetIdentity
 {
     public class InMemoryRoleStore : IRoleStore<IdentityRole>
     {

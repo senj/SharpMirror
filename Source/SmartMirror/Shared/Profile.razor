@@ -1,10 +1,12 @@
-﻿<div class="container-fluid">
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<Profile> Localizer
+ 
+<div class="container-fluid">
     <div class="row card-1">
         <div class="col-8">
             <span><b>Hallo, @ProfileName</b></span>
         </div>
         <div class="col-4">
-            Verfügbare Profile:<br />
+            @Localizer["Available profiles"]:<br />
             Alisa, Lukas, Verkehr, Spiegel
         </div>
     </div>
