@@ -1,8 +1,4 @@
 ﻿@using SmartMirror.Data.Fuel
-@using SmartMirror.Data
-@using System.Globalization
-@using Microsoft.JSInterop
-
 @inject IJSRuntime JSRuntime
 @inject FuelService FuelService
 
@@ -61,7 +57,7 @@
         FuelResponse = await FuelService.GetFuelResponseAsync(Limit);
 
         datasets = new Dictionary<string, Dataset<float>>();
-        var timer = new System.Threading.Timer((_) =>
+        var timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
             InvokeAsync(async () =>

@@ -1,7 +1,4 @@
-﻿@using Microsoft.JSInterop
-@using SmartMirror.Data.Fitbit
-@using SmartMirror.Data
-
+﻿@using SmartMirror.Data.Fitbit
 @inject IJSRuntime JSRuntime
 @inject FitbitService FitbitService
 
@@ -55,7 +52,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var timer = new System.Threading.Timer((_) =>
+        var timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
             InvokeAsync(async () =>

@@ -1,13 +1,14 @@
-﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<Profile> Localizer
+﻿@inject IStringLocalizer<Profile> Localizer
+@inject IOptions<ProfileConfiguration> ProfileConfiguration
  
 <div class="container-fluid">
     <div class="row card-1">
         <div class="col-8">
-            <span><b>Hallo, @ProfileName</b></span>
+            <span><b>@Localizer["Hello"], @ProfileName</b></span>
         </div>
         <div class="col-4">
             @Localizer["Available profiles"]:<br />
-            Alisa, Lukas, Verkehr, Spiegel
+            @string.Join(", ", ProfileConfiguration.Value)
         </div>
     </div>
 </div>

@@ -85,7 +85,7 @@
 
     protected override void OnInitialized()
     {
-        var timer = new System.Threading.Timer((_) =>
+        var timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
             InvokeAsync(async () =>

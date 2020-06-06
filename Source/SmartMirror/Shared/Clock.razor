@@ -1,5 +1,4 @@
-﻿
-<div class="container-fluid">
+﻿<div class="container-fluid">
     <div class="row card-1">
         <div class="col-12">
             <span class="important">@DateTime.Now.ToString("HH:mm:ss")</span><br />
@@ -15,9 +14,9 @@
 
     protected override void OnInitialized()
     {
-        System.Globalization.CultureInfo ci = new System.Globalization.CultureInfo("de-DE");
-        KW = ci.Calendar.GetWeekOfYear(DateTime.Now, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-        var timer = new System.Threading.Timer((_) =>
+        CultureInfo ci = new CultureInfo("de-DE");
+        KW = ci.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+        var timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
             InvokeAsync(() =>

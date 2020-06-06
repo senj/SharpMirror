@@ -37,7 +37,7 @@
         MoonPhase = GetMoonPhase(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
         PictureUrl = $"{MoonPhase}.png";
 
-        var timer = new System.Threading.Timer((_) =>
+        var timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
             InvokeAsync(() =>

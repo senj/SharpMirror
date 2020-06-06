@@ -77,7 +77,8 @@ namespace SmartMirror
             services.Configure<FitbitConfiguration>(_configuration.GetSection(nameof(FitbitConfiguration)));
             services.Configure<CalendarConfiguration>(_configuration.GetSection(nameof(CalendarConfiguration)));
             services.Configure<NewsConfiguration>(_configuration.GetSection(nameof(NewsConfiguration)));
-
+            services.Configure<ProfileConfiguration>(_configuration.GetSection(nameof(ProfileConfiguration)));
+            
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
             })

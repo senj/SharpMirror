@@ -120,4 +120,7 @@
   <data name="Available profiles" xml:space="preserve">
     <value>Available profiles</value>
   </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Hello</value>
+  </data>
 </root>
