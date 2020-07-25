@@ -15,6 +15,7 @@ There is heavy use of (experimental) browser APIs, best experience is with Chrom
 - Fuel prices
 - Fitbit
 - Spotify
+- Shopping List Bring
 - Hue Lights (if hosted in local network)
 - VVS (german local traffic around stuttgart)
 - German football results (1. Bundesliga)
@@ -37,6 +38,8 @@ You can set these secrets as environment variables. (see docker-compose.yml)
 - SpotifyConfiguration__ClientSecret=
 - FitbitConfiguration__ClientSecret=
 - RedisConfiguration__Configuration=
+- BringConfiguration__Email=
+- BringConfiguration__Password=
 
 ### Get access
 For most of the APIs, request limits apply. Therefore this project makes heavy use of caching using a redis cache. 

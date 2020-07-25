@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SmartMirror.Data;
+using SmartMirror.Data.Bring;
 using SmartMirror.Data.Calendar;
 using SmartMirror.Data.Fitbit;
 using SmartMirror.Data.Fuel;
@@ -51,6 +52,7 @@ namespace SmartMirror
             services.AddSingleton<StockDataService>();
             services.AddSingleton<HueService>();
             services.AddSingleton<FitbitService>();
+            services.AddSingleton<BringService>();
 
             services.AddSingleton<HttpClient>();
 
@@ -78,7 +80,8 @@ namespace SmartMirror
             services.Configure<CalendarConfiguration>(_configuration.GetSection(nameof(CalendarConfiguration)));
             services.Configure<NewsConfiguration>(_configuration.GetSection(nameof(NewsConfiguration)));
             services.Configure<ProfileConfiguration>(_configuration.GetSection(nameof(ProfileConfiguration)));
-            
+            services.Configure<BringConfiguration>(_configuration.GetSection(nameof(BringConfiguration)));
+
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
             })

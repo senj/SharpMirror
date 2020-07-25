@@ -1,0 +1,70 @@
+﻿@using SmartMirror.Data.Bring
+@inject BringService BringService
+
+<div class="container-fluid">
+    <div class="row card-1">
+        <div class="col-12">
+            @if (Items?.purchase == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else if (Items.purchase.Any())
+            {
+                <div class="col-12">
+                    <b>Shopping list</b>
+                </div>
+                <br />
+                <div class="col-12">
+                        @for (int i = 0; i < Items.purchase.Length; i += 3)
+                        {
+                            <div class="row">
+                                <span class="bring-item col-4">@Items.purchase[i].name (@Items.purchase[i].specification)</span>
+                                @if (i + 1 < Items.purchase.Length)
+                                {
+                                    <span class="bring-item col-4">@Items.purchase[i + 1].name (@Items.purchase[i + 1].specification)</span>
+                                }
+
+                                @if (i + 2 < Items.purchase.Length)
+                                {
+                                    <span class="bring-item col-4">@Items.purchase[i + 2].name (@Items.purchase[i + 2].specification)</span>
+                                }
+                            </div><br />
+                        }
+                </div>
+            }
+            else
+            {
+                <p>No items on shopping list.</p>
+            }
+        </div>
+    </div>
+</div>
+<br />
+
+@code {
+    SmartMirror.Data.Bring.BringItemResponse Items { get; set; }
+    private string Time { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string listId = "c7ec4008-536a-4ff0-8e43-7f1b6a403ba3";
+        Items = await BringService.GetItemsAsync(listId);
+        var timer = new System.Threading.Timer((_) =>
+        {
+            Time = DateTime.UtcNow.ToString();
+            InvokeAsync(async () =>
+            {
+                try
+                {
+                    Items = await BringService.GetItemsAsync(listId);
+                    StateHasChanged();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            });
+        }, null, 0, 600 * 1000);
+
+        base.OnInitializedAsync();
+    }
+}
