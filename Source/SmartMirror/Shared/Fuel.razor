@@ -2,8 +2,13 @@
 @inject IJSRuntime JSRuntime
 @inject FuelService FuelService
 
-<div class="container-fluid">
-    <div class="row card-1">
+<div class="container-fluid card-1">
+    <div class="row">
+        <div class="col-12">
+            <p class="box-heading">FUEL PRICES</p>
+        </div>
+    </div>
+    <div class="row">
         @if (FuelResponse == null || FuelResponse.Count == 0)
         {
             <p><em>Loading...</em></p>

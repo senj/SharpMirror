@@ -1,45 +1,66 @@
 ﻿@using SmartMirror.Data.Calendar;
 @inject CalendarService CalendarService
 
-<div class="container-fluid">
+<div class="container-fluid card-1">
+    <div class="row">
+        <div class="col-12">
+            <p class="box-heading">UPCOMING EVENTS</p>
+        </div>
+    </div>
     @if (Events == null)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
-        <div class="row card-1">
+        <div class="row">
             <div class="col-12">
-                @foreach (var calendarEvent in Events)
-                {
-                    string days, hours = string.Empty;
-                    if (calendarEvent.DtStart.Date != DateTime.Now.Date)
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:10%"></th>
+                            <th style="width:25%"></th>
+                            <th style="width:55%"></th>
+                        </tr>
+                    </thead>
+                    @foreach (var calendarEvent in Events)
                     {
-                        var diff = calendarEvent.DtStart.Date - DateTime.Now.Date;
-                        if (diff.Days < 4)
+                        string days, hours = string.Empty;
+                        if (calendarEvent.DtStart.Date != DateTime.Now.Date)
                         {
-                            days = $"+{diff.Days}";
+                            var diff = calendarEvent.DtStart.Date - DateTime.Now.Date;
+                            if (diff.Days < 4)
+                            {
+                                days = $"+{diff.Days}";
+                            }
+                            else
+                            {
+                                days = calendarEvent.DtStart.ToString("dd.MM.");
+                            }
                         }
                         else
                         {
-                            days = calendarEvent.DtStart.ToString("dd.MM.");
+                            days = string.Empty;
                         }
-                    }
-                    else
-                    {
-                        days = string.Empty;
-                    }
 
-                    if (!@calendarEvent.IsAllDay)
-                    {
-                        hours = $"{calendarEvent.DtStart.ToString("HH:mm")} - {calendarEvent.DtEnd.ToString("HH:mm")}";
+                        if (!@calendarEvent.IsAllDay)
+                        {
+                            hours = $"{calendarEvent.DtStart.ToString("HH:mm")} - {calendarEvent.DtEnd.ToString("HH:mm")}";
+                        }
+
+                        <tr>
+                            <td>
+                                @days
+                            </td>
+                            <td>
+                                <span style="font-weight:bold;">@hours</span>
+                            </td>
+                            <td>
+                                @calendarEvent.Summary
+                            </td>
+                        </tr>
                     }
-
-
-                    @days @if (!string.IsNullOrEmpty(days))
-                    {<span>:&nbsp;</span>} <span style="font-weight:bold;">@hours</span> @calendarEvent.Summary
-                    <br />
-                }
+                </table>
             </div>
         </div>
     }

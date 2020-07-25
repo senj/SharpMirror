@@ -118,9 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Available profiles" xml:space="preserve">
-    <value>Verfügbare Profile</value>
+    <value>Versuche etwas anderes</value>
   </data>
   <data name="Hello" xml:space="preserve">
-    <value>Hallo</value>
+    <value>Hi</value>
   </data>
 </root>

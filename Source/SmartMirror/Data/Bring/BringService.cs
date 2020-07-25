@@ -48,7 +48,7 @@ namespace SmartMirror.Data.Bring
             };
 
             FormUrlEncodedContent formData = new FormUrlEncodedContent(content);
-            var response = await _httpClient.PostAsync("https://api.getbring.com/rest/v2/bringauth", formData);
+            var response = await _httpClient.PostAsync("bringauth", formData);
 
             var stringResponse = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };

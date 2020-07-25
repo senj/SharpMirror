@@ -2,7 +2,7 @@
 @inject NewsService NewsService
 @inject IStringLocalizer<News> Localizer
 
-<div class="container-fluid">
+<div class="container-fluid card-1">
     @if (NewsResponse == null)
     {
         <p><em>Loading...</em></p>
@@ -16,7 +16,7 @@
             publishedString = Localizer["{0} days ago", published.Days];
         }
 
-        <div class="row card-1">
+        <div class="row">
             <div class="col-10">
                 <a href="@NewsResponse.ElementAt(Index).Id" target="_blank">
                     <h5>@NewsResponse.ElementAt(Index).Title</h5>

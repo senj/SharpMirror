@@ -2,14 +2,14 @@
 @inject IStringLocalizer<CurrentWeather> Localizer
 @inject WeatherForecastService ForecastService
 
-<div class="container-fluid">
+<div class="container-fluid card-1">
     @if (Forecast?.Current == null)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
-        <div class="row card-1">
+        <div class="row">
             <div class="col-6">
                 <p class="important">@Forecast.Current.Temp °C</p>
                 <p class="small">@Localizer["Feels like"]: @Forecast.Current.Feels_like °C</p>
@@ -20,7 +20,7 @@
                 <p>Wind: @Forecast.Current.Wind_speed km/h</p>
             </div>
         </div>
-        <div class="row card-1">
+        <div class="row">
             <table class="table" style="color:white;">
                 <tbody>
                     @foreach (Daily day in Forecast.Daily.Take(NumberOfDays))

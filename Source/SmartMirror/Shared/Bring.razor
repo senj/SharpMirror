@@ -1,8 +1,13 @@
 ﻿@using SmartMirror.Data.Bring
 @inject BringService BringService
 
-<div class="container-fluid">
-    <div class="row card-1">
+<div class="container-fluid card-1">
+    <div class="row">
+        <div class="col-12">
+            <p class="box-heading">SHOPPING LIST</p>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-12">
             @if (Items?.purchase == null)
             {
@@ -10,27 +15,40 @@
             }
             else if (Items.purchase.Any())
             {
-                <div class="col-12">
-                    <b>Shopping list</b>
-                </div>
-                <br />
-                <div class="col-12">
-                        @for (int i = 0; i < Items.purchase.Length; i += 3)
-                        {
-                            <div class="row">
-                                <span class="bring-item col-4">@Items.purchase[i].name (@Items.purchase[i].specification)</span>
-                                @if (i + 1 < Items.purchase.Length)
-                                {
-                                    <span class="bring-item col-4">@Items.purchase[i + 1].name (@Items.purchase[i + 1].specification)</span>
-                                }
+                @for (int i = 0; i < Items.purchase.Length; i += 3)
+                {
+                    <div class="row">
+                        <span class="bring-item col-4">
+                            @Items.purchase[i].name
+                            @if (!string.IsNullOrEmpty(Items.purchase[i].specification))
+                            {
+                                <span>(@Items.purchase[i].specification)</span>
+                            }
+                        </span>
 
-                                @if (i + 2 < Items.purchase.Length)
+                        @if (i + 1 < Items.purchase.Length)
+                        {
+                            <span class="bring-item col-4">
+                                @Items.purchase[i + 1].name
+                                @if (!string.IsNullOrEmpty(Items.purchase[i + 1].specification))
                                 {
-                                    <span class="bring-item col-4">@Items.purchase[i + 2].name (@Items.purchase[i + 2].specification)</span>
+                                    <span>(@Items.purchase[i + 1].specification)</span>
                                 }
-                            </div><br />
+                            </span>
                         }
-                </div>
+
+                        @if (i + 2 < Items.purchase.Length)
+                        {
+                            <span class="bring-item col-4">
+                                @Items.purchase[i + 2].name
+                                @if (!string.IsNullOrEmpty(Items.purchase[i + 2].specification))
+                                {
+                                    <span>(@Items.purchase[i + 2].specification)</span>
+                                }
+                            </span>
+                        }
+                    </div><br />
+                }
             }
             else
             {

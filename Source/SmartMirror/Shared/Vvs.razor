@@ -1,14 +1,19 @@
 ﻿@using SmartMirror.Data.VVS
 @inject VvsService VvsService
 
-<div class="container-fluid">
+<div class="container-fluid card-1">
+    <div class="row">
+        <div class="col-12">
+            <p class="box-heading">VVS</p>
+        </div>
+    </div>
     @if (VvsResponse == null)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
-        <div class="card-1 row">
+        <div class="row">
             <div class="col-12">
                 @foreach (var systemMessage in VvsResponse.SystemMessages)
                 {

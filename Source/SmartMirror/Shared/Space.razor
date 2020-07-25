@@ -1,5 +1,10 @@
-﻿<div class="container-fluid">
-    <div class="row card-1">
+﻿<div class="container-fluid card-1">
+    <div class="row">
+        <div class="col-12">
+            <p class="box-heading">FROM OUT OF SPACE</p>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-3">
             <img src="/images/moon/@PictureUrl" height="100" width="100" />
             @if (MoonPhase < 4)
@@ -79,7 +84,7 @@
 
         jd /= 29.5305882; //divide by the moon cycle
 
-        b = (int) jd; //int(jd) -> b, take integer part of jd
+        b = (int)jd; //int(jd) -> b, take integer part of jd
 
         jd -= b; //subtract integer part to leave fractional part of original jd
 
@@ -99,6 +104,6 @@
         // 6 => Last Quarter Moon
         // 7 => Waning Crescent Moon
 
-        return (int) moonPhase;
+        return (int)moonPhase;
     }
 }
