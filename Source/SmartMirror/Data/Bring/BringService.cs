@@ -30,12 +30,6 @@ namespace SmartMirror.Data.Bring
             _options = options;
             _httpClient = httpClient;
             _cache = cache;
-            _httpClient.BaseAddress = new Uri("https://api.getbring.com/rest/v2/");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("X-BRING-API-KEY", "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("X-BRING-CLIENT", "webApp");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("X-BRING-USER-UUID", "1d803f70-ab3e-4420-8c97-f08e0efe7fbf");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("X-BRING-VERSION", "303070050");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("X-BRING-COUNTRY", "de");
             _expiresIn = DateTime.MinValue;
         }
 
@@ -47,8 +41,15 @@ namespace SmartMirror.Data.Bring
                 new KeyValuePair<string, string>("password", _options.Value.Password)
             };
 
-            FormUrlEncodedContent formData = new FormUrlEncodedContent(content);
-            var response = await _httpClient.PostAsync("bringauth", formData);
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://api.getbring.com/rest/v2/bringauth");
+            request.Headers.Add("X-BRING-API-KEY", "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp");
+            request.Headers.Add("X-BRING-CLIENT", "webApp");
+            request.Headers.Add("X-BRING-USER-UUID", "1d803f70-ab3e-4420-8c97-f08e0efe7fbf");
+            request.Headers.Add("X-BRING-VERSION", "303070050");
+            request.Headers.Add("X-BRING-COUNTRY", "de");
+            request.Content = new FormUrlEncodedContent(content);
+
+            var response = await _httpClient.SendAsync(request);
 
             var stringResponse = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
@@ -71,8 +72,13 @@ namespace SmartMirror.Data.Bring
                 await BringAuth();
             }
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"bringlists/{listId}");
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://api.getbring.com/rest/v2/bringlists/{listId}");
             request.Headers.Add("Authorization", $"Bearer {_accessToken}");
+            request.Headers.Add("X-BRING-API-KEY", "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp");
+            request.Headers.Add("X-BRING-CLIENT", "webApp");
+            request.Headers.Add("X-BRING-USER-UUID", "1d803f70-ab3e-4420-8c97-f08e0efe7fbf");
+            request.Headers.Add("X-BRING-VERSION", "303070050");
+            request.Headers.Add("X-BRING-COUNTRY", "de");
 
             var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
