@@ -59,7 +59,7 @@ namespace SmartMirror.Data.Bring
             _expiresIn = DateTime.UtcNow.AddSeconds(bringAuthResponse.expires_in);
         }
 
-        public async Task<BringItemResponse> GetItemsAsync(string listId)
+        public async Task<BringItemResponse> GetItemsAsync()
         {
             if (_cache.TryGetValue(BRING_LIST_CACHE_KEY, out BringItemResponse bringItemResponse))
             {
@@ -72,7 +72,7 @@ namespace SmartMirror.Data.Bring
                 await BringAuth();
             }
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://api.getbring.com/rest/v2/bringlists/{listId}");
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://api.getbring.com/rest/v2/bringlists/{_options.Value.ListId}");
             request.Headers.Add("Authorization", $"Bearer {_accessToken}");
             request.Headers.Add("X-BRING-API-KEY", "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp");
             request.Headers.Add("X-BRING-CLIENT", "webApp");

@@ -65,8 +65,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        string listId = "c7ec4008-536a-4ff0-8e43-7f1b6a403ba3";
-        Items = await BringService.GetItemsAsync(listId);
+        Items = await BringService.GetItemsAsync();
         var timer = new System.Threading.Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
@@ -74,7 +73,7 @@
             {
                 try
                 {
-                    Items = await BringService.GetItemsAsync(listId);
+                    Items = await BringService.GetItemsAsync();
                     StateHasChanged();
                 }
                 catch (ObjectDisposedException)
