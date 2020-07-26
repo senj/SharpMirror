@@ -10,13 +10,13 @@
         </div>
     </div>
     <div class="row">
-        @if (User == null)
-        {
-            <p><em>Loading...</em></p>
-        }
-        else
-        {
-            <div class="col-12">
+        <div class="col-12">
+            @if (User == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1"></h5>
                     <small>@User.displayName</small>
@@ -30,8 +30,8 @@
                 <br />
                 <p class="mb-1">@Localizer["Sleep efficiency"]: @Sleep.sleep.Where(p => p.isMainSleep).FirstOrDefault()?.efficiency% - @Math.Round(Sleep.summary.totalMinutesAsleep / 60f, 1) / @Math.Round(Sleep.summary.totalTimeInBed / 60f, 1) @Localizer["hours slept"]</p>
                 <small>@Device?.deviceVersion: @Device?.batteryLevel% @Localizer["charged"]</small>
-            </div>
-        }
+            }
+        </div>
     </div>
 </div>
 <br />
