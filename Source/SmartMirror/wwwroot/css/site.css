@@ -18,6 +18,12 @@ p {
     font-weight: 300;
 }
 
+.important-symbol {
+    font-size: 5em;
+    font-weight: 300;
+    text-align: center;
+}
+
 .box-heading-big {
     font-size: 1.5em;
     font-weight: 300;
@@ -26,11 +32,11 @@ p {
 .box-heading {
     font-size: 1.5em;
     font-weight: 300;
-    padding: 0.25rem 0.25rem 0.25rem 0.25rem
+    padding: 0.25rem 0rem 0.1rem 0rem
 }
 
 .weatherIcon {
-    font-size: 1.5em;
+    font-size: 2rem;
 }
 
 .lightIcon {

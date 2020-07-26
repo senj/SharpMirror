@@ -10,14 +10,18 @@
     else
     {
         <div class="row">
-            <div class="col-6">
+            <div class="col-4">
                 <p class="important">@Forecast.Current.Temp °C</p>
                 <p class="small">@Localizer["Feels like"]: @Forecast.Current.Feels_like °C</p>
             </div>
-            <div class="col-6">
-                <p class="important">@((MarkupString)ShowSimpleIcon(Forecast.Current.Weather.FirstOrDefault()?.Main))</p>
-                <p class="small">@Forecast.Current.Weather.FirstOrDefault()?.Description</p>
-                <p>Wind: @Forecast.Current.Wind_speed km/h</p>
+            <div class="col-4">
+                <p class="important-symbol">@((MarkupString)ShowSimpleIcon(Forecast.Current.Weather.FirstOrDefault()?.Main))</p>
+                @*<p class="small">@Forecast.Current.Weather.FirstOrDefault()?.Description</p>*@
+            </div>
+            <div class="col-4">
+                <br />
+                <p style="text-align: center;">Wind: @Forecast.Current.Wind_speed km/h</p>
+                <p style="text-align: center;">&#9728; &uarr; @EpochToLocalTime(Forecast.Current.Sunrise).ToString("HH:mm") &nbsp; - &nbsp; &#9728; &darr; @EpochToLocalTime(Forecast.Current.Sunset).ToString("HH:mm")</p>
             </div>
         </div>
         <div class="row">
@@ -25,14 +29,12 @@
                 <tbody>
                     @foreach (Daily day in Forecast.Daily.Take(NumberOfDays))
                     {
-                        TimeSpan timeSpan = TimeSpan.FromSeconds(day.Dt);
-                        DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                        string localDateTime = epoch.Add(timeSpan).ToLocalTime().ToString("ddd, dd.MM.");
-
                         <tr>
-                            <th scope="row">@localDateTime</th>
+                            <th scope="row">@EpochToLocalTime(day.Dt).ToString("ddd, dd.MM.")</th>
                             <td class="weatherIcon">@(@ShowSimpleIcon(day.Weather.FirstOrDefault()?.Main))</td>
-                            <td>&darr; @Math.Round(day.Temp.Min, 1) °C &nbsp;&nbsp; &uarr; @Math.Round(day.Temp.Max, 1) °C</td>
+                            <td>&darr; @Math.Round(day.Temp.Min, 1) °C &nbsp;&nbsp; &uarr; @Math.Round(day.Temp.Max, 1) °C
+                            <br />@day.Weather.FirstOrDefault()?.Description
+                            </td>
                             <td>@day.Wind_speed km/h</td>
                         </tr>
                     }
@@ -54,37 +56,44 @@
         Forecast = await ForecastService.GetOneCallForecastAsync();
     }
 
+    private DateTime EpochToLocalTime(int epochDateTime)
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(epochDateTime);
+        DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        return epoch.Add(timeSpan).ToLocalTime();
+    }
+
     private MarkupString ShowSimpleIcon(string main)
     {
         if (main?.ToLower() == "clouds")
         {
-            return (MarkupString) "&#9729;";
+            return (MarkupString)"&#9729;";
         }
         else if (main?.ToLower() == "thunderstorm")
         {
-            return (MarkupString) "&#127785;";
+            return (MarkupString)"&#127785;";
         }
         else if (main?.ToLower() == "drizzle")
         {
-            return (MarkupString) "&#127782;";
+            return (MarkupString)"&#127782;";
         }
         else if (main?.ToLower() == "rain")
         {
-            return (MarkupString) "&#127783;";
+            return (MarkupString)"&#127783;";
         }
         else if (main?.ToLower() == "snow")
         {
-            return (MarkupString) "&#127784;";
+            return (MarkupString)"&#127784;";
         }
         else if (main?.ToLower() == "mist" || main?.ToLower() == "fog")
         {
-            return (MarkupString) "&#127787;";
+            return (MarkupString)"&#127787;";
         }
         else if (main?.ToLower() == "clear")
         {
-            return (MarkupString) "&#9728;";
+            return (MarkupString)"&#9728;";
         }
 
-        return (MarkupString) string.Empty;
+        return (MarkupString)string.Empty;
     }
 }

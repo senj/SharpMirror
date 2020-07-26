@@ -3,14 +3,21 @@
 
 <div class="container-fluid card-1">
     <div class="row">
-        @if (JokeModel == null)
-        {
-            <p><em>Loading...</em></p>
-        }
-        else
-        {
-            <span>&#9786;&nbsp;@JokeModel.Value</span>
-        }
+        <div class="col-12">
+            <p class="box-heading">JOKES</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            @if (JokeModel == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <span>@JokeModel.Value</span>
+            }
+        </div>
     </div>
 </div>
 <br />
