@@ -22,5 +22,8 @@
 </div>
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
+
     [CascadingParameter(Name = "Profile")] protected string Profile { get; set; }
 }

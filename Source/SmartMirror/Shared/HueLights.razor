@@ -2,6 +2,11 @@
 @inject HueService HueService
 @inject IStringLocalizer<HueLights> Localizer
 
+@if (!Show)
+{
+    return;
+}
+
 <div class="container-fluid card-1">
     <div class="row">
         <div class="col-12">
@@ -44,6 +49,9 @@
 <br />
 
 @code  {
+    [Parameter]
+    public bool Show { get; set; }
+
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
     private HueLightInfo LightInfo { get; set; }

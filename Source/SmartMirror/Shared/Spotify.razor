@@ -1,6 +1,11 @@
 ﻿@inject IJSRuntime JSRuntime
 @inject IWebHostEnvironment environment
 
+@if (!Show)
+{
+    return;
+}
+
 <div class="container-fluid card-1">
     <div class="row">
         <div class="col-12">
@@ -22,6 +27,9 @@
 <br />
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await JSRuntime.InvokeAsync<string>("onSpotifyWebPlaybackSDKReady");

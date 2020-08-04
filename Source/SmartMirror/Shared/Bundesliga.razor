@@ -1,6 +1,11 @@
 ﻿@using SmartMirror.Data.Soccer
 @inject BundesligaService BundesligaService
 
+@if (!Show)
+{
+    return;
+}
+
 <div class="container-fluid card-1">
     <div class="row">
         <div class="col-12">
@@ -81,6 +86,9 @@
 <br />
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
+
     BundesligaModel Matches { get; set; }
 
     protected override async Task OnInitializedAsync()

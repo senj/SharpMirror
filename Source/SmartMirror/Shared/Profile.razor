@@ -1,6 +1,11 @@
 ﻿@inject IStringLocalizer<Profile> Localizer
 @inject IOptions<ProfileConfiguration> ProfileConfiguration
- 
+
+@if (!Show)
+{
+    return;
+}
+
 <div class="container-fluid">
     <div class="row card-1">
         <div class="col-8">
@@ -22,6 +27,9 @@
 <br />
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
+
     [Parameter]
     public string ProfileName { get; set; }
 }

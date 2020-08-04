@@ -1,6 +1,11 @@
 ﻿@using SmartMirror.Data.Calendar;
 @inject CalendarService CalendarService
 
+@if(!Show)
+{
+    return;
+}
+
 <div class="container-fluid card-1">
     <div class="row">
         <div class="col-12">
@@ -72,6 +77,9 @@
 
     [Parameter]
     public int NumberOfDays { get; set; }
+
+    [Parameter]
+    public bool Show { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

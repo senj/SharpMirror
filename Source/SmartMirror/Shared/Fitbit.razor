@@ -3,6 +3,11 @@
 @inject FitbitService FitbitService
 @inject IStringLocalizer<Fitbit> Localizer
 
+@if (!Show)
+{
+    return;
+}
+
 <div class="container-fluid card-1">
     <div class="row">
         <div class="col-12">
@@ -37,6 +42,9 @@
 <br />
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
+
     private string Time { get; set; }
     private Data.Fitbit.User User { get; set; }
     private FitbitSleepResponse Sleep { get; set; }

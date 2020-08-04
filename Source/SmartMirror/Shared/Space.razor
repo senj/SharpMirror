@@ -1,4 +1,10 @@
-﻿<div class="container-fluid card-1">
+﻿
+@if (!Show)
+{
+    return;
+}
+
+<div class="container-fluid card-1">
     <div class="row">
         <div class="col-12">
             <p class="box-heading">FROM OUT OF SPACE</p>
@@ -33,6 +39,9 @@
 -->
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
+
     private string PictureUrl { get; set; }
     private int MoonPhase { get; set; }
     private string Time { get; set; }

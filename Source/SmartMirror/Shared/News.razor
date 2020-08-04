@@ -2,6 +2,11 @@
 @inject NewsService NewsService
 @inject IStringLocalizer<News> Localizer
 
+@if (!Show)
+{
+    return;
+}
+
 <div class="container-fluid card-1">
     @if (NewsResponse == null)
     {
@@ -33,6 +38,8 @@
 <br />
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
 
     private int Index { get; set; }
     private string Time { get; set; }

@@ -1,6 +1,11 @@
 ﻿@using SmartMirror.Data.VVS
 @inject VvsService VvsService
 
+@if (!Show)
+{
+    return;
+}
+
 <div class="container-fluid card-1">
     <div class="row">
         <div class="col-12">
@@ -73,6 +78,9 @@
 <br />
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
+
     [Parameter]
     public int Limit { get; set; }
 

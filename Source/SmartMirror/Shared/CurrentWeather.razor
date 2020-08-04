@@ -2,6 +2,11 @@
 @inject IStringLocalizer<CurrentWeather> Localizer
 @inject WeatherForecastService ForecastService
 
+@if (!Show)
+{
+    return;
+}
+
 <div class="container-fluid card-1">
     @if (Forecast?.Current == null)
     {
@@ -32,8 +37,9 @@
                         <tr>
                             <th scope="row">@EpochToLocalTime(day.Dt).ToString("ddd, dd.MM.")</th>
                             <td class="weatherIcon">@(@ShowSimpleIcon(day.Weather.FirstOrDefault()?.Main))</td>
-                            <td>&darr; @Math.Round(day.Temp.Min, 1) °C &nbsp;&nbsp; &uarr; @Math.Round(day.Temp.Max, 1) °C
-                            <br />@day.Weather.FirstOrDefault()?.Description
+                            <td>
+                                &darr; @Math.Round(day.Temp.Min, 1) °C &nbsp;&nbsp; &uarr; @Math.Round(day.Temp.Max, 1) °C
+                                <br />@day.Weather.FirstOrDefault()?.Description
                             </td>
                             <td>@day.Wind_speed km/h</td>
                         </tr>
@@ -46,6 +52,9 @@
 <br />
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
+
     [Parameter]
     public int NumberOfDays { get; set; }
 

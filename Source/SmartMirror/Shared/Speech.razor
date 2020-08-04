@@ -3,6 +3,11 @@
 
 @inject IJSRuntime JSRuntime
 
+@if (!Show)
+{
+    return;
+}
+
 <div class="container-fluid card-1">
     <div class="row">
         <!-- display larger (click events) -->
@@ -23,6 +28,9 @@
 <br />
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
+
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
     private async Task ValidateSpeechInputAsync(string speechInput)

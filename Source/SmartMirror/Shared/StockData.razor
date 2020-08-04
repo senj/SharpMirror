@@ -2,22 +2,30 @@
 @inject IJSRuntime JSRuntime
 @inject StockDataService StockDataService
 
+@if (!Show)
+{
+    return;
+}
+
 <div class="container-fluid">
     @if (StockDataModel == null)
     {
-    <p><em>Loading...</em></p>
+        <p><em>Loading...</em></p>
     }
     else
     {
-    <div>
-        <h3>@Symbol</h3>
-        <canvas id="stockChart_@Symbol" width="400" height="150"></canvas>
-    </div>
+        <div>
+            <h3>@Symbol</h3>
+            <canvas id="stockChart_@Symbol" width="400" height="150"></canvas>
+        </div>
     }
 </div>
 <br />
 
 @code {
+    [Parameter]
+    public bool Show { get; set; }
+
     [Parameter]
     public string Symbol { get; set; }
 
