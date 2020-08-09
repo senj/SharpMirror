@@ -2,21 +2,23 @@
     <br />
     <div class="row">
         <div class="col-lg-4 col-sm-12">
-            <Clock></Clock>
-            <Profile ProfileName="@Profile"></Profile>
-            <Speech></Speech>
-            <Calendar NumberOfDays="5"></Calendar>
+            <Clock Show="true"></Clock>
+            <Profile ProfileName="@Profile" Show="false"></Profile>
+            <Speech Show="true"></Speech>
+            <Calendar NumberOfDays="5" Show="true"></Calendar>
             @code {
                 string[] stuttgartDestinations = new string[] { "stuttgart", "herrenberg" };
             }
-            <Vvs Limit="5" Filter="new int[] { 0, 1 }" StuttgartDestinations="stuttgartDestinations"></Vvs> @*add 5 for bus*@
+            <Vvs Limit="5" Filter="new int[] { 0, 1 }" StuttgartDestinations="stuttgartDestinations" Show="true"></Vvs> @*add 5 for bus*@
         </div>
         <div class="col-lg-4">
             <News RefreshIntervalSeconds="30"></News>
         </div>
         <div class="col-lg-4">
-            <CurrentWeather NumberOfDays="5"></CurrentWeather>
-            <Spotify></Spotify>
+            <CurrentWeather NumberOfDays="5" Show="true"></CurrentWeather>
+            <Fuel Limit="5"></Fuel>
+            <Spotify Show="true"></Spotify>
+            <HueLights Show="true"></HueLights>
         </div>
     </div>
 </div>

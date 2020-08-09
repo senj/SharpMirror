@@ -3,19 +3,17 @@
     <div class="row">
         <div class="col-lg-4 col-sm-12">
             <Clock></Clock>
-            <Profile ProfileName="@Profile"></Profile>
+            <Profile ProfileName="@Profile" Show="false"></Profile>
             <Speech></Speech>
-            <Calendar NumberOfDays="5"></Calendar>
-            @code {
-                string[] stuttgartDestinations = new string[] { "stuttgart", "herrenberg" };
-            }
-            <Vvs Limit="5" Filter="new int[] { 0, 1 }" StuttgartDestinations="stuttgartDestinations"></Vvs> @*add 5 for bus*@      
+            <Calendar NumberOfDays="5"></Calendar>  
         </div>
         <div class="col-lg-4">            
         </div>
         <div class="col-lg-4">
             <CurrentWeather NumberOfDays="5"></CurrentWeather>
             <Fuel Limit="5"></Fuel>
+            <Spotify Show="true"></Spotify>
+            <HueLights Show="true"></HueLights>
         </div>
     </div>
 </div>

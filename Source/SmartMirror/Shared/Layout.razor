@@ -6,17 +6,17 @@
         @*add 5 for bus on VVS*@
         <CascadingValue Value="this" Name="LayoutRazor">
             <CascadingValue Value="Profile" Name="Profile">
-                @if (Profile == "lukas")
+                @if (Profile == "morgens")
                 {
-                    <Layout_lukas></Layout_lukas>
+                    <Layout_morning></Layout_morning>
                 }
-                else if (Profile == "alisa")
+                else if (Profile == "mittags")
                 {
-                    <Layout_alisa></Layout_alisa>
+                    <Layout_mid></Layout_mid>
                 }
-                else if (Profile == "verkehr")
+                else if (Profile == "abends")
                 {
-                    <Layout_verkehr></Layout_verkehr>
+                    <Layout_evening></Layout_evening>
                 }
                 else if (Profile == "spiegel")
                 {
@@ -32,7 +32,7 @@
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
     [CascadingParameter]
-    private static string Profile { get; set; } = "lukas";
+    private static string Profile { get; set; } = GetInitialProfile();
 
     private static Dictionary<Type, object> DI = new Dictionary<Type, object>();
 
@@ -70,5 +70,26 @@
         }
 
         return default;
+    }
+
+    private static string GetInitialProfile()
+    {
+        var currentHour = DateTime.UtcNow.Hour;
+        if (currentHour >= 0 && currentHour < 11)
+        {
+            return "morgens";
+        }
+        else if (currentHour >= 11 && currentHour < 17)
+        {
+            return "mittags";
+        }
+        else if (currentHour >= 17 && currentHour < 24)
+        {
+            return "abends";
+        }
+        else
+        {
+            return "spiegel";
+        }
     }
 }
