@@ -59,6 +59,8 @@
             {
                 <p>No items on shopping list.</p>
             }
+
+            <p><em>Say "füge der liste {itemName (one word)} hinzu" oder "füge der liste genau {itemName details (two words)} hinzu".</em></p>
         </div>
     </div>
 </div>
@@ -71,8 +73,11 @@
     SmartMirror.Data.Bring.BringItemResponse Items { get; set; }
     private string Time { get; set; }
 
+    [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        Layout.AddToParent<Bring>(this);
         Items = await BringService.GetItemsAsync();
         var timer = new System.Threading.Timer((_) =>
         {
@@ -91,5 +96,12 @@
         }, null, 0, 600 * 1000);
 
         base.OnInitializedAsync();
+    }
+
+    public async Task AddItem(string itemName, string details)
+    {
+        await BringService.AddItemAsync(itemName, details);
+        Items = await BringService.GetItemsAsync(loadFromCache: false);
+        StateHasChanged();
     }
 }

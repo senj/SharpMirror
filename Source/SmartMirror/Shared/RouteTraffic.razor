@@ -16,7 +16,7 @@
         <div class="col-12">
             @if (RouteResponse == null || !RouteResponse.routes.Any())
             {
-                <p><em>Say: Route|Strecke|Verbindung {source (one word)} {destination (one word)}.</em></p>
+                <p>No route requested.</p>
             }
             else
             {
@@ -67,6 +67,8 @@
 
                 <p>@trafficString</p>
             }
+
+            <p><em>Say: Route|Strecke|Verbindung {source (one word)} {destination (one word)}.</em></p>
         </div>
     </div>
 </div>

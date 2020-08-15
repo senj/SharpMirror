@@ -39,6 +39,7 @@
     private async Task ValidateSpeechInputAsync(string speechInput)
     {
         await ValidateChitChat(speechInput);
+        await ValidateBringInput(speechInput);
         await ValidateTrafficInput(speechInput);
         await ValidateHueLightsSpeech(speechInput);
         ValidateProfileSpeechInput(speechInput);
@@ -52,6 +53,33 @@
             if (speechInput.Split(' ').Any(s => greetings.Contains(s)))
             {
                 await JSRuntime.InvokeVoidAsync("speak", $"Hallo, schön das du da bist.");
+            }
+        }
+    }
+
+    private async Task ValidateBringInput(string speechInput)
+    {
+        if (speechInput.StartsWith("füge der liste genau"))
+        {
+            string itemName = speechInput.Split(' ')[4];
+            string details = speechInput.Split(' ')[5];
+            var bring = Layout.GetFromParent<Bring>();
+            await bring.AddItem(itemName, details);
+
+            if (VoiceOutput)
+            {
+                await JSRuntime.InvokeVoidAsync("speak", $"{itemName}, {details} ist jetzt auf deiner Liste.");
+            }
+        }
+        else if (speechInput.StartsWith("füge der liste"))
+        {
+            string itemName = speechInput.Split(' ')[3];
+            var bring = Layout.GetFromParent<Bring>();
+            await bring.AddItem(itemName, string.Empty);
+
+            if (VoiceOutput)
+            {
+                await JSRuntime.InvokeVoidAsync("speak", $"{itemName} ist jetzt auf deiner Liste.");
             }
         }
     }

@@ -5,6 +5,7 @@ using SmartMirror.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -59,9 +60,9 @@ namespace SmartMirror.Data.Bring
             _expiresIn = DateTime.UtcNow.AddSeconds(bringAuthResponse.expires_in);
         }
 
-        public async Task<BringItemResponse> GetItemsAsync()
+        public async Task<BringItemResponse> GetItemsAsync(bool loadFromCache = true)
         {
-            if (_cache.TryGetValue(BRING_LIST_CACHE_KEY, out BringItemResponse bringItemResponse))
+            if (loadFromCache && _cache.TryGetValue(BRING_LIST_CACHE_KEY, out BringItemResponse bringItemResponse))
             {
                 _logger.LogInformation("[CACHE] Got bring list from cache");
                 return bringItemResponse;
@@ -99,8 +100,34 @@ namespace SmartMirror.Data.Bring
                 });
             }
 
-            _logger.LogInformation("Got joke from chuck norris api");
+            _logger.LogInformation("Got items from bring api");
             return bringItemResponse;
+        }
+
+        public async Task AddItemAsync(string itemName, string details)
+        {
+            if (DateTime.UtcNow >= _expiresIn)
+            {
+                await BringAuth();
+            }
+
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"https://api.getbring.com/rest/v2/bringlists/{_options.Value.ListId}");
+            request.Content = new StringContent($"purchase={itemName}&recently=&specification={details}&remove=&sender=null", Encoding.UTF8, "application/x-www-form-urlencoded");
+
+            request.Headers.Add("Authorization", $"Bearer {_accessToken}");
+            request.Headers.Add("X-BRING-API-KEY", "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp");
+            request.Headers.Add("X-BRING-CLIENT", "webApp");
+            request.Headers.Add("X-BRING-USER-UUID", "1d803f70-ab3e-4420-8c97-f08e0efe7fbf");
+            request.Headers.Add("X-BRING-VERSION", "303070050");
+            request.Headers.Add("X-BRING-COUNTRY", "de");
+
+            var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Error adding bring item: {statusCode}", response.StatusCode);
+            }
+
+            _logger.LogInformation("Added item to bring shopping list.");
         }
     }
 }
