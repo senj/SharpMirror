@@ -106,22 +106,28 @@
 
     private async Task ValidateTrafficInput(string speechInput)
     {
-        if (SpeechInput.StartsWith("verbindung") || SpeechInput.StartsWith("route") || SpeechInput.StartsWith("strecke"))
+        SmartMirror.Data.Routes.RouteResponse routeResponse = null;
+        if (SpeechInput.StartsWith("strecke zur arbeit lukas") || SpeechInput.StartsWith("weg zur arbeit lukas"))
+        {
+            var traffic = Layout.GetFromParent<RouteTraffic>();
+            routeResponse = await traffic.SetRouteAsync("zuhause lukas", "arbeit lukas");
+        }
+        else if (SpeechInput.StartsWith("verbindung") || SpeechInput.StartsWith("route") || SpeechInput.StartsWith("strecke"))
         {
             var traffic = Layout.GetFromParent<RouteTraffic>();
             var speechValues = speechInput.Split(' ');
-            var routeResponse = await traffic.SetRouteAsync(speechValues[1], speechValues[2]);
+            routeResponse = await traffic.SetRouteAsync(speechValues[1], speechValues[2]);
+        }
 
-            if (routeResponse.routes.Any() && VoiceOutput)
-            {
-                var summary = routeResponse.routes.FirstOrDefault().summary;
-                double durationInHours = Math.Floor(summary.liveTrafficIncidentsTravelTimeInSeconds / 3600d);
-                double durationInMinutes = summary.liveTrafficIncidentsTravelTimeInSeconds / 60 % 60;
-                double delayInHours = Math.Floor(summary.trafficDelayInSeconds / 3600d);
-                double delayInMinutes = summary.trafficDelayInSeconds / 60 % 60;
+        if (routeResponse?.routes?.Any() == true && VoiceOutput)
+        {
+            var summary = routeResponse.routes.FirstOrDefault().summary;
+            double durationInHours = Math.Floor(summary.liveTrafficIncidentsTravelTimeInSeconds / 3600d);
+            double durationInMinutes = summary.liveTrafficIncidentsTravelTimeInSeconds / 60 % 60;
+            double delayInHours = Math.Floor(summary.trafficDelayInSeconds / 3600d);
+            double delayInMinutes = summary.trafficDelayInSeconds / 60 % 60;
 
-                await JSRuntime.InvokeVoidAsync("speak", $"Für diese Strecke von {summary.lengthInMeters / 1000} Kilometern benötigst du {durationInHours} Stunden und {durationInMinutes} Minuten.");
-            }
+            await JSRuntime.InvokeVoidAsync("speak", $"Für diese Strecke von {summary.lengthInMeters / 1000} Kilometern benötigst du {durationInHours} Stunden und {durationInMinutes} Minuten.");
         }
     }
 

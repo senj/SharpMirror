@@ -69,6 +69,7 @@
             }
             <br />
             <p><em>Route|Strecke|Verbindung {source (one word)} {destination (one word)}</em></p>
+            <p><em>Weg|Strecke zur Arbeit Lukas|Alisa</em></p>            
         </div>
     </div>
 </div>
@@ -92,8 +93,16 @@
 
     public async Task<RouteResponse> SetRouteAsync(string source, string destination)
     {
-        SourceGeoResponse = await RouteService.SearchAsync(source);
-        DestinationGeoResponse = await RouteService.SearchAsync(destination);
+        (bool sourceFound, bool destinationFound) = SetKnownLocations(source.ToLower(), destination.ToLower());
+        if (!sourceFound)
+        {
+            SourceGeoResponse = await RouteService.SearchAsync(source);
+        }
+
+        if (!destinationFound)
+        {
+            DestinationGeoResponse = await RouteService.SearchAsync(destination);
+        }
 
         if (SourceGeoResponse?.results.Any() != true || DestinationGeoResponse?.results?.Any() != true)
         {
@@ -117,5 +126,50 @@
         StateHasChanged();
 
         return RouteResponse;
+    }
+
+    private (bool, bool) SetKnownLocations(string source, string destination)
+    {
+        bool sourceFound = false, destinationFound = false;
+        Position sourcePosition = new Position();
+        Position destinationPosition = new Position();
+     
+        if (source == "zuhause lukas")
+        {
+            sourcePosition = new Position { lat = 48.663491f, lon = 9.381447f };
+            sourceFound = true;
+        }
+
+        if (destination == "arbeit lukas")
+        {
+            destinationPosition = new Position { lat = 48.671431f, lon = 9.363197f };
+            destinationFound = true;
+        }
+
+        SourceGeoResponse = new GeosearchResponse
+        {
+            results = new Result[]
+        {
+                    new Result
+                    {
+                        position = sourcePosition,
+                        address = new Address { freeformAddress = "Zuhause" }
+                    }
+            }
+        };
+
+        DestinationGeoResponse = new GeosearchResponse
+        {
+            results = new Result[]
+            {
+                    new Result
+                    {
+                        position = destinationPosition,
+                        address = new Address { freeformAddress = "Arbeit" }
+                    }
+                }
+        };
+
+        return (sourceFound, destinationFound);
     }
 }
