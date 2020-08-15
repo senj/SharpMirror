@@ -88,14 +88,14 @@
         base.OnInitializedAsync();
     }
 
-    public async Task SetRouteAsync(string source, string destination)
+    public async Task<RouteResponse> SetRouteAsync(string source, string destination)
     {
         SourceGeoResponse = await RouteService.SearchAsync(source);
         DestinationGeoResponse = await RouteService.SearchAsync(destination);
 
         if (SourceGeoResponse?.results.Any() != true || DestinationGeoResponse?.results?.Any() != true)
         {
-            return;
+            return new RouteResponse();
         }
 
         RouteResponse = await RouteService.GetRouteAsync(new RouteRequest
@@ -113,5 +113,7 @@
         });
 
         StateHasChanged();
+
+        return RouteResponse;
     }
 }

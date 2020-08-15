@@ -4,6 +4,11 @@ namespace SmartMirror.Data.Routes
 {
     public class RouteResponse
     {
+        public RouteResponse()
+        {
+            routes = new Route[] { };
+        }
+
         public string formatVersion { get; set; }
         public Route[] routes { get; set; }
     }

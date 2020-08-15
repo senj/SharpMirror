@@ -31,13 +31,29 @@
     [Parameter]
     public bool Show { get; set; }
 
+    [Parameter]
+    public bool VoiceOutput { get; set; }
+
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
     private async Task ValidateSpeechInputAsync(string speechInput)
     {
+        await ValidateChitChat(speechInput);
         await ValidateTrafficInput(speechInput);
         await ValidateHueLightsSpeech(speechInput);
         ValidateProfileSpeechInput(speechInput);
+    }
+
+    private async Task ValidateChitChat(string speechInput)
+    {
+        var greetings = new List<string>() { "hallo", "hi" };
+        if (VoiceOutput)
+        {
+            if (speechInput.Split(' ').Any(s => greetings.Contains(s)))
+            {
+                await JSRuntime.InvokeVoidAsync("speak", $"Hallo, schön das du da bist.");
+            }
+        }
     }
 
     private async Task ValidateTrafficInput(string speechInput)
@@ -46,31 +62,32 @@
         {
             var traffic = Layout.GetFromParent<RouteTraffic>();
             var speechValues = speechInput.Split(' ');
-            await traffic.SetRouteAsync(speechValues[1], speechValues[2]);
+            var routeResponse = await traffic.SetRouteAsync(speechValues[1], speechValues[2]);
+
+            if (routeResponse.routes.Any() && VoiceOutput)
+            {
+                var summary = routeResponse.routes.FirstOrDefault().summary;
+                double durationInHours = Math.Floor(summary.liveTrafficIncidentsTravelTimeInSeconds / 3600d);
+                double durationInMinutes = summary.liveTrafficIncidentsTravelTimeInSeconds / 60 % 60;
+                double delayInHours = Math.Floor(summary.trafficDelayInSeconds / 3600d);
+                double delayInMinutes = summary.trafficDelayInSeconds / 60 % 60;
+
+                await JSRuntime.InvokeVoidAsync("speak", $"Für diese Strecke von {summary.lengthInMeters / 1000} Kilometern benötigst du {durationInHours} Stunden und {durationInMinutes} Minuten.");
+            }
         }
     }
 
     private async Task ValidateProfileSpeechInput(string speechInput)
     {
-        if (speechInput.Contains("lukas"))
+        string profileName = speechInput.Split(' ')[3];
+        if (speechInput.Equals("wechsel profil zu"))
         {
-            await JSRuntime.InvokeVoidAsync("speak", "wechsel profil zu lukas");
-            Layout.SetProfile("lukas");
-        }
-        else if (speechInput.Contains("alisa"))
-        {
-            await JSRuntime.InvokeVoidAsync("speak", "wechsel profil zu alisa");
-            Layout.SetProfile("alisa");
-        }
-        else if (speechInput.Contains("verkehr"))
-        {
-            await JSRuntime.InvokeVoidAsync("speak", "wechsel profil zu verkehr");
-            Layout.SetProfile("verkehr");
-        }
-        else if (speechInput.Contains("spiegel"))
-        {
-            await JSRuntime.InvokeVoidAsync("speak", "wechsel profil zu spiegel");
-            Layout.SetProfile("spiegel");
+            if (VoiceOutput)
+            {
+                await JSRuntime.InvokeVoidAsync("speak", $"Wechsel Profil zu {profileName}");
+            }
+
+            Layout.SetProfile(profileName);
         }
     }
 

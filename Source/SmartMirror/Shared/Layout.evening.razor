@@ -2,18 +2,26 @@
     <br />
     <div class="row">
         <div class="col-lg-4 col-sm-12">
-            <Clock></Clock>
+            <Clock Show="true"></Clock>
             <Profile ProfileName="@Profile" Show="false"></Profile>
-            <Speech></Speech>
-            <Calendar NumberOfDays="5"></Calendar>  
-        </div>
-        <div class="col-lg-4">            
+            <Speech Show="true" VoiceOutput="true"></Speech>
+            <Calendar NumberOfDays="5" Show="true"></Calendar>
+            <Bundesliga Show="false"></Bundesliga>
+            <Vvs Limit="5" Filter="new int[] { 0, 1 }" Show="false"></Vvs> @*add 5 for bus*@
+            <Fitbit Show="true"></Fitbit>
+            <Bring Show="true"></Bring>
+            <GermanQuote Show="false"></GermanQuote>
+            <RouteTraffic Show="false"></RouteTraffic>
         </div>
         <div class="col-lg-4">
-            <CurrentWeather NumberOfDays="5"></CurrentWeather>
-            <Fuel Limit="5"></Fuel>
+            <News RefreshIntervalSeconds="30" Show="true"></News>
+        </div>
+        <div class="col-lg-4">
+            <CurrentWeather NumberOfDays="5" Show="true"></CurrentWeather>
+            <Fuel Limit="5" Show="true"></Fuel>
             <Spotify Show="true"></Spotify>
-            <HueLights Show="true"></HueLights>
+            <HueLights Show="false"></HueLights>
+            <Space Show="true"></Space>
         </div>
     </div>
 </div>

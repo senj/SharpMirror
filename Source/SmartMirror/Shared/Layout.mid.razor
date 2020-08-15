@@ -4,30 +4,24 @@
         <div class="col-lg-4 col-sm-12">
             <Clock Show="true"></Clock>
             <Profile ProfileName="@Profile" Show="false"></Profile>
-            <Speech Show="true"></Speech>
+            <Speech Show="true" VoiceOutput="true"></Speech>
             <Calendar NumberOfDays="5" Show="true"></Calendar>
-            <Fitbit Show="true"></Fitbit>
-            @if (
-      (DateTime.UtcNow.DayOfWeek == DayOfWeek.Friday
-   || DateTime.UtcNow.DayOfWeek == DayOfWeek.Saturday
-   || DateTime.UtcNow.DayOfWeek == DayOfWeek.Sunday))
-            {
-                <Bundesliga Show="false"></Bundesliga>
-            }
+            <Bundesliga Show="false"></Bundesliga>
+            <Vvs Limit="5" Filter="new int[] { 0, 1 }" Show="true"></Vvs> @*add 5 for bus*@
+            <Fitbit Show="false"></Fitbit>
             <Bring Show="true"></Bring>
-            <GermanQuote></GermanQuote>
+            <GermanQuote Show="false"></GermanQuote>
             <RouteTraffic Show="true"></RouteTraffic>
         </div>
         <div class="col-lg-4">
-            <News RefreshIntervalSeconds="30"></News>
-            <ChuckNorrisJokes></ChuckNorrisJokes>
-            <StockData Symbol="FRA:AMZ"></StockData>
+            <News RefreshIntervalSeconds="30" Show="false"></News>
         </div>
         <div class="col-lg-4">
             <CurrentWeather NumberOfDays="5" Show="true"></CurrentWeather>
+            <Fuel Limit="5" Show="true"></Fuel>
             <Spotify Show="true"></Spotify>
-            <HueLights Show="true"></HueLights>
-            <Space Show="true"></Space>
+            <HueLights Show="false"></HueLights>
+            <Space Show="false"></Space>
         </div>
     </div>
 </div>

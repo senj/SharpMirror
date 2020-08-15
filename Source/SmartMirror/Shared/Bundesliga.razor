@@ -1,7 +1,9 @@
 ﻿@using SmartMirror.Data.Soccer
 @inject BundesligaService BundesligaService
 
-@if (!Show)
+@if (!Show || (DateTime.UtcNow.DayOfWeek != DayOfWeek.Friday
+&& DateTime.UtcNow.DayOfWeek != DayOfWeek.Saturday
+&& DateTime.UtcNow.DayOfWeek != DayOfWeek.Sunday))
 {
     return;
 }

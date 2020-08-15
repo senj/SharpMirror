@@ -64,7 +64,7 @@
 
                     <p>
                         @stop.Transportation.origin.name - @stop.Transportation.destination.name
-                        @if (StuttgartDestinations.Any(s => stop.Transportation.destination.name.ToLower().Contains(s)))
+                        @if (SpecialDestinations.Any(s => stop.Transportation.destination.name.ToLower().Contains(s)))
                         {
                             <span>&#9734;</span>
                         }
@@ -85,7 +85,7 @@
     public int Limit { get; set; }
 
     [Parameter]
-    public string[] StuttgartDestinations { get; set; }
+    public string[] SpecialDestinations { get; set; } = new string[] { "stuttgart", "herrenberg" };
 
     /// <summary>
     /// 0 R-Bahn, 1 S-Bahn, 3 Stadtbahn, 5 Bus, 7 Nachtbus, 10 Ruftaxi, 11 Sonstige
