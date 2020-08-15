@@ -40,6 +40,7 @@ You can set these secrets as environment variables. (see docker-compose.yml)
 - RedisConfiguration__Configuration=
 - BringConfiguration__Email=
 - BringConfiguration__Password=
+- RouteConfiguration__ApiKey=
 
 ### Get access
 For most of the APIs, request limits apply. Therefore this project makes heavy use of caching using a redis cache. 
@@ -48,6 +49,7 @@ For most of the APIs, request limits apply. Therefore this project makes heavy u
 - fuel prices: check out this website: https://creativecommons.tankerkoenig.de/
 - Spotify: login here and create a client application: https://developer.spotify.com/dashboard/ (Spotify uses OAuth2)
 - Fitbit: login here and create a client application: https://dev.fitbit.com/login (Fitbit uses OAuth2)
+- Route/Traffic: Azure Map Service
 
 ## Build & Run
 - This can be built and run as a docker container.

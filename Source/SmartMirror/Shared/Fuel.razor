@@ -92,7 +92,7 @@
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        if (datasets?.Any() == true)
+        if (datasets?.Any() == true && Show)
         {
             await JSRuntime.InvokeAsync<string>("renderChart", "fuelChart", FuelResponse.Keys, datasets.Values);
         }

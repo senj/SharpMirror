@@ -104,7 +104,7 @@
         PopulateDatasets();
         StateHasChanged();
 
-        if (datasets?.Any() == true)
+        if (datasets?.Any() == true && Show)
         {
             JSRuntime.InvokeVoidAsync("renderPieChart", "activityChart0", new[] { "Very", "Fairly", "Lightly", "Sedentary" }, new Dataset<float>[] { datasets.Last().Value });
         }

@@ -35,6 +35,23 @@
 
     private async Task ValidateSpeechInputAsync(string speechInput)
     {
+        await ValidateTrafficInput(speechInput);
+        await ValidateHueLightsSpeech(speechInput);
+        ValidateProfileSpeechInput(speechInput);
+    }
+
+    private async Task ValidateTrafficInput(string speechInput)
+    {
+        if (SpeechInput.StartsWith("verbindung") || SpeechInput.StartsWith("route") || SpeechInput.StartsWith("strecke"))
+        {
+            var traffic = Layout.GetFromParent<RouteTraffic>();
+            var speechValues = speechInput.Split(' ');
+            await traffic.SetRouteAsync(speechValues[1], speechValues[2]);
+        }
+    }
+
+    private async Task ValidateProfileSpeechInput(string speechInput)
+    {
         if (speechInput.Contains("lukas"))
         {
             await JSRuntime.InvokeVoidAsync("speak", "wechsel profil zu lukas");
@@ -54,10 +71,6 @@
         {
             await JSRuntime.InvokeVoidAsync("speak", "wechsel profil zu spiegel");
             Layout.SetProfile("spiegel");
-        }
-        else if (speechInput.Contains("licht"))
-        {
-            ValidateHueLightsSpeech(speechInput);
         }
     }
 

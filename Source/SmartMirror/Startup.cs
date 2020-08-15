@@ -12,6 +12,7 @@ using SmartMirror.Data.Fitbit;
 using SmartMirror.Data.Fuel;
 using SmartMirror.Data.Jokes;
 using SmartMirror.Data.News;
+using SmartMirror.Data.Routes;
 using SmartMirror.Data.Soccer;
 using SmartMirror.Data.Spotify;
 using SmartMirror.Data.StockData;
@@ -53,6 +54,7 @@ namespace SmartMirror
             services.AddSingleton<HueService>();
             services.AddSingleton<FitbitService>();
             services.AddSingleton<BringService>();
+            services.AddSingleton<RouteService>();
 
             services.AddSingleton<HttpClient>();
 
@@ -81,6 +83,7 @@ namespace SmartMirror
             services.Configure<NewsConfiguration>(_configuration.GetSection(nameof(NewsConfiguration)));
             services.Configure<ProfileConfiguration>(_configuration.GetSection(nameof(ProfileConfiguration)));
             services.Configure<BringConfiguration>(_configuration.GetSection(nameof(BringConfiguration)));
+            services.Configure<RouteConfiguration>(_configuration.GetSection(nameof(RouteConfiguration)));
 
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {

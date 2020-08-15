@@ -1,0 +1,117 @@
+﻿@using SmartMirror.Data.Routes
+@inject RouteService RouteService
+
+@if (!Show)
+{
+    return;
+}
+
+<div class="container-fluid card-1">
+    <div class="row">
+        <div class="col-12">
+            <p class="box-heading">ROUTES AND TRAFFIC</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            @if (RouteResponse == null || !RouteResponse.routes.Any())
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                var summary = RouteResponse.routes.FirstOrDefault().summary;
+                <p>@SourceGeoResponse.results.FirstOrDefault().address.freeformAddress - @DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress</p>
+                <br />
+                if (summary.departureTime.Date != summary.arrivalTime.Date)
+                {
+                    <p>
+                        @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
+                        - @summary.arrivalTime.ToString("dd.MM.") <b>@summary.arrivalTime.ToString("HH:mm")</b>
+                    </p>
+                }
+                else
+                {
+                    <p>
+                        @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
+                        - <b>@summary.arrivalTime.ToString("HH:mm")</b>
+                    </p>
+                }
+
+                <p>@(summary.lengthInMeters / 1000) km</p>
+
+                double durationInHours = Math.Floor(summary.liveTrafficIncidentsTravelTimeInSeconds / 3600d);
+                double durationInMinutes = summary.liveTrafficIncidentsTravelTimeInSeconds / 60 % 60;
+                double delayInHours = Math.Floor(summary.trafficDelayInSeconds / 3600d);
+                double delayInMinutes = summary.trafficDelayInSeconds / 60 % 60;
+                string trafficString = string.Empty;
+
+                if (durationInHours != 0)
+                {
+                    trafficString = $"{durationInHours}h";
+                }
+
+                if (durationInMinutes != 0)
+                {
+                    trafficString += $" {durationInMinutes}min";
+                }
+
+                if (delayInHours != 0 && delayInMinutes != 0)
+                {
+                    trafficString += $" ({delayInHours}h {delayInMinutes}min)";
+                }
+                else if (delayInMinutes != 0)
+                {
+                    trafficString += $" ({delayInMinutes}min)";
+                }
+
+                <p>@trafficString</p>
+            }
+        </div>
+    </div>
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public bool Show { get; set; }
+
+    public RouteResponse RouteResponse { get; set; }
+    public GeosearchResponse SourceGeoResponse { get; set; }
+    public GeosearchResponse DestinationGeoResponse { get; set; }
+
+    [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Layout.AddToParent<RouteTraffic>(this);
+        base.OnInitializedAsync();
+    }
+
+    public async Task SetRouteAsync(string source, string destination)
+    {
+        SourceGeoResponse = await RouteService.SearchAsync(source);
+        DestinationGeoResponse = await RouteService.SearchAsync(destination);
+
+        if (SourceGeoResponse?.results.Any() != true || DestinationGeoResponse?.results?.Any() != true)
+        {
+            return;
+        }
+
+        RouteResponse = await RouteService.GetRouteAsync(new RouteRequest
+        {
+            Departure = new Geopoint
+            {
+                Latitude = SourceGeoResponse.results.FirstOrDefault().position.lat,
+                Longitude = SourceGeoResponse.results.FirstOrDefault().position.lon
+            },
+            Destination = new Geopoint
+            {
+                Latitude = DestinationGeoResponse.results.FirstOrDefault().position.lat,
+                Longitude = DestinationGeoResponse.results.FirstOrDefault().position.lon
+            }
+        });
+
+        StateHasChanged();
+    }
+}
