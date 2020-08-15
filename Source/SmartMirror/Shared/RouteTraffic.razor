@@ -16,7 +16,7 @@
         <div class="col-12">
             @if (RouteResponse == null || !RouteResponse.routes.Any())
             {
-                <p><em>Loading...</em></p>
+                <p><em>Say: Route|Strecke|Verbindung {source (one word)} {destination (one word)}.</em></p>
             }
             else
             {
@@ -58,11 +58,11 @@
 
                 if (delayInHours != 0 && delayInMinutes != 0)
                 {
-                    trafficString += $" ({delayInHours}h {delayInMinutes}min)";
+                    trafficString += $" ({delayInHours}h {delayInMinutes}min delay)";
                 }
                 else if (delayInMinutes != 0)
                 {
-                    trafficString += $" ({delayInMinutes}min)";
+                    trafficString += $" ({delayInMinutes}min delay)";
                 }
 
                 <p>@trafficString</p>
