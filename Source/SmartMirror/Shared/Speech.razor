@@ -39,7 +39,7 @@
     private async Task ValidateSpeechInputAsync(string speechInput)
     {
         await ValidateChitChat(speechInput);
-        ValidateWeatherInput(speechInput);
+        await ValidateWeatherInput(speechInput);
         await ValidateBringInput(speechInput);
         await ValidateTrafficInput(speechInput);
         await ValidateHueLightsSpeech(speechInput);
@@ -58,9 +58,14 @@
         }
     }
 
-    private void ValidateWeatherInput(string speechInput)
+    private async Task ValidateWeatherInput(string speechInput)
     {
-        if (SpeechInput.StartsWith("wetter klein"))
+        if (SpeechInput.StartsWith("wie wird das wetter heute") || SpeechInput.StartsWith("brauche ich heute einen regenschirm") && VoiceOutput)
+        {
+            var weather = Layout.GetFromParent<CurrentWeather>();
+            await JSRuntime.InvokeVoidAsync("speak", $"Heute gibt es in Wendlingen {weather.Forecast.Daily[0].Temp.Day} Grad und es ist {weather.Forecast.Daily[0].Weather[0].Description}.");
+        }
+        else if (SpeechInput.StartsWith("wetter klein"))
         {
             var weather = Layout.GetFromParent<CurrentWeather>();
             weather.DisableForecast();

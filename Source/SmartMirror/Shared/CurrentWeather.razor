@@ -44,7 +44,7 @@
                                     &darr; @Math.Round(day.Temp.Min, 1) °C &nbsp;&nbsp; &uarr; @Math.Round(day.Temp.Max, 1) °C
                                     <br />@day.Weather.FirstOrDefault()?.Description
                                 </td>
-                                <td>@day.Wind_speed km/h</td>
+                                <td>@day.Wind_speed km/h | @day.Uvi UV</td>
                             </tr>
                         }
                     </tbody>
@@ -68,7 +68,7 @@
     [Parameter]
     public int NumberOfDays { get; set; }
 
-    private OneCallWeatherForecast Forecast;
+    public OneCallWeatherForecast Forecast;
 
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
