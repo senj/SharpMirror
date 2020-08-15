@@ -29,24 +29,31 @@
                 <p style="text-align: center;">&#9728; &uarr; @EpochToLocalTime(Forecast.Current.Sunrise).ToString("HH:mm") &nbsp; - &nbsp; &#9728; &darr; @EpochToLocalTime(Forecast.Current.Sunset).ToString("HH:mm")</p>
             </div>
         </div>
-        <div class="row">
-            <table class="table" style="color:white;">
-                <tbody>
-                    @foreach (Daily day in Forecast.Daily.Take(NumberOfDays))
-                    {
-                        <tr>
-                            <th scope="row">@EpochToLocalTime(day.Dt).ToString("ddd, dd.MM.")</th>
-                            <td class="weatherIcon">@(@ShowSimpleIcon(day.Weather.FirstOrDefault()?.Main))</td>
-                            <td>
-                                &darr; @Math.Round(day.Temp.Min, 1) °C &nbsp;&nbsp; &uarr; @Math.Round(day.Temp.Max, 1) °C
-                                <br />@day.Weather.FirstOrDefault()?.Description
-                            </td>
-                            <td>@day.Wind_speed km/h</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+
+        @if (ShowForecast)
+        {
+            <div class="row">
+                <table class="table" style="color:white;">
+                    <tbody>
+                        @foreach (Daily day in Forecast.Daily.Take(NumberOfDays))
+                        {
+                            <tr>
+                                <th scope="row">@EpochToLocalTime(day.Dt).ToString("ddd, dd.MM.")</th>
+                                <td class="weatherIcon">@(@ShowSimpleIcon(day.Weather.FirstOrDefault()?.Main))</td>
+                                <td>
+                                    &darr; @Math.Round(day.Temp.Min, 1) °C &nbsp;&nbsp; &uarr; @Math.Round(day.Temp.Max, 1) °C
+                                    <br />@day.Weather.FirstOrDefault()?.Description
+                                </td>
+                                <td>@day.Wind_speed km/h</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <br />
+        <p><em>Wetter komplett | Wetter klein</em></p>
     }
 </div>
 <br />
@@ -56,13 +63,31 @@
     public bool Show { get; set; }
 
     [Parameter]
+    public bool ShowForecast { get; set; }
+
+    [Parameter]
     public int NumberOfDays { get; set; }
 
     private OneCallWeatherForecast Forecast;
 
+    [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        Layout.AddToParent<CurrentWeather>(this);
         Forecast = await ForecastService.GetOneCallForecastAsync();
+    }
+
+    public void EnableForecast()
+    {
+        ShowForecast = true;
+        StateHasChanged();
+    }
+
+    public void DisableForecast()
+    {
+        ShowForecast = false;
+        StateHasChanged();
     }
 
     private DateTime EpochToLocalTime(int epochDateTime)

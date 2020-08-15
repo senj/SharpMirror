@@ -88,6 +88,8 @@ function validateSpeechIntent(text) {
 
     if (input.includes('ende') || input.includes('stop') || input.includes('stopp')) {
         finalTranscript = '';
+        recognition.abort();
+        recognition.start();
     }
     else {
         DotNet.invokeMethodAsync('SmartMirror', 'SetSpeechInput', input);

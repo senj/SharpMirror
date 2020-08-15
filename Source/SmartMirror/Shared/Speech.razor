@@ -39,6 +39,7 @@
     private async Task ValidateSpeechInputAsync(string speechInput)
     {
         await ValidateChitChat(speechInput);
+        ValidateWeatherInput(speechInput);
         await ValidateBringInput(speechInput);
         await ValidateTrafficInput(speechInput);
         await ValidateHueLightsSpeech(speechInput);
@@ -54,6 +55,20 @@
             {
                 await JSRuntime.InvokeVoidAsync("speak", $"Hallo, schön das du da bist.");
             }
+        }
+    }
+
+    private void ValidateWeatherInput(string speechInput)
+    {
+        if (SpeechInput.StartsWith("wetter klein"))
+        {
+            var weather = Layout.GetFromParent<CurrentWeather>();
+            weather.DisableForecast();
+        }
+        else if (SpeechInput.StartsWith("wetter komplett"))
+        {
+            var weather = Layout.GetFromParent<CurrentWeather>();
+            weather.EnableForecast();
         }
     }
 
