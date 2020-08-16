@@ -21,7 +21,7 @@
             <p class="speechIcon" id="speechStatusImageMobile">&#128360;</p>
         </div>
         <div id="speechContainer" class="col-8 col-xl-10 overflow-auto">
-            <p id="speechTextOutput" />
+            <p id="speechTextOutput" style="display: none" />
         </div>
     </div>
 </div>
@@ -149,6 +149,7 @@
     {
         var hueLights = Layout.GetFromParent<HueLights>();
         var lightState = new LightState();
+        bool doNothing = false;
         if (speechInput.Contains("licht an"))
         {
             lightState.on = true;
@@ -197,8 +198,15 @@
         {
             lightState = null;
         }
+        else
+        {
+            doNothing = true;
+        }
 
-        hueLights.SwitchLightAsync(1, lightState);
+        if (!doNothing)
+        {
+            hueLights.SwitchLightAsync(1, lightState);
+        }
     }
 
     #region STATIC PROPERTY HANDLING

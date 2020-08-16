@@ -10,6 +10,7 @@ var tData = JSON.parse(config);
 
 window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
 let finalTranscript = '';
+let display = false;
 let recognition = new window.SpeechRecognition();
 
 recognition.interimResults = true;
@@ -55,12 +56,23 @@ recognition.onend = (event) => {
     finalTranscript = '';
     document.getElementById('speechTextOutput').innerHTML = ''
 
+    if (display === true) {
+        document.getElementById('speechTextOutput').style.display = "block"; // show
+        document.getElementById('speechStatusImageWeb').innerHTML = '&#128362;';
+        document.getElementById('speechStatusImageMobile').innerHTML = '&#128362;';
+    } else {
+        document.getElementById('speechTextOutput').style.display = "none"; // hide
+    }
+    
     recognition.start();
 }
 
 recognition.onspeechstart = (event) => {
-    document.getElementById('speechStatusImageWeb').innerHTML = '&#128362;';
-    document.getElementById('speechStatusImageMobile').innerHTML = '&#128362;';
+    if (display === true) {
+        display = false;
+        document.getElementById('speechStatusImageWeb').innerHTML = '&#128362;';
+        document.getElementById('speechStatusImageMobile').innerHTML = '&#128362;';
+    }
 }
 
 recognition.onspeechend = (event) => {
@@ -87,6 +99,13 @@ function validateSpeechIntent(text) {
     var input = text.toLowerCase();
 
     if (input.includes('ende') || input.includes('stop') || input.includes('stopp')) {
+        finalTranscript = '';
+        recognition.abort();
+        recognition.start();
+    }
+    else if (input.includes('okay spiegel') || input.includes('ok spiegel'))
+    {
+        display = true;
         finalTranscript = '';
         recognition.abort();
         recognition.start();
