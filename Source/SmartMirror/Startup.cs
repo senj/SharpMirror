@@ -14,6 +14,7 @@ using SmartMirror.Data.Jokes;
 using SmartMirror.Data.News;
 using SmartMirror.Data.Routes;
 using SmartMirror.Data.Soccer;
+using SmartMirror.Data.Speech;
 using SmartMirror.Data.Spotify;
 using SmartMirror.Data.StockData;
 using SmartMirror.Data.VVS;
@@ -55,6 +56,7 @@ namespace SmartMirror
             services.AddSingleton<FitbitService>();
             services.AddSingleton<BringService>();
             services.AddSingleton<RouteService>();
+            services.AddSingleton<SpeechRecognitionService>();
 
             services.AddSingleton<HttpClient>();
 

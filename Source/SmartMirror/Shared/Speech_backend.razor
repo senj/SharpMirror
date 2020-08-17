@@ -1,0 +1,93 @@
+﻿@using SmartMirror.Data.Speech;
+@using Microsoft.CognitiveServices.Speech;
+
+@inject SpeechRecognitionService SpeechService
+
+@if (!Show)
+{
+    return;
+}
+
+<div class="container-fluid card-1">
+    <div class="row">
+        <!-- display larger (click events) -->
+        <div class="col-xl-2 d-none d-lg-block">
+            @*<input type="button" class="btn btn-md btn-circle btn-secondary" onmousedown="startRecognition()" onmouseup="stopRecognition()" value="Voice" />*@
+            <p class="speechIcon" id="speechStatusImageWeb">@((MarkupString)_symbol)</p>
+        </div>
+        <!-- only display on mobile (touch events) -->
+        <div class="col-4 d-lg-none">
+            @*<input type="button" class="btn btn-md btn-circle btn-secondary" ontouchstart="startRecognition()" ontouchend="stopRecognition()" value="Voice" />*@
+            <p class="speechIcon" id="speechStatusImageMobile">@((MarkupString)_symbol)</p>
+        </div>
+        <div id="speechContainer" class="col-8 col-xl-10 overflow-auto">
+            <p id="speechTextOutput">@_output</p>
+        </div>
+    </div>
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public bool VoiceOutput { get; set; }
+
+    private string _symbol { get; set; } = "&#128360";
+    private string _output { get; set; }
+    private string _speaker { get; set; }
+
+    [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Run(async () =>
+            {
+                var recognizer = SpeechService.GetRecognizer();
+
+                recognizer.Recognized += Recognizer_Recognized;
+                recognizer.Recognizing += Recognizer_Recognizing;
+
+                recognizer.SpeechStartDetected += Recognizer_SpeechStartDetected;
+                recognizer.SpeechEndDetected += Recognizer_SpeechEndDetected;
+
+                var stopRecognition = new TaskCompletionSource<int>();
+                await recognizer.StartContinuousRecognitionAsync();
+
+                Task.WaitAny(new[] { stopRecognition.Task });
+
+                await recognizer.StopContinuousRecognitionAsync();
+            });
+        }
+
+        base.OnAfterRenderAsync(firstRender);
+    }
+
+    internal void Recognizer_Recognizing(object sender, SpeechRecognitionEventArgs e)
+    {
+    }
+
+    internal void Recognizer_Recognized(object sender, SpeechRecognitionEventArgs e)
+    {
+        _output = _speaker + ": " +  e.Result.Text;
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    internal void Recognizer_SpeechEndDetected(object sender, RecognitionEventArgs e)
+    {
+        _output = "";
+        _symbol = "&#128360";
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    internal void Recognizer_SpeechStartDetected(object sender, RecognitionEventArgs e)
+    {
+        _speaker = SpeechService.SpeakerVerify().GetAwaiter().GetResult();
+
+        _symbol = "&#128362";
+        InvokeAsync(() => StateHasChanged());
+    }
+}
