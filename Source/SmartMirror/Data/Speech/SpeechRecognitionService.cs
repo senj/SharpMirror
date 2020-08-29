@@ -146,6 +146,12 @@ namespace SmartMirror.Data.Speech
                         SpeechOutputRequested?.Invoke(this, new SpeechOutputEventArgs($"Heute gibt es in Wendlingen {forecast.Daily[0].Temp.Day} Grad und es ist {forecast.Daily[0].Weather[0].Description}."));
                     }
                     break;
+                case "Weather.DisplayForecast":
+                    await _mediator.Publish(new WeatherDisplayType(true));
+                    break;
+                case "Weather.HideForecast":
+                    await _mediator.Publish(new WeatherDisplayType(false));
+                    break;
                 case "ToDo.AddToDo":
                     await _mediator.Publish(new AddListEntry(predictionResponse.Prediction.Entities));
                     break;

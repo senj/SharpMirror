@@ -71,5 +71,10 @@ namespace SmartMirror.Data.WeatherForecast
             _logger.LogInformation("Got weather forecast");
             return oneCallWeatherForecast;
         }
+
+        public void WeatherDisplayType(bool displayForecast)
+        {
+            DisplayForecastRequested?.Invoke(this, new ForecastEventArgs(displayForecast));
+        }
     }
 }

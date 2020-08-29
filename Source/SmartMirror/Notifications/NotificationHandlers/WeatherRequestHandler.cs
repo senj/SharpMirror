@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace SmartMirror.Notifications.NotificationHandlers
 {
-    public class WeatherNotificationHandler : IRequestHandler<WeatherInformationRequest, OneCallWeatherForecast>
+    public class WeatherRequestHandler : IRequestHandler<WeatherInformationRequest, OneCallWeatherForecast>
     {
         private readonly WeatherForecastService _weatherForecastService;
 
-        public WeatherNotificationHandler(WeatherForecastService weatherForecastService)
+        public WeatherRequestHandler(WeatherForecastService weatherForecastService)
         {
             _weatherForecastService = weatherForecastService;
         }
