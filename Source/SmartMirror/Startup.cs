@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,7 @@ using SmartMirror.Data.Jokes;
 using SmartMirror.Data.News;
 using SmartMirror.Data.Routes;
 using SmartMirror.Data.Soccer;
+using SmartMirror.Data.Speech;
 using SmartMirror.Data.Spotify;
 using SmartMirror.Data.StockData;
 using SmartMirror.Data.VVS;
@@ -23,6 +25,7 @@ using SmartMirror.SmartHome.Hue;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Reflection;
 
 namespace SmartMirror
 {
@@ -55,6 +58,7 @@ namespace SmartMirror
             services.AddSingleton<FitbitService>();
             services.AddSingleton<BringService>();
             services.AddSingleton<RouteService>();
+            services.AddSingleton<SpeechRecognitionService>();
 
             services.AddSingleton<HttpClient>();
 
@@ -84,6 +88,9 @@ namespace SmartMirror
             services.Configure<ProfileConfiguration>(_configuration.GetSection(nameof(ProfileConfiguration)));
             services.Configure<BringConfiguration>(_configuration.GetSection(nameof(BringConfiguration)));
             services.Configure<RouteConfiguration>(_configuration.GetSection(nameof(RouteConfiguration)));
+            services.Configure<SpeechRecognitionConfiguration>(_configuration.GetSection(nameof(SpeechRecognitionConfiguration)));
+
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {

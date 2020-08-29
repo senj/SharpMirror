@@ -1,7 +1,9 @@
 ﻿@using System.ComponentModel;
+@using Microsoft.Extensions.Logging;
 @using SmartMirror.SmartHome.Hue;
 
 @inject IJSRuntime JSRuntime
+@inject ILogger<Speech> Logger
 
 @if (!Show)
 {
@@ -38,6 +40,8 @@
 
     private async Task ValidateSpeechInputAsync(string speechInput)
     {
+        Logger.LogInformation("Validating {speechInput}.", speechInput);
+
         await ValidateChitChat(speechInput);
         await ValidateWeatherInput(speechInput);
         await ValidateBringInput(speechInput);
@@ -68,12 +72,12 @@
         else if (SpeechInput.StartsWith("wetter klein"))
         {
             var weather = Layout.GetFromParent<CurrentWeather>();
-            weather.DisableForecast();
+            weather.OnForecastRequested(this, new Data.WeatherForecast.ForecastEventArgs(false));
         }
         else if (SpeechInput.StartsWith("wetter komplett"))
         {
             var weather = Layout.GetFromParent<CurrentWeather>();
-            weather.EnableForecast();
+            weather.OnForecastRequested(this, new Data.WeatherForecast.ForecastEventArgs(true));
         }
     }
 
@@ -107,12 +111,7 @@
     private async Task ValidateTrafficInput(string speechInput)
     {
         SmartMirror.Data.Routes.RouteResponse routeResponse = null;
-        if (SpeechInput.StartsWith("strecke zur arbeit lukas") || SpeechInput.StartsWith("weg zur arbeit lukas"))
-        {
-            var traffic = Layout.GetFromParent<RouteTraffic>();
-            routeResponse = await traffic.SetRouteAsync("zuhause lukas", "arbeit lukas");
-        }
-        else if (SpeechInput.StartsWith("verbindung") || SpeechInput.StartsWith("route") || SpeechInput.StartsWith("strecke"))
+        if (SpeechInput.StartsWith("verbindung") || SpeechInput.StartsWith("route") || SpeechInput.StartsWith("strecke"))
         {
             var traffic = Layout.GetFromParent<RouteTraffic>();
             var speechValues = speechInput.Split(' ');

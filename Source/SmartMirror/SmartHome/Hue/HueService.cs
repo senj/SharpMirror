@@ -14,7 +14,9 @@ namespace SmartMirror.SmartHome.Hue
         private readonly string _ipAddress;
         private readonly HttpClient _httpClient;
         private string _userToken = "T165psyqi-UxsIcRQe0TIK5cu2MinJbJtZsVDKKD";
-        
+
+        public event EventHandler<LightStateChangedEventArgs> LightStateChanged;
+
         public HueService(ILogger<HueService> logger, HttpClient httpClient)
         {
             _logger = logger;
@@ -30,6 +32,8 @@ namespace SmartMirror.SmartHome.Hue
 
             var response = await _httpClient.PutAsync($"http://{_ipAddress}/api/{_userToken}/lights/{lightId}/state",
                 new StringContent(JsonSerializer.Serialize(lightState), Encoding.UTF8, "application/json"));
+
+            LightStateChanged?.Invoke(this, new LightStateChangedEventArgs());
 
             return response.IsSuccessStatusCode;
         }
@@ -68,5 +72,9 @@ namespace SmartMirror.SmartHome.Hue
 
             return ipAddress;
         }
+    }
+
+    public class LightStateChangedEventArgs
+    {
     }
 }

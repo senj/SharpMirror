@@ -1,0 +1,103 @@
+﻿@using SmartMirror.Data.Speech;
+
+@inject IJSRuntime JSRuntime
+@inject SpeechRecognitionService SpeechService
+
+@if (!Show)
+{
+    return;
+}
+
+<div class="container-fluid card-1">
+    <div class="row">
+        <!-- display larger (click events) -->
+        <div class="col-xl-2 d-none d-lg-block">
+            @*<input type="button" class="btn btn-md btn-circle btn-secondary" onmousedown="startRecognition()" onmouseup="stopRecognition()" value="Voice" />*@
+            <p class="speechIcon" id="speechStatusImageWeb">@((MarkupString)_symbol)</p>
+        </div>
+        <!-- only display on mobile (touch events) -->
+        <div class="col-4 d-lg-none">
+            @*<input type="button" class="btn btn-md btn-circle btn-secondary" ontouchstart="startRecognition()" ontouchend="stopRecognition()" value="Voice" />*@
+            <p class="speechIcon" id="speechStatusImageMobile">@((MarkupString)_symbol)</p>
+        </div>
+        <div id="speechContainer" class="col-8 col-xl-10 overflow-auto">
+            <p id="speechTextOutput">@_output</p>
+        </div>
+    </div>
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public bool VoiceOutput { get; set; }
+
+    private string _symbol { get; set; } = "&#128360";
+    private string _output { get; set; }
+
+    private EventHandler<SpeechStartedEventArgs> speechStartedEventHandler;
+    private EventHandler<SpeechEndedEventArgs> speechEndedEventHandler;
+    private EventHandler<SpeechRecognizedEventArgs> SpeechRecognizedEventHandler;
+    private EventHandler<SpeechOutputEventArgs> SpeechOutputEventHandler;
+
+    [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            speechStartedEventHandler = new EventHandler<SpeechStartedEventArgs>(OnSpeechStared);
+            SpeechService.SpeechStarted += speechStartedEventHandler;
+
+            speechEndedEventHandler = new EventHandler<SpeechEndedEventArgs>(OnSpeechEnded);
+            SpeechService.SpeechEnded += speechEndedEventHandler;
+
+            SpeechRecognizedEventHandler = new EventHandler<SpeechRecognizedEventArgs>(OnSpeechRecognized);
+            SpeechService.SpeechRecognized += SpeechRecognizedEventHandler;
+
+            SpeechOutputEventHandler = new EventHandler<SpeechOutputEventArgs>(OnSpeechOutputRequested);
+            SpeechService.SpeechOutputRequested += SpeechOutputEventHandler;
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+
+    private void OnSpeechStared(object sender, SpeechStartedEventArgs args)
+    {
+        _symbol = "&#128362";
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    private void OnSpeechEnded(object sender, SpeechEndedEventArgs args)
+    {
+        _output = "";
+        _symbol = "&#128360";
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    private void OnSpeechRecognized(object sender, SpeechRecognizedEventArgs args)
+    {
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        if (!string.IsNullOrEmpty(args.Speaker))
+        {
+            sb.Append(args.Speaker + ": ");
+        }
+
+        sb.Append(args.Text);
+
+        if (!string.IsNullOrEmpty(args.TopIntent))
+        {
+            sb.Append($" ({args.TopIntent})");
+        }
+
+        _output = sb.ToString();
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    private void OnSpeechOutputRequested(object sender, SpeechOutputEventArgs args)
+    {
+        JSRuntime.InvokeVoidAsync("speak", args.Output).GetAwaiter().GetResult();
+    }
+}

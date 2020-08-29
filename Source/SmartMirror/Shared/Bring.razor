@@ -74,6 +74,7 @@
 
     SmartMirror.Data.Bring.BringItemResponse Items { get; set; }
     private string Time { get; set; }
+    private EventHandler<ShoppingListChangedEventArgs> shoppingListChangedEventHandler;
 
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
@@ -97,6 +98,9 @@
             });
         }, null, 0, 600 * 1000);
 
+        shoppingListChangedEventHandler = new EventHandler<ShoppingListChangedEventArgs>(OnShoppingListChanged);
+        BringService.ShoppingListChanged += shoppingListChangedEventHandler;
+
         base.OnInitializedAsync();
     }
 
@@ -105,5 +109,11 @@
         await BringService.AddItemAsync(itemName, details);
         Items = await BringService.GetItemsAsync(loadFromCache: false);
         StateHasChanged();
+    }
+
+    public void OnShoppingListChanged(object sender, ShoppingListChangedEventArgs args)
+    {
+        Items = BringService.GetItemsAsync(loadFromCache: false).GetAwaiter().GetResult();
+        InvokeAsync(() => StateHasChanged());
     }
 }

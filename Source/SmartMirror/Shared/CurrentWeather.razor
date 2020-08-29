@@ -69,25 +69,23 @@
     public int NumberOfDays { get; set; }
 
     public OneCallWeatherForecast Forecast;
+    private EventHandler<ForecastEventArgs> forecastRequestedEventHandler;
 
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Layout.AddToParent<CurrentWeather>(this);
-        Forecast = await ForecastService.GetOneCallForecastAsync();
+        Forecast = await ForecastService.GetOneCallForecastAsync(false);
+
+        forecastRequestedEventHandler = new EventHandler<ForecastEventArgs>(OnForecastRequested);
+        ForecastService.DisplayForecastRequested += forecastRequestedEventHandler;
     }
 
-    public void EnableForecast()
+    public void OnForecastRequested(object sender, ForecastEventArgs args)
     {
-        ShowForecast = true;
-        StateHasChanged();
-    }
-
-    public void DisableForecast()
-    {
-        ShowForecast = false;
-        StateHasChanged();
+        ShowForecast = args.DisplayForecast;
+        InvokeAsync(() => StateHasChanged());
     }
 
     private DateTime EpochToLocalTime(int epochDateTime)

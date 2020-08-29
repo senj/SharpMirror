@@ -60,6 +60,8 @@ recognition.onend = (event) => {
         document.getElementById('speechTextOutput').style.display = "block"; // show
         document.getElementById('speechStatusImageWeb').innerHTML = '&#128362;';
         document.getElementById('speechStatusImageMobile').innerHTML = '&#128362;';
+        speak('ja?');
+        display = false;
     } else {
         document.getElementById('speechTextOutput').style.display = "none"; // hide
     }
@@ -68,11 +70,7 @@ recognition.onend = (event) => {
 }
 
 recognition.onspeechstart = (event) => {
-    if (display === true) {
-        display = false;
-        document.getElementById('speechStatusImageWeb').innerHTML = '&#128362;';
-        document.getElementById('speechStatusImageMobile').innerHTML = '&#128362;';
-    }
+
 }
 
 recognition.onspeechend = (event) => {

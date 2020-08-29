@@ -41,6 +41,10 @@ You can set these secrets as environment variables. (see docker-compose.yml)
 - BringConfiguration__Email=
 - BringConfiguration__Password=
 - RouteConfiguration__ApiKey=
+- SpeechRecognitionConfiguration__SpeechApiSubscriptionKey
+- SpeechRecognitionConfiguration__LuisAppId
+- SpeechRecognitionConfiguration__LuisSubscriptionKey
+- SpeechRecognitionConfiguration__LuisEndpoint
 
 ### Get access
 For most of the APIs, request limits apply. Therefore this project makes heavy use of caching using a redis cache. 
@@ -50,6 +54,11 @@ For most of the APIs, request limits apply. Therefore this project makes heavy u
 - Spotify: login here and create a client application: https://developer.spotify.com/dashboard/ (Spotify uses OAuth2)
 - Fitbit: login here and create a client application: https://dev.fitbit.com/login (Fitbit uses OAuth2)
 - Route/Traffic: Azure Map Service
+
+## LUIS
+Use LUISGen to generate model for LUIS response
+https://github.com/microsoft/botbuilder-tools/blob/master/packages/LUISGen/src/npm/readme.md
+Export data model from luis.ai portal as JSON, then run `LUISGen <exported-luis-app>.json -cs ClassToGenerate -o`
 
 ## Build & Run
 - This can be built and run as a docker container.
