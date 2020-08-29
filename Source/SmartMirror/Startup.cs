@@ -86,6 +86,7 @@ namespace SmartMirror
             services.Configure<ProfileConfiguration>(_configuration.GetSection(nameof(ProfileConfiguration)));
             services.Configure<BringConfiguration>(_configuration.GetSection(nameof(BringConfiguration)));
             services.Configure<RouteConfiguration>(_configuration.GetSection(nameof(RouteConfiguration)));
+            services.Configure<SpeechRecognitionConfiguration>(_configuration.GetSection(nameof(SpeechRecognitionConfiguration)));
 
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
