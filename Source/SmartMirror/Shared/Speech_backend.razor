@@ -1,5 +1,6 @@
 ﻿@using SmartMirror.Data.Speech;
 
+@inject IJSRuntime JSRuntime
 @inject SpeechRecognitionService SpeechService
 
 @if (!Show)
@@ -39,6 +40,7 @@
     private EventHandler<SpeechStartedEventArgs> speechStartedEventHandler;
     private EventHandler<SpeechEndedEventArgs> speechEndedEventHandler;
     private EventHandler<SpeechRecognizedEventArgs> SpeechRecognizedEventHandler;
+    private EventHandler<SpeechOutputEventArgs> SpeechOutputEventHandler;
 
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
@@ -54,6 +56,9 @@
 
             SpeechRecognizedEventHandler = new EventHandler<SpeechRecognizedEventArgs>(OnSpeechRecognized);
             SpeechService.SpeechRecognized += SpeechRecognizedEventHandler;
+
+            SpeechOutputEventHandler = new EventHandler<SpeechOutputEventArgs>(OnSpeechOutputRequested);
+            SpeechService.SpeechOutputRequested += SpeechOutputEventHandler;
         }
 
         base.OnAfterRender(firstRender);
@@ -89,5 +94,10 @@
 
         _output = sb.ToString();
         InvokeAsync(() => StateHasChanged());
+    }
+
+    private void OnSpeechOutputRequested(object sender, SpeechOutputEventArgs args)
+    {
+        JSRuntime.InvokeVoidAsync("speak", args.Output).GetAwaiter().GetResult();
     }
 }

@@ -27,6 +27,7 @@ namespace SmartMirror.Data.Speech
         public event EventHandler<SpeechRecognizedEventArgs> SpeechRecognized;
         public event EventHandler<SpeechStartedEventArgs> SpeechStarted;
         public event EventHandler<SpeechEndedEventArgs> SpeechEnded;
+        public event EventHandler<SpeechOutputEventArgs> SpeechOutputRequested;
 
         public SpeechRecognitionService(
             ILogger<SpeechRecognitionService> logger,
@@ -132,9 +133,21 @@ namespace SmartMirror.Data.Speech
         {
             switch (predictionResponse.Prediction.TopIntent)
             {
-                case "HomeAutomation.TurnOn": await _mediator.Publish(new TurnOn(predictionResponse.Prediction.Entities));
+                case "HomeAutomation.TurnOn":
+                    await _mediator.Publish(new TurnOn(predictionResponse.Prediction.Entities));
                     break;
-                case "HomeAutomation.TurnOff": await _mediator.Publish(new TurnOff(predictionResponse.Prediction.Entities));
+                case "HomeAutomation.TurnOff":
+                    await _mediator.Publish(new TurnOff(predictionResponse.Prediction.Entities));
+                    break;
+                case "Weather.CheckWeatherValue":
+                case "Weather.QueryWeather":
+                    {
+                        var forecast = await _mediator.Send(new WeatherInformationRequest(true));
+                        SpeechOutputRequested?.Invoke(this, new SpeechOutputEventArgs($"Heute gibt es in Wendlingen {forecast.Daily[0].Temp.Day} Grad und es ist {forecast.Daily[0].Weather[0].Description}."));
+                    }
+                    break;
+                case "ToDo.AddToDo":
+                    await _mediator.Publish(new AddListEntry(predictionResponse.Prediction.Entities));
                     break;
             };
         }

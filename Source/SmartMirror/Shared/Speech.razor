@@ -72,12 +72,12 @@
         else if (SpeechInput.StartsWith("wetter klein"))
         {
             var weather = Layout.GetFromParent<CurrentWeather>();
-            weather.DisableForecast();
+            weather.OnForecastRequested(this, new Data.WeatherForecast.ForecastEventArgs(false));
         }
         else if (SpeechInput.StartsWith("wetter komplett"))
         {
             var weather = Layout.GetFromParent<CurrentWeather>();
-            weather.EnableForecast();
+            weather.OnForecastRequested(this, new Data.WeatherForecast.ForecastEventArgs(true));
         }
     }
 
