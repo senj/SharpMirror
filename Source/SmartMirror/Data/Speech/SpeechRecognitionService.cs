@@ -1,9 +1,11 @@
-﻿using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+﻿using MediatR;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SmartMirror.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,6 +15,7 @@ namespace SmartMirror.Data.Speech
     public class SpeechRecognitionService
     {
         private readonly ILogger<SpeechRecognitionService> _logger;
+        private readonly IMediator _mediator;
         private readonly SpeechRecognitionConfiguration _config;
         private readonly SpeechConfig _speechConfiguration;
         private readonly LUISRuntimeClient _luisClient;
@@ -27,22 +30,22 @@ namespace SmartMirror.Data.Speech
 
         public SpeechRecognitionService(
             ILogger<SpeechRecognitionService> logger,
-            IOptions<SpeechRecognitionConfiguration> speechRecognitionConfiguration)
+            IOptions<SpeechRecognitionConfiguration> speechRecognitionConfiguration,
+            IMediator mediator)
         {
             _logger = logger;
+            _mediator = mediator;
             _config = speechRecognitionConfiguration.Value;
             _speechConfiguration = SpeechConfig.FromSubscription(_config.SpeechApiSubscriptionKey, _config.SpeechApiRegion);
 
-            var credentials = new ApiKeyServiceClientCredentials(_config.LuisSubscriptionKey);
-            _luisClient = new LUISRuntimeClient(credentials) 
+            ApiKeyServiceClientCredentials credentials = new ApiKeyServiceClientCredentials(_config.LuisSubscriptionKey);
+            _luisClient = new LUISRuntimeClient(credentials)
             {
                 Endpoint = _config.LuisEndpoint
             };
-            
+
             _recognizer = new SpeechRecognizer(_speechConfiguration, _config.SpeechApiTargetLanguage);
             _recognizer.Recognized += Recognizer_Recognized;
-            _recognizer.Recognizing += Recognizer_Recognizing;
-
             _recognizer.SpeechStartDetected += Recognizer_SpeechStartDetected;
             _recognizer.SpeechEndDetected += Recognizer_SpeechEndDetected;
 
@@ -67,24 +70,22 @@ namespace SmartMirror.Data.Speech
             await _recognizer.StopContinuousRecognitionAsync();
         }
 
-        internal void Recognizer_Recognizing(object sender, SpeechRecognitionEventArgs e)
-        {
-        }
-
-        internal void Recognizer_Recognized(object sender, SpeechRecognitionEventArgs e)
+        public void Recognizer_Recognized(object sender, SpeechRecognitionEventArgs e)
         {
             if (string.IsNullOrEmpty(e.Result.Text))
             {
                 return;
             }
 
-            var prediction = _luisClient.Prediction.GetSlotPredictionAsync(Guid.Parse(_config.LuisAppId), _config.LuisAppSlot,
+            PredictionResponse prediction = _luisClient.Prediction.GetSlotPredictionAsync(Guid.Parse(_config.LuisAppId), _config.LuisAppSlot,
                     new PredictionRequest
                     {
                         Query = e.Result.Text
                     }).GetAwaiter().GetResult();
 
-            SpeechRecognized?.Invoke(this, new SpeechRecognizedEventArgs 
+            AnalyzePredictionAsync(prediction).GetAwaiter().GetResult();
+
+            SpeechRecognized?.Invoke(this, new SpeechRecognizedEventArgs
             {
                 Speaker = _speaker ?? null,
                 Text = e.Result.Text,
@@ -94,18 +95,18 @@ namespace SmartMirror.Data.Speech
             });
         }
 
-        internal void Recognizer_SpeechEndDetected(object sender, RecognitionEventArgs e)
+        public void Recognizer_SpeechEndDetected(object sender, RecognitionEventArgs e)
         {
             SpeechEnded?.Invoke(this, new SpeechEndedEventArgs());
         }
 
-        internal void Recognizer_SpeechStartDetected(object sender, RecognitionEventArgs e)
+        public void Recognizer_SpeechStartDetected(object sender, RecognitionEventArgs e)
         {
             SpeechStarted?.Invoke(this, new SpeechStartedEventArgs());
-            Task.Run(async () => await SpeakerVerify()).ContinueWith(p => _speaker = p.Result);
+            Task.Run(async () => await SpeakerIdentification()).ContinueWith(p => _speaker = p.Result);
         }
 
-        public async Task<string> SpeakerVerify()
+        public async Task<string> SpeakerIdentification()
         {
             var model = SpeakerIdentificationModel.FromProfiles(_voiceProfiles);
 
@@ -126,26 +127,17 @@ namespace SmartMirror.Data.Speech
             _logger.LogInformation($"The most similiar voice profile is {_profileMapping[result.ProfileId]} with similiarity score {result.Score}");
             return _profileMapping[result.ProfileId];
         }
-    }
 
-    public class SpeechEndedEventArgs
-    {
-    }
-
-    public class SpeechStartedEventArgs
-    {
-    }
-
-    public class SpeechRecognizedEventArgs
-    {
-        public IDictionary<string, Intent> Intents { get; set; }
-
-        public string TopIntent { get; set; }
-
-        public string Text { get; set; }
-
-        public IDictionary<string, object> Entities { get; set; }
-
-        public string Speaker { get; set; }
+        private async Task AnalyzePredictionAsync(PredictionResponse predictionResponse)
+        {
+            switch (predictionResponse.Prediction.TopIntent)
+            {
+                case "HomeAutomation.TurnOn": await _mediator.Publish(new TurnOn(predictionResponse.Prediction.Entities));
+                    break;
+                case "HomeAutomation.TurnOff": await _mediator.Publish(new TurnOff(predictionResponse.Prediction.Entities));
+                    break;
+            };
+        }
     }
 }
+
