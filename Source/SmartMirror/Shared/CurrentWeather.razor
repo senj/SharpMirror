@@ -16,7 +16,7 @@
     {
         <div class="row">
             <div class="col-4">
-                <p class="important">@Forecast.Current.Temp °C</p>
+                <p class="important">@Math.Round(Forecast.Current.Temp, 1) °C</p>
                 <p class="small">@Localizer["Feels like"]: @Forecast.Current.Feels_like °C</p>
             </div>
             <div class="col-4">

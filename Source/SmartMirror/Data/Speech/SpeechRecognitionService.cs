@@ -78,14 +78,22 @@ namespace SmartMirror.Data.Speech
                 return;
             }
 
-            PredictionResponse prediction = _luisClient.Prediction.GetSlotPredictionAsync(Guid.Parse(_config.LuisAppId), _config.LuisAppSlot,
+            PredictionResponse prediction = null;
+            try
+            {
+                prediction = _luisClient.Prediction.GetSlotPredictionAsync(Guid.Parse(_config.LuisAppId), _config.LuisAppSlot,
                     new PredictionRequest
                     {
                         Query = e.Result.Text
                     }).GetAwaiter().GetResult();
 
-            AnalyzePredictionAsync(prediction).GetAwaiter().GetResult();
-
+                AnalyzePredictionAsync(prediction).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during speech recognition");
+            }
+            
             SpeechRecognized?.Invoke(this, new SpeechRecognizedEventArgs
             {
                 Speaker = _speaker ?? null,
@@ -155,8 +163,13 @@ namespace SmartMirror.Data.Speech
                 case "ToDo.AddToDo":
                     await _mediator.Publish(new AddListEntry(predictionResponse.Prediction.Entities));
                     break;
+                case "ToDo.DisplayDetails":
+                    await _mediator.Publish(new ShoppingListDisplayType(true));
+                    break;
+                case "ToDo.HideDetails":
+                    await _mediator.Publish(new ShoppingListDisplayType(false));
+                    break;
             };
         }
     }
 }
-

@@ -42,8 +42,8 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
+        [Parameter]
+        public bool Show { get; set; }
 
     private string Time { get; set; }
     private Data.Fitbit.User User { get; set; }
@@ -60,7 +60,10 @@
 
         if (firstRender)
         {
-            UpdateDataAsync();
+            if (!string.IsNullOrEmpty(Token))
+            {
+                UpdateDataAsync();
+            }
         }
     }
 

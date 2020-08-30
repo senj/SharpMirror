@@ -88,6 +88,16 @@
     protected override async Task OnInitializedAsync()
     {
         Layout.AddToParent<RouteTraffic>(this);
+
+        try
+        {
+            await SetRouteAsync("Deutschland, 73240 Wendlingen am Neckar, Bessarabienstr. 32",
+            "Deutschland, 73240 Wendlingen am Neckar, Wertstr. 20");
+        }
+        catch (Exception ex)
+        {
+        }
+
         base.OnInitializedAsync();
     }
 
@@ -116,7 +126,6 @@
         });
 
         StateHasChanged();
-
         return RouteResponse;
     }
 }
