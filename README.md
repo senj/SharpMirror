@@ -22,6 +22,7 @@ There is heavy use of (experimental) browser APIs, best experience is with Chrom
 - Space (moon phases, ISS live feed)
 - Chuck norris jokes
 - Static quotes
+- Google FIT Api
 
 ## Featuers
 - Customizable speech input & output
@@ -45,6 +46,8 @@ You can set these secrets as environment variables. (see docker-compose.yml)
 - SpeechRecognitionConfiguration__LuisAppId
 - SpeechRecognitionConfiguration__LuisSubscriptionKey
 - SpeechRecognitionConfiguration__LuisEndpoint
+- GoogleApiConfiguration__ClientId
+- GoogleApiConfiguration__ClientSecret
 
 ### Get access
 For most of the APIs, request limits apply. Therefore this project makes heavy use of caching using a redis cache. 

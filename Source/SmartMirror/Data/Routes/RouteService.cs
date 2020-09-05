@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Globalization;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace SmartMirror.Data.Routes
         private readonly ILogger<RouteService> _logger;
         private readonly HttpClient _httpClient;
         private readonly RouteConfiguration _configuration;
+        private readonly NumberFormatInfo _numberFormatInfo;
 
         public RouteService(
             ILogger<RouteService> logger,
@@ -20,6 +22,11 @@ namespace SmartMirror.Data.Routes
             _logger = logger;
             _httpClient = httpClient;
             _configuration = configuration.Value;
+
+            _numberFormatInfo = new NumberFormatInfo
+            {
+                NumberDecimalSeparator = "."
+            };
         }
      
         public async Task<GeosearchResponse> SearchAsync(string query)
@@ -57,7 +64,8 @@ namespace SmartMirror.Data.Routes
             string requestUri = "https://atlas.microsoft.com/route/directions/json" +
                 $"?subscription-key={_configuration.ApiKey}" +
                 $"&api-version={_configuration.ApiVersion}" +
-                $"&query={routeRequest.Departure.Latitude},{routeRequest.Departure.Longitude}:{routeRequest.Destination.Latitude},{routeRequest.Destination.Longitude}" +
+                $"&query={routeRequest.Departure.Latitude.ToString(_numberFormatInfo)},{routeRequest.Departure.Longitude.ToString(_numberFormatInfo)}" +
+                $":{routeRequest.Destination.Latitude.ToString(_numberFormatInfo)},{routeRequest.Destination.Longitude.ToString(_numberFormatInfo)}" +
                 $"&computeTravelTimeFor=all" +
                 $"&traffic=true";
             

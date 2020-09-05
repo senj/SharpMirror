@@ -21,22 +21,9 @@
             else
             {
                 var summary = RouteResponse.routes.FirstOrDefault().summary;
-                <p>@SourceGeoResponse.results.FirstOrDefault().address.freeformAddress - @DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress</p>
+                <p>@SourceGeoResponse.results.FirstOrDefault().address.freeformAddress -</p>
+                <p>@DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress</p>
                 <br />
-                if (summary.departureTime.Date != summary.arrivalTime.Date)
-                {
-                    <p>
-                        @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
-                        - @summary.arrivalTime.ToString("dd.MM.") <b>@summary.arrivalTime.ToString("HH:mm")</b>
-                    </p>
-                }
-                else
-                {
-                    <p>
-                        @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
-                        - <b>@summary.arrivalTime.ToString("HH:mm")</b>
-                    </p>
-                }
 
                 <p>@(summary.lengthInMeters / 1000) km</p>
 
@@ -66,10 +53,23 @@
                 }
 
                 <p>@trafficString</p>
+
+                if (summary.departureTime.Date != summary.arrivalTime.Date)
+                {
+                    <p>
+                        @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
+                        - @summary.arrivalTime.ToString("dd.MM.") <b>@summary.arrivalTime.ToString("HH:mm")</b>
+                    </p>
+                }
+                else
+                {
+                    <p>
+                        @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
+                        - <b>@summary.arrivalTime.ToString("HH:mm")</b>
+                    </p>
+                }
             }
             <br />
-            <p><em>Route|Strecke|Verbindung {source (one word)} {destination (one word)}</em></p>
-            <p><em>Weg|Strecke zur Arbeit Lukas|Alisa</em></p>            
         </div>
     </div>
 </div>
