@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Net.Http;
 using System.Text.Json;
@@ -13,6 +15,8 @@ namespace SmartMirror.Data.Routes
         private readonly HttpClient _httpClient;
         private readonly RouteConfiguration _configuration;
         private readonly NumberFormatInfo _numberFormatInfo;
+
+        public event EventHandler<DisplayRouteEventArgs> DisplayRouteRequested;
 
         public RouteService(
             ILogger<RouteService> logger,
@@ -28,7 +32,12 @@ namespace SmartMirror.Data.Routes
                 NumberDecimalSeparator = "."
             };
         }
-     
+
+        internal Task SearchAsync(object source)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public async Task<GeosearchResponse> SearchAsync(string query)
         {
             string requestUri = "https://atlas.microsoft.com/search/address/json" +
@@ -90,6 +99,16 @@ namespace SmartMirror.Data.Routes
             }
 
             return routeJsonResponse;
+        }
+
+        public void DisplayRoute(GeosearchResponse source, GeosearchResponse destination, RouteResponse routeResponse)
+        {
+            DisplayRouteRequested?.Invoke(this, new DisplayRouteEventArgs 
+            { 
+                Source = source,
+                Destination = destination,
+                RouteResponse = routeResponse 
+            });
         }
     }
 }

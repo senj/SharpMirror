@@ -83,11 +83,16 @@
     public GeosearchResponse SourceGeoResponse { get; set; }
     public GeosearchResponse DestinationGeoResponse { get; set; }
 
+    private EventHandler<DisplayRouteEventArgs> routeRequestedEventHandler;
+
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Layout.AddToParent<RouteTraffic>(this);
+
+        routeRequestedEventHandler = new EventHandler<DisplayRouteEventArgs>(OnDisplayRouteRequested);
+        RouteService.DisplayRouteRequested += routeRequestedEventHandler;
 
         try
         {
@@ -99,6 +104,14 @@
         }
 
         base.OnInitializedAsync();
+    }
+
+    public void OnDisplayRouteRequested(object sender, DisplayRouteEventArgs args)
+    {
+        SourceGeoResponse = args.Source;
+        DestinationGeoResponse = args.Destination;
+        RouteResponse = args.RouteResponse;
+        InvokeAsync(() => StateHasChanged());
     }
 
     public async Task<RouteResponse> SetRouteAsync(string source, string destination)

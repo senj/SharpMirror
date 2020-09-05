@@ -169,6 +169,12 @@ namespace SmartMirror.Data.Speech
                 case "ToDo.HideDetails":
                     await _mediator.Publish(new ShoppingListDisplayType(false));
                     break;
+                case "Places.GetRoute":
+                    {
+                        var routeResponse = await _mediator.Send(new GetDistanceRequest(predictionResponse.Prediction.Entities));
+                        SpeechOutputRequested?.Invoke(this, new SpeechOutputEventArgs("Route gefunden"));
+                    }
+                    break;
             };
         }
     }
