@@ -35,21 +35,21 @@
 
                 if (durationInHours != 0)
                 {
-                    trafficString = $"{durationInHours}h";
+                    trafficString = $"{durationInHours} h";
                 }
 
                 if (durationInMinutes != 0)
                 {
-                    trafficString += $" {durationInMinutes}min";
+                    trafficString += $" {durationInMinutes} min";
                 }
 
                 if (delayInHours != 0 && delayInMinutes != 0)
                 {
-                    trafficString += $" ({delayInHours}h {delayInMinutes}min delay)";
+                    trafficString += $" ({delayInHours} h {delayInMinutes} min delay)";
                 }
                 else if (delayInMinutes != 0)
                 {
-                    trafficString += $" ({delayInMinutes}min delay)";
+                    trafficString += $" ({delayInMinutes} min delay)";
                 }
 
                 <p>@trafficString</p>
@@ -69,7 +69,6 @@
                     </p>
                 }
             }
-            <br />
         </div>
     </div>
 </div>

@@ -175,6 +175,9 @@ namespace SmartMirror.Data.Speech
                         SpeechOutputRequested?.Invoke(this, new SpeechOutputEventArgs("Route gefunden"));
                     }
                     break;
+                case "Spotify.NextSong":
+                    await _mediator.Publish(new NextSongRequested());
+                    break;
             };
         }
     }

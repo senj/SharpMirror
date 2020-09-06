@@ -61,6 +61,7 @@ namespace SmartMirror
             services.AddSingleton<RouteService>();
             services.AddSingleton<SpeechRecognitionService>();
             services.AddSingleton<GoogleFitService>();
+            services.AddSingleton<SpotifyService>();
 
             services.AddSingleton<HttpClient>();
 

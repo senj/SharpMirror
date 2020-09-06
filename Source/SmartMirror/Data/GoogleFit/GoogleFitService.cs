@@ -103,15 +103,19 @@ namespace SmartMirror.Data.GoogleFit
             string accessToken = _cache.GetString("google_access_token");
             if (string.IsNullOrEmpty(accessToken))
             {
-                await RefreshToken(_cache.GetString("google_refresh_token"));
-                accessToken = _cache.GetString("google_access_token");
+                accessToken = await RefreshToken(_cache.GetString("google_refresh_token"));
             }
 
             return accessToken;
         }
 
-        private async Task RefreshToken(string refreshToken)
+        private async Task<string> RefreshToken(string refreshToken)
         {
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return string.Empty;
+            }
+
             List<KeyValuePair<string, string>> content = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("client_id", _configuration.ClientId),
@@ -126,6 +130,8 @@ namespace SmartMirror.Data.GoogleFit
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(refreshTokenResponse.expires_in - 30)
             });
+
+            return refreshTokenResponse.access_token;
         }
 
         private async Task<string> GetDeviceRegistrationEndpointAsync()
