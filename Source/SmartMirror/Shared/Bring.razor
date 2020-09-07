@@ -20,49 +20,49 @@
             }
             else if (Items.purchase.Any())
             {
-                @for (int i = 0; i < Items.purchase.Length; i += 3)
+                <p>@Items.purchase.Count() Artikel auf der Einkaufsliste</p>
+                if (ShowDetails)
                 {
-                    <div class="row">
-                        <span class="bring-item col-4">
-                            @Items.purchase[i].name
-                            @if (!string.IsNullOrEmpty(Items.purchase[i].specification))
+                    @for (int i = 0; i < Items.purchase.Length; i += 3)
+                    {
+                        <div class="row">
+                            <span class="bring-item col-3">
+                                @Items.purchase[i].name
+                                @if (!string.IsNullOrEmpty(Items.purchase[i].specification))
+                                {
+                                    <span class="subtitle">(@Items.purchase[i].specification)</span>
+                                }
+                            </span>
+
+                            @if (i + 1 < Items.purchase.Length)
                             {
-                                <span>(@Items.purchase[i].specification)</span>
+                                <span class="bring-item col-3">
+                                    @Items.purchase[i + 1].name
+                                    @if (!string.IsNullOrEmpty(Items.purchase[i + 1].specification))
+                                    {
+                                        <span class="subtitle">(@Items.purchase[i + 1].specification)</span>
+                                    }
+                                </span>
                             }
-                        </span>
 
-                        @if (i + 1 < Items.purchase.Length)
-                        {
-                            <span class="bring-item col-4">
-                                @Items.purchase[i + 1].name
-                                @if (!string.IsNullOrEmpty(Items.purchase[i + 1].specification))
-                                {
-                                    <span>(@Items.purchase[i + 1].specification)</span>
-                                }
-                            </span>
-                        }
-
-                        @if (i + 2 < Items.purchase.Length)
-                        {
-                            <span class="bring-item col-4">
-                                @Items.purchase[i + 2].name
-                                @if (!string.IsNullOrEmpty(Items.purchase[i + 2].specification))
-                                {
-                                    <span>(@Items.purchase[i + 2].specification)</span>
-                                }
-                            </span>
-                        }
-                    </div><br />
+                            @if (i + 2 < Items.purchase.Length)
+                            {
+                                <span class="bring-item col-3">
+                                    @Items.purchase[i + 2].name
+                                    @if (!string.IsNullOrEmpty(Items.purchase[i + 2].specification))
+                                    {
+                                        <span class="subtitle">(@Items.purchase[i + 2].specification)</span>
+                                    }
+                                </span>
+                            }
+                        </div><br />
+                    }
                 }
             }
             else
             {
                 <p>No items on shopping list.</p>
             }
-
-            <br />
-            <p><em>Füge der Liste {itemName (one word)} hinzu</em></p>
-            <p><em>Füge der Liste genau {itemName (one word)} {details (one word)} hinzu".</em></p>
         </div>
     </div>
 </div>
@@ -72,9 +72,13 @@
     [Parameter]
     public bool Show { get; set; }
 
+    [Parameter]
+    public bool ShowDetails { get; set; }
+
     SmartMirror.Data.Bring.BringItemResponse Items { get; set; }
     private string Time { get; set; }
     private EventHandler<ShoppingListChangedEventArgs> shoppingListChangedEventHandler;
+    private EventHandler<ShoppingListDetailsEventArgs> shoppingListDetailsRequestedEventHandler;
 
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
@@ -101,6 +105,9 @@
         shoppingListChangedEventHandler = new EventHandler<ShoppingListChangedEventArgs>(OnShoppingListChanged);
         BringService.ShoppingListChanged += shoppingListChangedEventHandler;
 
+        shoppingListDetailsRequestedEventHandler = new EventHandler<ShoppingListDetailsEventArgs>(OnShoppingListDetailsRequested);
+        BringService.ShoppingListDetailsRequested += shoppingListDetailsRequestedEventHandler;
+
         base.OnInitializedAsync();
     }
 
@@ -109,6 +116,12 @@
         await BringService.AddItemAsync(itemName, details);
         Items = await BringService.GetItemsAsync(loadFromCache: false);
         StateHasChanged();
+    }
+
+    public void OnShoppingListDetailsRequested(object sender, ShoppingListDetailsEventArgs args)
+    {
+        ShowDetails = args.ShowDetails;
+        InvokeAsync(() => StateHasChanged());
     }
 
     public void OnShoppingListChanged(object sender, ShoppingListChangedEventArgs args)

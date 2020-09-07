@@ -11,6 +11,7 @@ using SmartMirror.Data.Bring;
 using SmartMirror.Data.Calendar;
 using SmartMirror.Data.Fitbit;
 using SmartMirror.Data.Fuel;
+using SmartMirror.Data.GoogleFit;
 using SmartMirror.Data.Jokes;
 using SmartMirror.Data.News;
 using SmartMirror.Data.Routes;
@@ -59,6 +60,8 @@ namespace SmartMirror
             services.AddSingleton<BringService>();
             services.AddSingleton<RouteService>();
             services.AddSingleton<SpeechRecognitionService>();
+            services.AddSingleton<GoogleFitService>();
+            services.AddSingleton<SpotifyService>();
 
             services.AddSingleton<HttpClient>();
 

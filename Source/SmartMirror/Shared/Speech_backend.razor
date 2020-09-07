@@ -28,11 +28,11 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
+        [Parameter]
+        public bool Show { get; set; }
 
-    [Parameter]
-    public bool VoiceOutput { get; set; }
+        [Parameter]
+        public bool VoiceOutput { get; set; }
 
     private string _symbol { get; set; } = "&#128360";
     private string _output { get; set; }
@@ -98,6 +98,9 @@
 
     private void OnSpeechOutputRequested(object sender, SpeechOutputEventArgs args)
     {
-        JSRuntime.InvokeVoidAsync("speak", args.Output).GetAwaiter().GetResult();
+        if (VoiceOutput)
+        {
+            JSRuntime.InvokeVoidAsync("speak", args.Output).GetAwaiter().GetResult();
+        }
     }
 }

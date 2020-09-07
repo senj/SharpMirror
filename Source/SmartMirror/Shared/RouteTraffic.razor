@@ -21,8 +21,39 @@
             else
             {
                 var summary = RouteResponse.routes.FirstOrDefault().summary;
-                <p>@SourceGeoResponse.results.FirstOrDefault().address.freeformAddress - @DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress</p>
+                <p>@SourceGeoResponse.results.FirstOrDefault().address.freeformAddress -</p>
+                <p>@DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress</p>
                 <br />
+
+                <p>@(summary.lengthInMeters / 1000) km</p>
+
+                double durationInHours = Math.Floor(summary.liveTrafficIncidentsTravelTimeInSeconds / 3600d);
+                double durationInMinutes = summary.liveTrafficIncidentsTravelTimeInSeconds / 60 % 60;
+                double delayInHours = Math.Floor(summary.trafficDelayInSeconds / 3600d);
+                double delayInMinutes = summary.trafficDelayInSeconds / 60 % 60;
+                string trafficString = string.Empty;
+
+                if (durationInHours != 0)
+                {
+                    trafficString = $"{durationInHours} h";
+                }
+
+                if (durationInMinutes != 0)
+                {
+                    trafficString += $" {durationInMinutes} min";
+                }
+
+                if (delayInHours != 0 && delayInMinutes != 0)
+                {
+                    trafficString += $" ({delayInHours} h {delayInMinutes} min delay)";
+                }
+                else if (delayInMinutes != 0)
+                {
+                    trafficString += $" ({delayInMinutes} min delay)";
+                }
+
+                <p>@trafficString</p>
+
                 if (summary.departureTime.Date != summary.arrivalTime.Date)
                 {
                     <p>
@@ -37,39 +68,7 @@
                         - <b>@summary.arrivalTime.ToString("HH:mm")</b>
                     </p>
                 }
-
-                <p>@(summary.lengthInMeters / 1000) km</p>
-
-                double durationInHours = Math.Floor(summary.liveTrafficIncidentsTravelTimeInSeconds / 3600d);
-                double durationInMinutes = summary.liveTrafficIncidentsTravelTimeInSeconds / 60 % 60;
-                double delayInHours = Math.Floor(summary.trafficDelayInSeconds / 3600d);
-                double delayInMinutes = summary.trafficDelayInSeconds / 60 % 60;
-                string trafficString = string.Empty;
-
-                if (durationInHours != 0)
-                {
-                    trafficString = $"{durationInHours}h";
-                }
-
-                if (durationInMinutes != 0)
-                {
-                    trafficString += $" {durationInMinutes}min";
-                }
-
-                if (delayInHours != 0 && delayInMinutes != 0)
-                {
-                    trafficString += $" ({delayInHours}h {delayInMinutes}min delay)";
-                }
-                else if (delayInMinutes != 0)
-                {
-                    trafficString += $" ({delayInMinutes}min delay)";
-                }
-
-                <p>@trafficString</p>
             }
-            <br />
-            <p><em>Route|Strecke|Verbindung {source (one word)} {destination (one word)}</em></p>
-            <p><em>Weg|Strecke zur Arbeit Lukas|Alisa</em></p>            
         </div>
     </div>
 </div>
@@ -83,12 +82,35 @@
     public GeosearchResponse SourceGeoResponse { get; set; }
     public GeosearchResponse DestinationGeoResponse { get; set; }
 
+    private EventHandler<DisplayRouteEventArgs> routeRequestedEventHandler;
+
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Layout.AddToParent<RouteTraffic>(this);
+
+        routeRequestedEventHandler = new EventHandler<DisplayRouteEventArgs>(OnDisplayRouteRequested);
+        RouteService.DisplayRouteRequested += routeRequestedEventHandler;
+
+        try
+        {
+            await SetRouteAsync("Deutschland, 73240 Wendlingen am Neckar, Bessarabienstr. 32",
+            "Deutschland, 73240 Wendlingen am Neckar, Wertstr. 20");
+        }
+        catch (Exception ex)
+        {
+        }
+
         base.OnInitializedAsync();
+    }
+
+    public void OnDisplayRouteRequested(object sender, DisplayRouteEventArgs args)
+    {
+        SourceGeoResponse = args.Source;
+        DestinationGeoResponse = args.Destination;
+        RouteResponse = args.RouteResponse;
+        InvokeAsync(() => StateHasChanged());
     }
 
     public async Task<RouteResponse> SetRouteAsync(string source, string destination)
@@ -116,7 +138,6 @@
         });
 
         StateHasChanged();
-
         return RouteResponse;
     }
 }
