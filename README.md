@@ -23,6 +23,7 @@ There is heavy use of (experimental) browser APIs, best experience is with Chrom
 - Chuck norris jokes
 - Static quotes
 - Google FIT Api
+- Route/Traffic information
 
 ## Featuers
 - Customizable speech input & output
