@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   smartmirror:
-    image: zailregistry.azurecr.io/smartmirror:191
+    image: zailregistry.azurecr.io/smartmirror:210
     container_name: smartmirror
     restart: always
     ports:
@@ -16,4 +16,11 @@ services:
       - RedisConfiguration__Configuration=
       - BringConfiguration__Email=
       - BringConfiguration__Password=
+      - RouteConfiguration__ApiKey=
+      - SpeechRecognitionConfiguration__SpeechApiSubscriptionKey=
+      - SpeechRecognitionConfiguration__LuisAppId=
+      - SpeechRecognitionConfiguration__LuisSubscriptionKey=
+      - SpeechRecognitionConfiguration__LuisEndpoint=
+      - GoogleApiConfiguration__ClientId=
+      - GoogleApiConfiguration__ClientSecret=
   }
