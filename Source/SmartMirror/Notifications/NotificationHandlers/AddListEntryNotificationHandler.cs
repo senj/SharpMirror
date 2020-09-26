@@ -22,11 +22,6 @@ namespace SmartMirror.Notifications.NotificationHandlers
             {
                 await _bringService.AddItemAsync(entry, request.Details);
             }
-
-            if (request.ItemNames.Any())
-            {
-                await _bringService.GetItemsAsync(false);
-            }
         }
     }
 }
