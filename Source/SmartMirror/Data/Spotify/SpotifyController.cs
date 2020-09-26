@@ -75,7 +75,7 @@ namespace SmartMirror.Data.Spotify
             
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError("Error during spotify authorization: {error}", response.StatusCode);
+                _logger.LogError("Error during spotify authorization: {error} {message}", response.StatusCode, await response.Content.ReadAsStringAsync());
                 return new StatusCodeResult(500);
             }
 
