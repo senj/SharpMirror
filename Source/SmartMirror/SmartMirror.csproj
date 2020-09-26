@@ -27,12 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\scripts\fitbit.js" />
-    <Content Remove="wwwroot\scripts\piechart.js" />
-    <Content Remove="wwwroot\scripts\speechOutput.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="smartmirror.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
