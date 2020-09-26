@@ -25,8 +25,3 @@ steps:
     azureContainerRegistry: zailregistry.azurecr.io
     command: 'Push an image'
     imageName: '$(Build.Repository.Name)'
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
