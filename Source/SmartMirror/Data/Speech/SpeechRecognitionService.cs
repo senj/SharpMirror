@@ -2,7 +2,6 @@
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.CognitiveServices.Speech;
-using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SmartMirror.Notifications;
@@ -37,7 +36,7 @@ namespace SmartMirror.Data.Speech
             _logger = logger;
             _mediator = mediator;
             _config = speechRecognitionConfiguration.Value;
-            _speechConfiguration = SpeechConfig.FromSubscription(_config.SpeechApiSubscriptionKey, _config.SpeechApiRegion);
+            //_speechConfiguration = SpeechConfig.FromSubscription(_config.SpeechApiSubscriptionKey, _config.SpeechApiRegion);
 
             ApiKeyServiceClientCredentials credentials = new ApiKeyServiceClientCredentials(_config.LuisSubscriptionKey);
             _luisClient = new LUISRuntimeClient(credentials)
@@ -45,20 +44,20 @@ namespace SmartMirror.Data.Speech
                 Endpoint = _config.LuisEndpoint
             };
 
-            _recognizer = new SpeechRecognizer(_speechConfiguration, _config.SpeechApiTargetLanguage);
-            _recognizer.Recognized += Recognizer_Recognized;
-            _recognizer.SpeechStartDetected += Recognizer_SpeechStartDetected;
-            _recognizer.SpeechEndDetected += Recognizer_SpeechEndDetected;
+            //_recognizer = new SpeechRecognizer(_speechConfiguration, _config.SpeechApiTargetLanguage);
+            //_recognizer.Recognized += Recognizer_Recognized;
+            //_recognizer.SpeechStartDetected += Recognizer_SpeechStartDetected;
+            //_recognizer.SpeechEndDetected += Recognizer_SpeechEndDetected;
 
-            _voiceProfiles = new List<VoiceProfile>();
-            _profileMapping = new Dictionary<string, string>();
-            foreach (var entry in _config.SpeechApiVoiceProfileMapping)
-            {
-                _voiceProfiles.Add(new VoiceProfile(entry.Key));
-                _profileMapping.Add(entry.Key, entry.Value);
-            }
+            //_voiceProfiles = new List<VoiceProfile>();
+            //_profileMapping = new Dictionary<string, string>();
+            //foreach (var entry in _config.SpeechApiVoiceProfileMapping)
+            //{
+            //    _voiceProfiles.Add(new VoiceProfile(entry.Key));
+            //    _profileMapping.Add(entry.Key, entry.Value);
+            //}
 
-            Task.Run(() => StartRecognizer());
+            //Task.Run(() => StartRecognizer());
         }
 
         public async Task StartRecognizer()
@@ -71,37 +70,14 @@ namespace SmartMirror.Data.Speech
             await _recognizer.StopContinuousRecognitionAsync();
         }
 
+        public void Recognizer_Recognized(string input)
+        {
+            ValidateSpeechInput(input);
+        }
+
         public void Recognizer_Recognized(object sender, SpeechRecognitionEventArgs e)
         {
-            if (string.IsNullOrEmpty(e.Result.Text))
-            {
-                return;
-            }
-
-            PredictionResponse prediction = null;
-            try
-            {
-                prediction = _luisClient.Prediction.GetSlotPredictionAsync(Guid.Parse(_config.LuisAppId), _config.LuisAppSlot,
-                    new PredictionRequest
-                    {
-                        Query = e.Result.Text
-                    }).GetAwaiter().GetResult();
-
-                AnalyzePredictionAsync(prediction).GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during speech recognition");
-            }
-            
-            SpeechRecognized?.Invoke(this, new SpeechRecognizedEventArgs
-            {
-                Speaker = _speaker ?? null,
-                Text = e.Result.Text,
-                TopIntent = prediction?.Prediction?.TopIntent,
-                Intents = prediction?.Prediction?.Intents,
-                Entities = prediction?.Prediction?.Entities
-            });
+            ValidateSpeechInput(e.Result.Text);
         }
 
         public void Recognizer_SpeechEndDetected(object sender, RecognitionEventArgs e)
@@ -112,29 +88,62 @@ namespace SmartMirror.Data.Speech
         public void Recognizer_SpeechStartDetected(object sender, RecognitionEventArgs e)
         {
             SpeechStarted?.Invoke(this, new SpeechStartedEventArgs());
-            Task.Run(async () => await SpeakerIdentification()).ContinueWith(p => _speaker = p.Result);
+            //Task.Run(async () => await SpeakerIdentification()).ContinueWith(p => _speaker = p.Result);
         }
 
-        public async Task<string> SpeakerIdentification()
+        //public async Task<string> SpeakerIdentification()
+        //{
+        //    var model = SpeakerIdentificationModel.FromProfiles(_voiceProfiles);
+
+        //    var speakerRecognizer = new SpeakerRecognizer(_speechConfiguration, AudioConfig.FromDefaultMicrophoneInput());
+        //    var result = await speakerRecognizer.RecognizeOnceAsync(model);
+
+        //    if (result.Reason == ResultReason.Canceled)
+        //    {
+        //        var cancelled = SpeakerRecognitionCancellationDetails.FromResult(result);
+        //        _logger.LogError("Speaker recognizer was canceled: {@error}", cancelled);
+        //    }
+
+        //    if (string.IsNullOrEmpty(result.ProfileId) || result.ProfileId == Guid.Empty.ToString())
+        //    {
+        //        return string.Empty;
+        //    }
+
+        //    _logger.LogInformation($"The most similiar voice profile is {_profileMapping[result.ProfileId]} with similiarity score {result.Score}");
+        //    return _profileMapping[result.ProfileId];
+        //}
+
+        private void ValidateSpeechInput(string text)
         {
-            var model = SpeakerIdentificationModel.FromProfiles(_voiceProfiles);
-
-            var speakerRecognizer = new SpeakerRecognizer(_speechConfiguration, AudioConfig.FromDefaultMicrophoneInput());
-            var result = await speakerRecognizer.RecognizeOnceAsync(model);
-
-            if (result.Reason == ResultReason.Canceled)
+            if (string.IsNullOrEmpty(text))
             {
-                var cancelled = SpeakerRecognitionCancellationDetails.FromResult(result);
-                _logger.LogError("Speaker recognizer was canceled: {@error}", cancelled);
+                return;
             }
 
-            if (string.IsNullOrEmpty(result.ProfileId) || result.ProfileId == Guid.Empty.ToString())
+            PredictionResponse prediction = null;
+            try
             {
-                return string.Empty;
+                prediction = _luisClient.Prediction.GetSlotPredictionAsync(Guid.Parse(_config.LuisAppId), _config.LuisAppSlot,
+                    new PredictionRequest
+                    {
+                        Query = text
+                    }).GetAwaiter().GetResult();
+
+                AnalyzePredictionAsync(prediction).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during speech recognition");
             }
 
-            _logger.LogInformation($"The most similiar voice profile is {_profileMapping[result.ProfileId]} with similiarity score {result.Score}");
-            return _profileMapping[result.ProfileId];
+            SpeechRecognized?.Invoke(this, new SpeechRecognizedEventArgs
+            {
+                Speaker = _speaker ?? null,
+                Text = text,
+                TopIntent = prediction?.Prediction?.TopIntent,
+                Intents = prediction?.Prediction?.Intents,
+                Entities = prediction?.Prediction?.Entities
+            });
         }
 
         private async Task AnalyzePredictionAsync(PredictionResponse predictionResponse)

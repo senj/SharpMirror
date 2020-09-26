@@ -10,7 +10,6 @@ var tData = JSON.parse(config);
 
 window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
 let finalTranscript = '';
-let display = false;
 let recognition = new window.SpeechRecognition();
 
 recognition.interimResults = true;
@@ -36,6 +35,7 @@ recognition.onresult = (event) => {
 
             validateSpeechIntent(finalTranscript);
             interimTranscript = '';
+            setTimeout(stopRecognition, 4000)
         } else {
             interimTranscript += transcript;
         }
@@ -45,9 +45,12 @@ recognition.onresult = (event) => {
     document.getElementById('speechTextOutput').innerHTML = finalTranscript + '<i style="color:#ddd;">' + interimTranscript + '</>';
 }
 
+function stopRecognition() {
+    recognition.abort();
+    console.log('recognition aborted');
+}
+
 recognition.onend = (event) => {
-    //document.getElementById('speechStatusImageWeb').src = '/images/voice/muted.png';
-    //document.getElementById('speechStatusImageMobile').src = '/images/voice/muted.png';
     console.log('recognition ended');
 
     document.getElementById('speechStatusImageWeb').innerHTML = '&#128360;';
@@ -56,24 +59,19 @@ recognition.onend = (event) => {
     finalTranscript = '';
     document.getElementById('speechTextOutput').innerHTML = ''
 
-    if (display === true) {
-        document.getElementById('speechTextOutput').style.display = "block"; // show
-        document.getElementById('speechStatusImageWeb').innerHTML = '&#128362;';
-        document.getElementById('speechStatusImageMobile').innerHTML = '&#128362;';
-        speak('ja?');
-        display = false;
-    } else {
-        document.getElementById('speechTextOutput').style.display = "none"; // hide
-    }
-    
     recognition.start();
 }
 
 recognition.onspeechstart = (event) => {
+    console.log('speech started');
 
+    document.getElementById('speechStatusImageWeb').innerHTML = '&#128362;';
+    document.getElementById('speechStatusImageMobile').innerHTML = '&#128362;';
 }
 
 recognition.onspeechend = (event) => {
+    console.log('speech ended');
+
     document.getElementById('speechStatusImageWeb').innerHTML = '&#128360;';
     document.getElementById('speechStatusImageMobile').innerHTML = '&#128360;';
 
@@ -82,8 +80,7 @@ recognition.onspeechend = (event) => {
 }
 
 recognition.onstart = (event) => {
-    //document.getElementById('speechStatusImageWeb').src = '/images/voice/active.png';
-    //document.getElementById('speechStatusImageMobile').src = '/images/voice/active.png';
+    console.log('recognition started');
 }
 
 recognition.start();
@@ -99,16 +96,16 @@ function validateSpeechIntent(text) {
     if (input.includes('ende') || input.includes('stop') || input.includes('stopp')) {
         finalTranscript = '';
         recognition.abort();
-        recognition.start();
+        console.log('recognition aborted');
     }
-    else if (input.includes('okay spiegel') || input.includes('ok spiegel'))
-    {
-        display = true;
-        finalTranscript = '';
-        recognition.abort();
-        recognition.start();
-    }
+    //else if (input.includes('okay spiegel') || input.includes('ok spiegel'))
+    //{
+    //    display = true;
+    //    finalTranscript = '';
+    //    recognition.abort();
+    //}
     else {
+        console.log("validate " + input);
         DotNet.invokeMethodAsync('SmartMirror', 'SetSpeechInput', input);
     }
 }

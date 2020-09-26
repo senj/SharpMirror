@@ -1,8 +1,10 @@
 ﻿@using System.ComponentModel;
 @using Microsoft.Extensions.Logging;
 @using SmartMirror.SmartHome.Hue;
+@using SmartMirror.Data.Speech;
 
 @inject IJSRuntime JSRuntime
+@inject SpeechRecognitionService SpeechService
 @inject ILogger<Speech> Logger
 
 @if (!Show)
@@ -15,15 +17,15 @@
         <!-- display larger (click events) -->
         <div class="col-xl-2 d-none d-lg-block">
             @*<input type="button" class="btn btn-md btn-circle btn-secondary" onmousedown="startRecognition()" onmouseup="stopRecognition()" value="Voice" />*@
-            <p class="speechIcon" id="speechStatusImageWeb">&#128360;</p>
+            <p class="speechIcon" id="speechStatusImageWeb">@((MarkupString)_symbol)</p>
         </div>
         <!-- only display on mobile (touch events) -->
         <div class="col-4 d-lg-none">
             @*<input type="button" class="btn btn-md btn-circle btn-secondary" ontouchstart="startRecognition()" ontouchend="stopRecognition()" value="Voice" />*@
-            <p class="speechIcon" id="speechStatusImageMobile">&#128360;</p>
+            <p class="speechIcon" id="speechStatusImageMobile">@((MarkupString)_symbol)</p>
         </div>
         <div id="speechContainer" class="col-8 col-xl-10 overflow-auto">
-            <p id="speechTextOutput" style="display: none" />
+            <p id="speechTextOutput"></p><span>@_output</span>
         </div>
     </div>
 </div>
@@ -36,176 +38,48 @@
     [Parameter]
     public bool VoiceOutput { get; set; }
 
+    private string _symbol { get; set; } = "&#128360";
+    private string _output { get; set; }
+
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
+
+    private EventHandler<SpeechStartedEventArgs> speechStartedEventHandler;
+    private EventHandler<SpeechEndedEventArgs> speechEndedEventHandler;
+    private EventHandler<SpeechRecognizedEventArgs> SpeechRecognizedEventHandler;
+    private EventHandler<SpeechOutputEventArgs> SpeechOutputEventHandler;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {            
+            SpeechRecognizedEventHandler = new EventHandler<SpeechRecognizedEventArgs>(OnSpeechRecognized);
+            SpeechService.SpeechRecognized += SpeechRecognizedEventHandler;
+
+            SpeechOutputEventHandler = new EventHandler<SpeechOutputEventArgs>(OnSpeechOutputRequested);
+            SpeechService.SpeechOutputRequested += SpeechOutputEventHandler;
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+
+    private void OnSpeechRecognized(object sender, SpeechRecognizedEventArgs args)
+    {
+        _output = $" ({args.TopIntent})";
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    private void OnSpeechOutputRequested(object sender, SpeechOutputEventArgs args)
+    {
+        if (VoiceOutput)
+        {
+            JSRuntime.InvokeVoidAsync("speak", args.Output).GetAwaiter().GetResult();
+        }
+    }
 
     private async Task ValidateSpeechInputAsync(string speechInput)
     {
         Logger.LogInformation("Validating {speechInput}.", speechInput);
-
-        await ValidateChitChat(speechInput);
-        await ValidateWeatherInput(speechInput);
-        await ValidateBringInput(speechInput);
-        await ValidateTrafficInput(speechInput);
-        await ValidateHueLightsSpeech(speechInput);
-        ValidateProfileSpeechInput(speechInput);
-    }
-
-    private async Task ValidateChitChat(string speechInput)
-    {
-        var greetings = new List<string>() { "hallo", "hi" };
-        if (VoiceOutput)
-        {
-            if (speechInput.Split(' ').Any(s => greetings.Contains(s)))
-            {
-                await JSRuntime.InvokeVoidAsync("speak", $"Hallo, schön das du da bist.");
-            }
-        }
-    }
-
-    private async Task ValidateWeatherInput(string speechInput)
-    {
-        if (SpeechInput.StartsWith("wie wird das wetter heute") || SpeechInput.StartsWith("brauche ich heute einen regenschirm") && VoiceOutput)
-        {
-            var weather = Layout.GetFromParent<CurrentWeather>();
-            await JSRuntime.InvokeVoidAsync("speak", $"Heute gibt es in Wendlingen {weather.Forecast.Daily[0].Temp.Day} Grad und es ist {weather.Forecast.Daily[0].Weather[0].Description}.");
-        }
-        else if (SpeechInput.StartsWith("wetter klein"))
-        {
-            var weather = Layout.GetFromParent<CurrentWeather>();
-            weather.OnForecastRequested(this, new Data.WeatherForecast.ForecastEventArgs(false));
-        }
-        else if (SpeechInput.StartsWith("wetter komplett"))
-        {
-            var weather = Layout.GetFromParent<CurrentWeather>();
-            weather.OnForecastRequested(this, new Data.WeatherForecast.ForecastEventArgs(true));
-        }
-    }
-
-    private async Task ValidateBringInput(string speechInput)
-    {
-        if (speechInput.StartsWith("füge der liste genau"))
-        {
-            string itemName = speechInput.Split(' ')[4];
-            string details = speechInput.Split(' ')[5];
-            var bring = Layout.GetFromParent<Bring>();
-            await bring.AddItem(itemName, details);
-
-            if (VoiceOutput)
-            {
-                await JSRuntime.InvokeVoidAsync("speak", $"{itemName}, {details} ist jetzt auf deiner Liste.");
-            }
-        }
-        else if (speechInput.StartsWith("füge der liste"))
-        {
-            string itemName = speechInput.Split(' ')[3];
-            var bring = Layout.GetFromParent<Bring>();
-            await bring.AddItem(itemName, string.Empty);
-
-            if (VoiceOutput)
-            {
-                await JSRuntime.InvokeVoidAsync("speak", $"{itemName} ist jetzt auf deiner Liste.");
-            }
-        }
-    }
-
-    private async Task ValidateTrafficInput(string speechInput)
-    {
-        SmartMirror.Data.Routes.RouteResponse routeResponse = null;
-        if (SpeechInput.StartsWith("verbindung") || SpeechInput.StartsWith("route") || SpeechInput.StartsWith("strecke"))
-        {
-            var traffic = Layout.GetFromParent<RouteTraffic>();
-            var speechValues = speechInput.Split(' ');
-            routeResponse = await traffic.SetRouteAsync(speechValues[1], speechValues[2]);
-        }
-
-        if (routeResponse?.routes?.Any() == true && VoiceOutput)
-        {
-            var summary = routeResponse.routes.FirstOrDefault().summary;
-            double durationInHours = Math.Floor(summary.liveTrafficIncidentsTravelTimeInSeconds / 3600d);
-            double durationInMinutes = summary.liveTrafficIncidentsTravelTimeInSeconds / 60 % 60;
-            double delayInHours = Math.Floor(summary.trafficDelayInSeconds / 3600d);
-            double delayInMinutes = summary.trafficDelayInSeconds / 60 % 60;
-
-            await JSRuntime.InvokeVoidAsync("speak", $"Für diese Strecke von {summary.lengthInMeters / 1000} Kilometern benötigst du {durationInHours} Stunden und {durationInMinutes} Minuten.");
-        }
-    }
-
-    private async Task ValidateProfileSpeechInput(string speechInput)
-    {
-        string profileName = speechInput.Split(' ')[3];
-        if (speechInput.Equals("wechsel profil zu"))
-        {
-            if (VoiceOutput)
-            {
-                await JSRuntime.InvokeVoidAsync("speak", $"Wechsel Profil zu {profileName}");
-            }
-
-            Layout.SetProfile(profileName);
-        }
-    }
-
-    private async Task ValidateHueLightsSpeech(string speechInput)
-    {
-        var hueLights = Layout.GetFromParent<HueLights>();
-        var lightState = new LightState();
-        bool doNothing = false;
-        if (speechInput.Contains("licht an"))
-        {
-            lightState.on = true;
-            lightState.sat = 0;
-            lightState.bri = 127;
-        }
-        else if (speechInput.Contains("licht aus"))
-        {
-            lightState.on = false;
-        }
-        else if (speechInput.Contains("helles licht"))
-        {
-            lightState.on = true;
-            lightState.sat = 0;
-            lightState.bri = 254;
-        }
-        else if (speechInput.Contains("dunkles licht"))
-        {
-            lightState.on = true;
-            lightState.sat = 0;
-            lightState.bri = 50;
-        }
-        else if (speechInput.Contains("rotes licht"))
-        {
-            lightState.on = true;
-            lightState.sat = 254;
-            lightState.bri = 127;
-            lightState.hue = 0;
-        }
-        else if (speechInput.Contains("blaues licht"))
-        {
-            lightState.on = true;
-            lightState.sat = 254;
-            lightState.bri = 127;
-            lightState.hue = 42720;
-        }
-        else if (speechInput.Contains("grünes licht"))
-        {
-            lightState.on = true;
-            lightState.sat = 254;
-            lightState.bri = 127;
-            lightState.hue = 22606;
-        }
-        // must always be last one
-        else if (speechInput.Contains("licht"))
-        {
-            lightState = null;
-        }
-        else
-        {
-            doNothing = true;
-        }
-
-        if (!doNothing)
-        {
-            hueLights.SwitchLightAsync(1, lightState);
-        }
+        SpeechService.Recognizer_Recognized(speechInput);
     }
 
     #region STATIC PROPERTY HANDLING
