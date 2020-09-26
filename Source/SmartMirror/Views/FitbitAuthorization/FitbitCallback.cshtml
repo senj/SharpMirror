@@ -7,9 +7,10 @@
         localStorage.setItem('fitbit_refresh_token', '@Model.refresh_token');
         @{ 
             var date = DateTime.Now.AddSeconds(Model.expires_in);
+            var dateString = Newtonsoft.Json.JsonConvert.SerializeObject(date).Replace("\"", "");
         }
 
-        localStorage.setItem('fitbit_expires_at', '@date.ToString("d.M.yyyy, HH:mm:ss")');
+        localStorage.setItem('fitbit_expires_at', '@dateString');
         setTimeout(function () { window.close(); }, 100);
     }
 </script>

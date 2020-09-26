@@ -5,11 +5,12 @@
     function setSpotifyToken() {
         localStorage.setItem('spotify_access_token', '@Model.access_token');
         localStorage.setItem('spotify_refresh_token', '@Model.refresh_token');
-        @{ 
+        @{
             var date = DateTime.Now.AddSeconds(Model.expires_in);
+            var dateString = Newtonsoft.Json.JsonConvert.SerializeObject(date).Replace("\"", "");
         }
 
-        localStorage.setItem('spotify_expires_at', '@date.ToString("d.M.yyyy, HH:mm:ss")');
+        localStorage.setItem('spotify_expires_at', '@dateString');
         setTimeout(function () { window.close(); }, 100);
     }
 </script>

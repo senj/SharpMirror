@@ -3,8 +3,9 @@
     if (accessToken !== null) {
         // check if token is still valid
         var expires_at = localStorage.getItem('fitbit_expires_at')
-        var currentDate = new Date(Date.now()).toLocaleString()
-        if (expires_at < currentDate) {
+        var expires = new Date(decodeHtml(expires_at));
+        var currentDate = new Date(Date.now())
+        if (expires < currentDate) {
             // no longer valid, continue
             localStorage.clear();
         }
@@ -29,4 +30,10 @@
             return accessToken;
         }
     }, 500);
+}
+
+function decodeHtml(html) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
 }
