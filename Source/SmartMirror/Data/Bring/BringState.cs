@@ -35,6 +35,14 @@ namespace SmartMirror.Data.Bring
             await GetItemsAsync(false);
         }
 
+        public async Task RemoveItemAsync(string entry)
+        {
+            await _bringService.RemoveItemAsync(entry);
+
+            // This will refresh items property and trigger onChange
+            await GetItemsAsync(false);
+        }
+
         public void SetShowDetails(bool showDetails)
         {
             ShowDetails = showDetails;

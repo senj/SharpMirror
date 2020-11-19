@@ -86,9 +86,23 @@ namespace SmartMirror.Data.Speech
             }
         }
 
+        public async Task Handle(RemoveListEntry request)
+        {
+            foreach (string entry in request.ItemNames)
+            {
+                await _bringState.RemoveItemAsync(entry);
+            }
+        }
+
         public Task<(RouteResponse route, GeosearchResponse source, GeosearchResponse destination)> Handle(GetDistanceRequest request)
         {
             return _routeState.FindRouteAsync(request.Source, request.Destination);
+        }
+
+        public Task Handle(RoutesDisplayType routesDisplayType)
+        {
+            _routeState.SetShowDetails(routesDisplayType.ShowDetails);
+            return Task.CompletedTask;
         }
     }
 }

@@ -4,6 +4,7 @@
     {
         public SpeechOutputResult()
         {
+            Output = string.Empty;
         }
 
         public SpeechOutputResult(string output)

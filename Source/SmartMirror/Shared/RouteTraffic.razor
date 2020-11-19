@@ -22,18 +22,12 @@
             else
             {
                 var summary = RouteResponse.routes.FirstOrDefault().summary;
-                <p>@SourceGeoResponse.results.FirstOrDefault().address.freeformAddress -</p>
-                <p>@DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress</p>
-                <br />
-
-                <p>@(summary.lengthInMeters / 1000) km</p>
-
                 double durationInHours = Math.Floor(summary.liveTrafficIncidentsTravelTimeInSeconds / 3600d);
                 double durationInMinutes = summary.liveTrafficIncidentsTravelTimeInSeconds / 60 % 60;
                 double delayInHours = Math.Floor(summary.trafficDelayInSeconds / 3600d);
                 double delayInMinutes = summary.trafficDelayInSeconds / 60 % 60;
-                string trafficString = string.Empty;
 
+                string trafficString = string.Empty;
                 if (durationInHours != 0)
                 {
                     trafficString = $"{durationInHours} h";
@@ -53,21 +47,36 @@
                     trafficString += $" ({delayInMinutes} min delay)";
                 }
 
-                <p>@trafficString</p>
-
-                if (summary.departureTime.Date != summary.arrivalTime.Date)
+                if (State.ShowDetails)
                 {
-                    <p>
-                        @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
-                        - @summary.arrivalTime.ToString("dd.MM.") <b>@summary.arrivalTime.ToString("HH:mm")</b>
-                    </p>
+                    <p>@SourceGeoResponse.results.FirstOrDefault().address.freeformAddress -</p>
+                    <p>@DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress</p>
+                    <br />
+
+                    <p>@(summary.lengthInMeters / 1000) km</p>
+
+                    <p>@trafficString</p>
+
+                    if (summary.departureTime.Date != summary.arrivalTime.Date)
+                    {
+                        <p>
+                            @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
+                            - @summary.arrivalTime.ToString("dd.MM.") <b>@summary.arrivalTime.ToString("HH:mm")</b>
+                        </p>
+                    }
+                    else
+                    {
+                        <p>
+                            @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
+                            - <b>@summary.arrivalTime.ToString("HH:mm")</b>
+                        </p>
+                    }
                 }
                 else
                 {
-                    <p>
-                        @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
-                        - <b>@summary.arrivalTime.ToString("HH:mm")</b>
-                    </p>
+                    <p>@SourceGeoResponse.results.FirstOrDefault().address.freeformAddress - @DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress</p>
+                    <br />
+                    <p>@trafficString</p>
                 }
             }
         </div>

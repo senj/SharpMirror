@@ -14,7 +14,7 @@ namespace SmartMirror.Data.Speech
         private readonly IntentExecutor _intentExecutor;
         private readonly SpeechRecognitionConfiguration _config;
         private readonly LUISRuntimeClient _luisClient;
-        
+
         public SpeechRecognitionService(
             ILogger<SpeechRecognitionService> logger,
             IOptions<SpeechRecognitionConfiguration> speechRecognitionConfiguration,
@@ -23,7 +23,7 @@ namespace SmartMirror.Data.Speech
             _logger = logger;
             _intentExecutor = intentExecutor;
             _config = speechRecognitionConfiguration.Value;
-            
+
             ApiKeyServiceClientCredentials credentials = new ApiKeyServiceClientCredentials(_config.LuisSubscriptionKey);
             _luisClient = new LUISRuntimeClient(credentials)
             {
@@ -39,6 +39,7 @@ namespace SmartMirror.Data.Speech
             }
 
             PredictionResponse prediction = null;
+            SpeechOutputResult speechOutputResult = new SpeechOutputResult();
             try
             {
                 prediction = await _luisClient.Prediction.GetSlotPredictionAsync(Guid.Parse(_config.LuisAppId), _config.LuisAppSlot,
@@ -47,7 +48,7 @@ namespace SmartMirror.Data.Speech
                         Query = text
                     });
 
-                await AnalyzePredictionAsync(prediction);
+                speechOutputResult = await AnalyzePredictionAsync(prediction);
             }
             catch (Exception ex)
             {
@@ -60,7 +61,8 @@ namespace SmartMirror.Data.Speech
                 Text = text,
                 TopIntent = prediction?.Prediction?.TopIntent,
                 Intents = prediction?.Prediction?.Intents,
-                Entities = prediction?.Prediction?.Entities
+                Entities = prediction?.Prediction?.Entities,
+                VoiceResponse = speechOutputResult.Output
             };
         }
 
@@ -89,6 +91,9 @@ namespace SmartMirror.Data.Speech
                 case "ToDo.AddToDo":
                     await _intentExecutor.Handle(new AddListEntry(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult();
+                case "ToDo.DeleteToDo":
+                    await _intentExecutor.Handle(new RemoveListEntry(predictionResponse.Prediction.Entities));
+                    return new SpeechOutputResult();
                 case "ToDo.DisplayDetails":
                     await _intentExecutor.Handle(new ShoppingListDisplayType(true));
                     return new SpeechOutputResult();
@@ -96,10 +101,14 @@ namespace SmartMirror.Data.Speech
                     await _intentExecutor.Handle(new ShoppingListDisplayType(false));
                     return new SpeechOutputResult();
                 case "Places.GetRoute":
-                    {
                         var routeResponse = await _intentExecutor.Handle(new GetDistanceRequest(predictionResponse.Prediction.Entities));
                         return new SpeechOutputResult("Route gefunden");
-                    }
+                case "Places.DisplayDetails":
+                    await _intentExecutor.Handle(new RoutesDisplayType(true));
+                    return new SpeechOutputResult();
+                case "Places.HideDetails":
+                    await _intentExecutor.Handle(new RoutesDisplayType(false));
+                    return new SpeechOutputResult();
                 case "Spotify.NextSong":
                     await _intentExecutor.Handle(new NextSongRequested());
                     return new SpeechOutputResult();

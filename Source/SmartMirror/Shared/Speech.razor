@@ -1,6 +1,4 @@
-﻿@using System.ComponentModel;
-@using Microsoft.Extensions.Logging;
-@using SmartMirror.SmartHome.Hue;
+﻿@using Microsoft.Extensions.Logging;
 @using SmartMirror.Data.Speech;
 
 @inject IJSRuntime JSRuntime
@@ -55,6 +53,11 @@
         Logger.LogInformation("Validating {speechInput}.", speechInput);
         var recognitionResponse = await SpeechService.ValidateSpeechInputAsync(speechInput);
         _output = $" ({recognitionResponse.TopIntent})";
+
+        if (VoiceOutput)
+        {
+            await JSRuntime.InvokeVoidAsync("speak", recognitionResponse.VoiceResponse);
+        }
 
         await InvokeAsync(() => StateHasChanged());
     }

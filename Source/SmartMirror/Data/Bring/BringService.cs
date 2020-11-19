@@ -129,5 +129,31 @@ namespace SmartMirror.Data.Bring
 
             _logger.LogInformation("Added item to bring shopping list.");
         }
+
+        public async Task RemoveItemAsync(string itemName)
+        {
+            if (DateTime.UtcNow >= _expiresIn)
+            {
+                await BringAuth();
+            }
+
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"https://api.getbring.com/rest/v2/bringlists/{_options.Value.ListId}");
+            request.Content = new StringContent($"purchase=&recently=&specification=&remove={itemName}&sender=null", Encoding.UTF8, "application/x-www-form-urlencoded");
+
+            request.Headers.Add("Authorization", $"Bearer {_accessToken}");
+            request.Headers.Add("X-BRING-API-KEY", "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp");
+            request.Headers.Add("X-BRING-CLIENT", "webApp");
+            request.Headers.Add("X-BRING-USER-UUID", "1d803f70-ab3e-4420-8c97-f08e0efe7fbf");
+            request.Headers.Add("X-BRING-VERSION", "303070050");
+            request.Headers.Add("X-BRING-COUNTRY", "de");
+
+            var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Error adding bring item: {statusCode}", response.StatusCode);
+            }
+
+            _logger.LogInformation("Removed item to bring shopping list.");
+        }
     }
 }
