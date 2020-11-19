@@ -1,8 +1,6 @@
-﻿using MediatR;
-
-namespace SmartMirror.Notifications
+﻿namespace SmartMirror.Notifications
 {
-    public class WeatherDisplayType : INotification
+    public class WeatherDisplayType
     {
         public WeatherDisplayType(bool displayForecast)
         {

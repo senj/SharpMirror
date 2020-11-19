@@ -1,8 +1,6 @@
-﻿using MediatR;
-
-namespace SmartMirror.Notifications
+﻿namespace SmartMirror.Notifications
 {
-    public class ShoppingListDisplayType : INotification
+    public class ShoppingListDisplayType
     {
         public ShoppingListDisplayType(bool showDetails)
         {

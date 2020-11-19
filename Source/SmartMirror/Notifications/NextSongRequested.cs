@@ -1,8 +1,6 @@
-﻿using MediatR;
-
-namespace SmartMirror.Notifications
+﻿namespace SmartMirror.Notifications
 {
-    public class NextSongRequested : INotification
+    public class NextSongRequested
     {
     }
 }

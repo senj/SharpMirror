@@ -1,11 +1,9 @@
-﻿using MediatR;
-using SmartMirror.Data.Routes;
-using SmartMirror.Extensions;
+﻿using SmartMirror.Extensions;
 using System.Collections.Generic;
 
 namespace SmartMirror.Notifications
 {
-    public class GetDistanceRequest : IRequest<RouteResponse>
+    public class GetDistanceRequest
     {
         private IDictionary<string, object> _entities;
 

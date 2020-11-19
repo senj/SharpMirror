@@ -1,9 +1,6 @@
-﻿using MediatR;
-using SmartMirror.Data.WeatherForecast;
-
-namespace SmartMirror.Notifications
+﻿namespace SmartMirror.Notifications
 {
-    public class WeatherInformationRequest : IRequest<OneCallWeatherForecast>
+    public class WeatherInformationRequest
     {
         public WeatherInformationRequest(bool displayForecast)
         {

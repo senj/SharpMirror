@@ -1,12 +1,11 @@
-﻿using MediatR;
-using SmartMirror.Extensions;
+﻿using SmartMirror.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SmartMirror.Notifications
 {
-    public class TurnOn : INotification
+    public class TurnOn
     {
         public TurnOn(IDictionary<string, object> entities)
         {

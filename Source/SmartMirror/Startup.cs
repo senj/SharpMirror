@@ -1,4 +1,3 @@
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -26,7 +25,6 @@ using SmartMirror.SmartHome.Hue;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
-using System.Reflection;
 
 namespace SmartMirror
 {
@@ -47,6 +45,7 @@ namespace SmartMirror
             services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
             services.AddLocalization(p => p.ResourcesPath = "Resources");
 
+            services.AddSingleton<IntentExecutor>();
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<VvsService>();
             services.AddSingleton<FuelService>();
@@ -92,8 +91,6 @@ namespace SmartMirror
             services.Configure<BringConfiguration>(_configuration.GetSection(nameof(BringConfiguration)));
             services.Configure<RouteConfiguration>(_configuration.GetSection(nameof(RouteConfiguration)));
             services.Configure<SpeechRecognitionConfiguration>(_configuration.GetSection(nameof(SpeechRecognitionConfiguration)));
-
-            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {

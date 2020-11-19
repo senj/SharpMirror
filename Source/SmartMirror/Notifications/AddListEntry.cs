@@ -1,10 +1,9 @@
-﻿using MediatR;
-using SmartMirror.Extensions;
+﻿using SmartMirror.Extensions;
 using System.Collections.Generic;
 
-namespace SmartMirror.Data.Speech
+namespace SmartMirror.Notifications
 {
-    public class AddListEntry : INotification
+    public class AddListEntry
     {
         public AddListEntry(IDictionary<string, object> entities)
         {

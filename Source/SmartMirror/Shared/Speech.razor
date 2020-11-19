@@ -54,11 +54,7 @@
     {
         Logger.LogInformation("Validating {speechInput}.", speechInput);
         var recognitionResponse = SpeechService.ValidateSpeechInput(speechInput);
-        //_output = $" ({recognitionResponse.TopIntent})";
-        //if (VoiceOutput)
-        //{
-        //    JSRuntime.InvokeVoidAsync("speak", recognitionResponse.VoiceResponse).GetAwaiter().GetResult();
-        //}
+        _output = $" ({recognitionResponse.TopIntent})";
 
         InvokeAsync(() => StateHasChanged());
     }

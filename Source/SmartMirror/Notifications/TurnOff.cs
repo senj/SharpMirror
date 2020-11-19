@@ -1,12 +1,11 @@
-﻿using MediatR;
-using SmartMirror.Extensions;
+﻿using SmartMirror.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SmartMirror.Notifications
 {
-    public class TurnOff : INotification
+    public class TurnOff
     {
         public TurnOff(IDictionary<string, object> entities)
         {

@@ -19,7 +19,11 @@ namespace SmartMirror.Data.WeatherForecast
 
         public event EventHandler<ForecastEventArgs> DisplayForecastRequested;
 
-        public WeatherForecastService(ILogger<WeatherForecastService> logger, IDistributedCache cache, HttpClient httpClient, IOptions<WeatherConfiguration> configuration)
+        public WeatherForecastService(
+            ILogger<WeatherForecastService> logger,
+            IOptions<WeatherConfiguration> configuration,
+            IDistributedCache cache,
+            HttpClient httpClient)
         {
             _logger = logger;
             _cache = cache;
