@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SmartMirror.Data.Speech
 {
-    public class SpeechRecognizedEventArgs
+    public class SpeechRecognizedResult
     {
         public IDictionary<string, Intent> Intents { get; set; }
 
@@ -14,5 +14,7 @@ namespace SmartMirror.Data.Speech
         public IDictionary<string, object> Entities { get; set; }
 
         public string Speaker { get; set; }
+
+        public string VoiceResponse { get; set; }
     }
 }

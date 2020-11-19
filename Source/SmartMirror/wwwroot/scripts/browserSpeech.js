@@ -43,7 +43,7 @@ recognition.onresult = (event) => {
 
     updateScroll();
     document.getElementById('speechTextOutput').innerHTML = finalTranscript + '<i style="color:#ddd;">' + interimTranscript + '</>';
-}
+    }
 
 function stopRecognition() {
     recognition.abort();
@@ -90,10 +90,10 @@ function updateScroll() {
     element.scrollTop = element.scrollHeight;
 }
 
-function validateSpeechIntent(text) {
+async function validateSpeechIntent(text) {
     var input = text.toLowerCase();
 
-    if (input.includes('ende') || input.includes('stop') || input.includes('stopp')) {
+    if (input.includes('stop') || input.includes('stopp')) {
         finalTranscript = '';
         recognition.abort();
         console.log('recognition aborted');
@@ -106,7 +106,7 @@ function validateSpeechIntent(text) {
     //}
     else {
         console.log("validate " + input);
-        DotNet.invokeMethodAsync('SmartMirror', 'SetSpeechInput', input);
+        await DotNet.invokeMethodAsync('SmartMirror', 'SetSpeechInputCaller', input)
     }
 }
 

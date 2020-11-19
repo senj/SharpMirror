@@ -43,91 +43,29 @@
 
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
-    private EventHandler<SpeechStartedEventArgs> speechStartedEventHandler;
-    private EventHandler<SpeechEndedEventArgs> speechEndedEventHandler;
-    private EventHandler<SpeechRecognizedEventArgs> SpeechRecognizedEventHandler;
-    private EventHandler<SpeechOutputEventArgs> SpeechOutputEventHandler;
+    private static Action<string> action;
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnInitialized()
     {
-        if (firstRender)
-        {            
-            SpeechRecognizedEventHandler = new EventHandler<SpeechRecognizedEventArgs>(OnSpeechRecognized);
-            SpeechService.SpeechRecognized += SpeechRecognizedEventHandler;
-
-            SpeechOutputEventHandler = new EventHandler<SpeechOutputEventArgs>(OnSpeechOutputRequested);
-            SpeechService.SpeechOutputRequested += SpeechOutputEventHandler;
-        }
-
-        base.OnAfterRender(firstRender);
+        action = ValidateSpeechInput;
     }
 
-    private void OnSpeechRecognized(object sender, SpeechRecognizedEventArgs args)
+    private void ValidateSpeechInput(string speechInput)
     {
-        _output = $" ({args.TopIntent})";
+        Logger.LogInformation("Validating {speechInput}.", speechInput);
+        var recognitionResponse = SpeechService.ValidateSpeechInput(speechInput);
+        //_output = $" ({recognitionResponse.TopIntent})";
+        //if (VoiceOutput)
+        //{
+        //    JSRuntime.InvokeVoidAsync("speak", recognitionResponse.VoiceResponse).GetAwaiter().GetResult();
+        //}
+
         InvokeAsync(() => StateHasChanged());
     }
 
-    private void OnSpeechOutputRequested(object sender, SpeechOutputEventArgs args)
+    [JSInvokable("SetSpeechInputCaller")]
+    public static void SetSpeechInputCaller(string speechInput)
     {
-        if (VoiceOutput)
-        {
-            JSRuntime.InvokeVoidAsync("speak", args.Output).GetAwaiter().GetResult();
-        }
+        action.Invoke(speechInput);
     }
-
-    private async Task ValidateSpeechInputAsync(string speechInput)
-    {
-        Logger.LogInformation("Validating {speechInput}.", speechInput);
-        SpeechService.Recognizer_Recognized(speechInput);
-    }
-
-    #region STATIC PROPERTY HANDLING
-
-    private static string _speechInput;
-    public static string SpeechInput
-    {
-        get { return _speechInput; }
-
-        set
-        {
-            if (_speechInput != value)
-            {
-                _speechInput = value;
-                OnGlobalPropertyChanged("SpeechInput");
-            }
-        }
-    }
-
-    [JSInvokable]
-    public static void SetSpeechInput(string speechInput)
-    {
-        SpeechInput = speechInput;
-    }
-
-    static event PropertyChangedEventHandler GlobalPropertyChanged = delegate { };
-    static void OnGlobalPropertyChanged(string propertyName)
-    {
-        GlobalPropertyChanged(
-            typeof(Speech),
-            new PropertyChangedEventArgs(propertyName));
-    }
-
-    public Speech()
-    {
-        // This should use a weak event handler instead of normal handler
-        GlobalPropertyChanged += this.HandleGlobalPropertyChanged;
-    }
-
-    void HandleGlobalPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        switch (e.PropertyName)
-        {
-            case "SpeechInput":
-                ValidateSpeechInputAsync(SpeechInput);
-                break;
-        }
-    }
-
-    #endregion
 }
