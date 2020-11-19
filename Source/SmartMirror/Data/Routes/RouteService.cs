@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -15,8 +14,6 @@ namespace SmartMirror.Data.Routes
         private readonly HttpClient _httpClient;
         private readonly RouteConfiguration _configuration;
         private readonly NumberFormatInfo _numberFormatInfo;
-
-        public event EventHandler<DisplayRouteEventArgs> DisplayRouteRequested;
 
         public RouteService(
             ILogger<RouteService> logger,
@@ -33,12 +30,32 @@ namespace SmartMirror.Data.Routes
             };
         }
 
-        internal Task SearchAsync(object source)
+        public async Task<(RouteResponse route, GeosearchResponse source, GeosearchResponse destination)> FindRouteAsync(string source, string destination)
         {
-            throw new System.NotImplementedException();
+            GeosearchResponse geoSource = await SearchAsync(source);
+            GeosearchResponse geoDestination = await SearchAsync(destination);
+
+            if (source != null && destination != null)
+            {
+                return (await GetRouteAsync(new RouteRequest
+                {
+                    Departure = new Geopoint
+                    {
+                        Latitude = geoSource.results.FirstOrDefault().position.lat,
+                        Longitude = geoSource.results.FirstOrDefault().position.lon
+                    },
+                    Destination = new Geopoint
+                    {
+                        Latitude = geoDestination.results.FirstOrDefault().position.lat,
+                        Longitude = geoDestination.results.FirstOrDefault().position.lon
+                    }
+                }), geoSource, geoDestination);
+            }
+
+            return (new RouteResponse(), new GeosearchResponse(), new GeosearchResponse());
         }
 
-        public async Task<GeosearchResponse> SearchAsync(string query)
+        private async Task<GeosearchResponse> SearchAsync(string query)
         {
             string requestUri = "https://atlas.microsoft.com/search/address/json" +
                $"?subscription-key={_configuration.ApiKey}" +
@@ -68,7 +85,7 @@ namespace SmartMirror.Data.Routes
             return geoJsonResponse;
         }
 
-        public async Task<RouteResponse> GetRouteAsync(RouteRequest routeRequest)
+        private async Task<RouteResponse> GetRouteAsync(RouteRequest routeRequest)
         {
             string requestUri = "https://atlas.microsoft.com/route/directions/json" +
                 $"?subscription-key={_configuration.ApiKey}" +
@@ -99,16 +116,6 @@ namespace SmartMirror.Data.Routes
             }
 
             return routeJsonResponse;
-        }
-
-        public void DisplayRoute(GeosearchResponse source, GeosearchResponse destination, RouteResponse routeResponse)
-        {
-            DisplayRouteRequested?.Invoke(this, new DisplayRouteEventArgs 
-            { 
-                Source = source,
-                Destination = destination,
-                RouteResponse = routeResponse 
-            });
         }
     }
 }

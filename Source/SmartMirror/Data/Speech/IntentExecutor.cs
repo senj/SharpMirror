@@ -5,7 +5,6 @@ using SmartMirror.Data.Spotify;
 using SmartMirror.Data.WeatherForecast;
 using SmartMirror.Notifications;
 using SmartMirror.SmartHome.Hue;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Speech
@@ -13,36 +12,36 @@ namespace SmartMirror.Data.Speech
     public class IntentExecutor
     {
         private readonly ILogger<IntentExecutor> _logger;
-        private readonly BringService _bringService;
-        private readonly RouteService _routeService;
+        private readonly BringState _bringState;
+        private readonly RouteState _routeState;
         private readonly SpotifyService _spotifyService;
         private readonly HueService _hueService;
-        private readonly WeatherForecastService _weatherForecastService;
+        private readonly WeatherState _weatherState;
 
         public IntentExecutor(
             ILogger<IntentExecutor> logger,
-            BringService bringService,
-            RouteService routeService,
+            BringState bringState,
+            RouteState routeState,
             SpotifyService spotifyService,
             HueService hueService,
-            WeatherForecastService weatherForecastService)
+            WeatherState weatherState)
         {
             _logger = logger;
-            _bringService = bringService;
-            _routeService = routeService;
+            _bringState = bringState;
+            _routeState = routeState;
             _spotifyService = spotifyService;
             _hueService = hueService;
-            _weatherForecastService = weatherForecastService;
+            _weatherState = weatherState;
         }
 
         public Task<OneCallWeatherForecast> Handle(WeatherInformationRequest request)
         {
-            return _weatherForecastService.GetOneCallForecastAsync(request.DisplayForecast);
+            return _weatherState.GetWeatherForecastAsync();
         }
 
         public Task Handle(WeatherDisplayType request)
         {
-            _weatherForecastService.WeatherDisplayType(request.DisplayForecast);
+            _weatherState.SetShowDetails(request.DisplayForecast);
             return Task.CompletedTask;
         }
 
@@ -75,7 +74,7 @@ namespace SmartMirror.Data.Speech
 
         public Task Handle(ShoppingListDisplayType request)
         {
-            _bringService.SetShoppingListDisplayType(request.ShowDetails);
+            _bringState.SetShowDetails(request.ShowDetails);
             return Task.CompletedTask;
         }
 
@@ -83,35 +82,13 @@ namespace SmartMirror.Data.Speech
         {
             foreach (string entry in request.ItemNames)
             {
-                await _bringService.AddItemAsync(entry, request.Details);
+                await _bringState.AddItemAsync(entry, request.Details);
             }
         }
 
-        public async Task<RouteResponse> Handle(GetDistanceRequest request)
+        public Task<(RouteResponse route, GeosearchResponse source, GeosearchResponse destination)> Handle(GetDistanceRequest request)
         {
-            GeosearchResponse source = await _routeService.SearchAsync(request.Source);
-            GeosearchResponse destination = await _routeService.SearchAsync(request.Destination);
-
-            if (source != null && destination != null)
-            {
-                RouteResponse routeResponse = await _routeService.GetRouteAsync(new RouteRequest
-                {
-                    Departure = new Geopoint
-                    {
-                        Latitude = source.results.FirstOrDefault().position.lat,
-                        Longitude = source.results.FirstOrDefault().position.lon
-                    },
-                    Destination = new Geopoint
-                    {
-                        Latitude = destination.results.FirstOrDefault().position.lat,
-                        Longitude = destination.results.FirstOrDefault().position.lon
-                    }
-                });
-
-                _routeService.DisplayRoute(source, destination, routeResponse);
-            }
-
-            return new RouteResponse();
+            return _routeState.FindRouteAsync(request.Source, request.Destination);
         }
     }
 }

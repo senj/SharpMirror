@@ -1,6 +1,7 @@
 ﻿@using SmartMirror.Data.WeatherForecast
 @inject IStringLocalizer<CurrentWeather> Localizer
-@inject WeatherForecastService ForecastService
+@inject WeatherState State
+@implements IDisposable
 
 @if (!Show)
 {
@@ -30,7 +31,7 @@
             </div>
         </div>
 
-        @if (ShowForecast)
+        @if (State.ShowDetails)
         {
             <div class="row">
                 <table class="table" style="color:white;">
@@ -60,29 +61,15 @@
     public bool Show { get; set; }
 
     [Parameter]
-    public bool ShowForecast { get; set; }
-
-    [Parameter]
     public int NumberOfDays { get; set; }
 
-    public OneCallWeatherForecast Forecast;
-    private EventHandler<ForecastEventArgs> forecastRequestedEventHandler;
-
-    [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
+    public OneCallWeatherForecast Forecast => State.WeatherForecast;
 
     protected override async Task OnInitializedAsync()
     {
-        Layout.AddToParent<CurrentWeather>(this);
-        Forecast = await ForecastService.GetOneCallForecastAsync(false);
+        State.OnChange += StateHasChangedAsync;
 
-        forecastRequestedEventHandler = new EventHandler<ForecastEventArgs>(OnForecastRequested);
-        ForecastService.DisplayForecastRequested += forecastRequestedEventHandler;
-    }
-
-    public void OnForecastRequested(object sender, ForecastEventArgs args)
-    {
-        ShowForecast = args.DisplayForecast;
-        InvokeAsync(() => StateHasChanged());
+        await State.GetWeatherForecastAsync();
     }
 
     private DateTime EpochToLocalTime(int epochDateTime)
@@ -124,5 +111,15 @@
         }
 
         return (MarkupString)string.Empty;
+    }
+
+    public async void StateHasChangedAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChangedAsync;
     }
 }

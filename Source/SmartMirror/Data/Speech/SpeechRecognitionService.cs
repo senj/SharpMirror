@@ -31,7 +31,7 @@ namespace SmartMirror.Data.Speech
             };
         }
 
-        public SpeechRecognizedResult ValidateSpeechInput(string text)
+        public async Task<SpeechRecognizedResult> ValidateSpeechInputAsync(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -41,13 +41,13 @@ namespace SmartMirror.Data.Speech
             PredictionResponse prediction = null;
             try
             {
-                prediction = _luisClient.Prediction.GetSlotPredictionAsync(Guid.Parse(_config.LuisAppId), _config.LuisAppSlot,
+                prediction = await _luisClient.Prediction.GetSlotPredictionAsync(Guid.Parse(_config.LuisAppId), _config.LuisAppSlot,
                     new PredictionRequest
                     {
                         Query = text
-                    }).GetAwaiter().GetResult();
+                    });
 
-                AnalyzePredictionAsync(prediction).GetAwaiter().GetResult();
+                await AnalyzePredictionAsync(prediction);
             }
             catch (Exception ex)
             {

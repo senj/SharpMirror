@@ -17,8 +17,6 @@ namespace SmartMirror.Data.WeatherForecast
         private readonly HttpClient _httpClient;
         private readonly WeatherConfiguration _configuration;
 
-        public event EventHandler<ForecastEventArgs> DisplayForecastRequested;
-
         public WeatherForecastService(
             ILogger<WeatherForecastService> logger,
             IOptions<WeatherConfiguration> configuration,
@@ -31,9 +29,8 @@ namespace SmartMirror.Data.WeatherForecast
             _configuration = configuration.Value;
         }
 
-        public async Task<OneCallWeatherForecast> GetOneCallForecastAsync(bool displayForecast)
+        public async Task<OneCallWeatherForecast> GetOneCallForecastAsync()
         {
-            DisplayForecastRequested?.Invoke(this, new ForecastEventArgs(displayForecast));
             if (_cache.TryGetValue("weather", out OneCallWeatherForecast currentWeather))
             {
                 _logger.LogInformation("[CACHE] Got weather forecast from cache");
@@ -74,11 +71,6 @@ namespace SmartMirror.Data.WeatherForecast
 
             _logger.LogInformation("Got weather forecast");
             return oneCallWeatherForecast;
-        }
-
-        public void WeatherDisplayType(bool displayForecast)
-        {
-            DisplayForecastRequested?.Invoke(this, new ForecastEventArgs(displayForecast));
         }
     }
 }

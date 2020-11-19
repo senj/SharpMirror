@@ -1,5 +1,6 @@
 ﻿@using SmartMirror.Data.Routes
-@inject RouteService RouteService
+@inject RouteState State
+@implements IDisposable
 
 @if (!Show)
 {
@@ -78,66 +79,31 @@
     [Parameter]
     public bool Show { get; set; }
 
-    public RouteResponse RouteResponse { get; set; }
-    public GeosearchResponse SourceGeoResponse { get; set; }
-    public GeosearchResponse DestinationGeoResponse { get; set; }
-
-    private EventHandler<DisplayRouteEventArgs> routeRequestedEventHandler;
-
-    [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
+    public RouteResponse RouteResponse => State.RouteResponse;
+    public GeosearchResponse SourceGeoResponse => State.Source;
+    public GeosearchResponse DestinationGeoResponse => State.Destination;
 
     protected override async Task OnInitializedAsync()
     {
-        Layout.AddToParent<RouteTraffic>(this);
-
-        routeRequestedEventHandler = new EventHandler<DisplayRouteEventArgs>(OnDisplayRouteRequested);
-        RouteService.DisplayRouteRequested += routeRequestedEventHandler;
+        State.OnChange += StateHasChangedAsync;
 
         try
         {
-            await SetRouteAsync("Deutschland, 73240 Wendlingen am Neckar, Bessarabienstr. 32",
+            await State.FindRouteAsync("Deutschland, 73240 Wendlingen am Neckar, Bessarabienstr. 32",
             "Deutschland, 73240 Wendlingen am Neckar, Wertstr. 20");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
         }
-
-        base.OnInitializedAsync();
     }
 
-    public void OnDisplayRouteRequested(object sender, DisplayRouteEventArgs args)
+    public async void StateHasChangedAsync()
     {
-        SourceGeoResponse = args.Source;
-        DestinationGeoResponse = args.Destination;
-        RouteResponse = args.RouteResponse;
-        InvokeAsync(() => StateHasChanged());
+        await InvokeAsync(StateHasChanged);
     }
 
-    public async Task<RouteResponse> SetRouteAsync(string source, string destination)
+    public void Dispose()
     {
-        SourceGeoResponse = await RouteService.SearchAsync(source);
-        DestinationGeoResponse = await RouteService.SearchAsync(destination);
-
-        if (SourceGeoResponse?.results.Any() != true || DestinationGeoResponse?.results?.Any() != true)
-        {
-            return new RouteResponse();
-        }
-
-        RouteResponse = await RouteService.GetRouteAsync(new RouteRequest
-        {
-            Departure = new Geopoint
-            {
-                Latitude = SourceGeoResponse.results.FirstOrDefault().position.lat,
-                Longitude = SourceGeoResponse.results.FirstOrDefault().position.lon
-            },
-            Destination = new Geopoint
-            {
-                Latitude = DestinationGeoResponse.results.FirstOrDefault().position.lat,
-                Longitude = DestinationGeoResponse.results.FirstOrDefault().position.lon
-            }
-        });
-
-        StateHasChanged();
-        return RouteResponse;
+        State.OnChange -= StateHasChangedAsync;
     }
 }

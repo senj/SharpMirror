@@ -21,9 +21,6 @@ namespace SmartMirror.Data.Bring
         private DateTime _expiresIn;
         private const string BRING_LIST_CACHE_KEY = "bring-list";
 
-        public event EventHandler<ShoppingListChangedEventArgs> ShoppingListChanged;
-        public event EventHandler<ShoppingListDetailsEventArgs> ShoppingListDetailsRequested;
-
         public BringService(
             ILogger<BringService> logger,
             IOptions<BringConfiguration> options,
@@ -131,12 +128,6 @@ namespace SmartMirror.Data.Bring
             }
 
             _logger.LogInformation("Added item to bring shopping list.");
-            ShoppingListChanged?.Invoke(this, new ShoppingListChangedEventArgs());
-        }
-
-        public void SetShoppingListDisplayType(bool showDetails)
-        {
-            ShoppingListDetailsRequested?.Invoke(this, new ShoppingListDetailsEventArgs(showDetails));
         }
     }
 }

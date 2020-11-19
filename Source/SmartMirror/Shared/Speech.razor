@@ -43,25 +43,26 @@
 
     [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
-    private static Action<string> action;
+    private static Func<string, Task> action;
 
     protected override void OnInitialized()
     {
         action = ValidateSpeechInput;
     }
 
-    private void ValidateSpeechInput(string speechInput)
+    private async Task ValidateSpeechInput(string speechInput)
     {
         Logger.LogInformation("Validating {speechInput}.", speechInput);
-        var recognitionResponse = SpeechService.ValidateSpeechInput(speechInput);
+        var recognitionResponse = await SpeechService.ValidateSpeechInputAsync(speechInput);
         _output = $" ({recognitionResponse.TopIntent})";
 
-        InvokeAsync(() => StateHasChanged());
+        await InvokeAsync(() => StateHasChanged());
     }
 
     [JSInvokable("SetSpeechInputCaller")]
     public static void SetSpeechInputCaller(string speechInput)
     {
+        // This is async
         action.Invoke(speechInput);
     }
 }

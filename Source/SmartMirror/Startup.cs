@@ -45,6 +45,7 @@ namespace SmartMirror
             services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
             services.AddLocalization(p => p.ResourcesPath = "Resources");
 
+            // Services
             services.AddSingleton<IntentExecutor>();
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<VvsService>();
@@ -61,6 +62,11 @@ namespace SmartMirror
             services.AddSingleton<SpeechRecognitionService>();
             services.AddSingleton<GoogleFitService>();
             services.AddSingleton<SpotifyService>();
+
+            // State
+            services.AddSingleton<BringState>();
+            services.AddSingleton<WeatherState>();
+            services.AddSingleton<RouteState>();
 
             services.AddSingleton<HttpClient>();
 

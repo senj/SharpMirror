@@ -81,7 +81,7 @@
 
     private void OnLightStateChanged(object sender, LightStateChangedEventArgs args)
     {
-        LightInfo = HueService.GetLightInfoAsync(1).GetAwaiter().GetResult();
-        InvokeAsync(() => StateHasChanged());
+        //LightInfo = HueService.GetLightInfoAsync(1).GetAwaiter().GetResult();
+        //InvokeAsync(() => StateHasChanged());
     }
 }

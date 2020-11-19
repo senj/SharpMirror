@@ -1,5 +1,6 @@
 ﻿@using SmartMirror.Data.Bring
-@inject BringService BringService
+@inject BringState State
+@implements IDisposable
 
 @if (!Show)
 {
@@ -14,44 +15,44 @@
     </div>
     <div class="row">
         <div class="col-12">
-            @if (Items?.purchase == null)
+            @if (State?.Items?.purchase == null)
             {
                 <p><em>Loading...</em></p>
             }
-            else if (Items.purchase.Any())
+            else if (State.Items.purchase.Any())
             {
-                <p>@Items.purchase.Count() Artikel auf der Einkaufsliste</p>
+                <p>@State.Items.purchase.Count() Artikel auf der Einkaufsliste</p>
                 if (ShowDetails)
                 {
-                    @for (int i = 0; i < Items.purchase.Length; i += 3)
+                    @for (int i = 0; i < State.Items.purchase.Length; i += 3)
                     {
                         <div class="row">
                             <span class="bring-item col-3">
-                                @Items.purchase[i].name
-                                @if (!string.IsNullOrEmpty(Items.purchase[i].specification))
+                                @State.Items.purchase[i].name
+                                @if (!string.IsNullOrEmpty(State.Items.purchase[i].specification))
                                 {
-                                    <span class="subtitle">(@Items.purchase[i].specification)</span>
+                                    <span class="subtitle">(@State.Items.purchase[i].specification)</span>
                                 }
                             </span>
 
-                            @if (i + 1 < Items.purchase.Length)
+                            @if (i + 1 < State.Items.purchase.Length)
                             {
                                 <span class="bring-item col-3">
-                                    @Items.purchase[i + 1].name
-                                    @if (!string.IsNullOrEmpty(Items.purchase[i + 1].specification))
+                                    @State.Items.purchase[i + 1].name
+                                    @if (!string.IsNullOrEmpty(State.Items.purchase[i + 1].specification))
                                     {
-                                        <span class="subtitle">(@Items.purchase[i + 1].specification)</span>
+                                        <span class="subtitle">(@State.Items.purchase[i + 1].specification)</span>
                                     }
                                 </span>
                             }
 
-                            @if (i + 2 < Items.purchase.Length)
+                            @if (i + 2 < State.Items.purchase.Length)
                             {
                                 <span class="bring-item col-3">
-                                    @Items.purchase[i + 2].name
-                                    @if (!string.IsNullOrEmpty(Items.purchase[i + 2].specification))
+                                    @State.Items.purchase[i + 2].name
+                                    @if (!string.IsNullOrEmpty(State.Items.purchase[i + 2].specification))
                                     {
-                                        <span class="subtitle">(@Items.purchase[i + 2].specification)</span>
+                                        <span class="subtitle">(@State.Items.purchase[i + 2].specification)</span>
                                     }
                                 </span>
                             }
@@ -72,20 +73,14 @@
     [Parameter]
     public bool Show { get; set; }
 
-    [Parameter]
-    public bool ShowDetails { get; set; }
-
-    SmartMirror.Data.Bring.BringItemResponse Items { get; set; }
+    private bool ShowDetails => State.ShowDetails;
     private string Time { get; set; }
-    private EventHandler<ShoppingListChangedEventArgs> shoppingListChangedEventHandler;
-    private EventHandler<ShoppingListDetailsEventArgs> shoppingListDetailsRequestedEventHandler;
-
-    [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Layout.AddToParent<Bring>(this);
-        Items = await BringService.GetItemsAsync();
+        State.OnChange += StateHasChangedAsync;
+
+        await State.GetItemsAsync(true);
         var timer = new System.Threading.Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
@@ -93,40 +88,22 @@
             {
                 try
                 {
-                    Items = await BringService.GetItemsAsync();
-                    StateHasChanged();
+                    await State.GetItemsAsync(false);
                 }
                 catch (ObjectDisposedException)
                 {
                 }
             });
         }, null, 0, 600 * 1000);
-
-        shoppingListChangedEventHandler = new EventHandler<ShoppingListChangedEventArgs>(OnShoppingListChanged);
-        BringService.ShoppingListChanged += shoppingListChangedEventHandler;
-
-        shoppingListDetailsRequestedEventHandler = new EventHandler<ShoppingListDetailsEventArgs>(OnShoppingListDetailsRequested);
-        BringService.ShoppingListDetailsRequested += shoppingListDetailsRequestedEventHandler;
-
-        base.OnInitializedAsync();
     }
 
-    public async Task AddItem(string itemName, string details)
+    public async void StateHasChangedAsync()
     {
-        await BringService.AddItemAsync(itemName, details);
-        Items = await BringService.GetItemsAsync(loadFromCache: false);
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
-    public void OnShoppingListDetailsRequested(object sender, ShoppingListDetailsEventArgs args)
+    public void Dispose()
     {
-        ShowDetails = args.ShowDetails;
-        InvokeAsync(() => StateHasChanged());
-    }
-
-    public void OnShoppingListChanged(object sender, ShoppingListChangedEventArgs args)
-    {
-        Items = BringService.GetItemsAsync(loadFromCache: false).GetAwaiter().GetResult();
-        InvokeAsync(() => StateHasChanged());
+        State.OnChange -= StateHasChangedAsync;
     }
 }
