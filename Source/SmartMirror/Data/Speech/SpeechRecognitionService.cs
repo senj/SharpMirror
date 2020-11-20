@@ -70,16 +70,16 @@ namespace SmartMirror.Data.Speech
         {
             switch (predictionResponse.Prediction.TopIntent)
             {
-                case "HomeAutomation.TurnOn":
+                case "Hue.TurnOn":
                     await _intentExecutor.Handle(new TurnOn(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult();
-                case "HomeAutomation.TurnOff":
+                case "Hue.TurnOff":
                     await _intentExecutor.Handle(new TurnOff(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult();
                 case "Weather.CheckWeatherValue":
                 case "Weather.QueryWeather":
                     {
-                        var forecast = await _intentExecutor.Handle(new WeatherInformationRequest(true));
+                        var forecast = await _intentExecutor.Handle(new WeatherInformationRequest(predictionResponse.Prediction.Entities));
                         return new SpeechOutputResult($"Heute gibt es in Wendlingen {forecast.Daily[0].Temp.Day} Grad und es ist {forecast.Daily[0].Weather[0].Description}.");
                     }
                 case "Weather.DisplayForecast":
@@ -88,29 +88,32 @@ namespace SmartMirror.Data.Speech
                 case "Weather.HideForecast":
                     await _intentExecutor.Handle(new WeatherDisplayType(false));
                     return new SpeechOutputResult();
-                case "ToDo.AddToDo":
+                case "Bring.AddToDo":
                     await _intentExecutor.Handle(new AddListEntry(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult();
-                case "ToDo.DeleteToDo":
+                case "Bring.DeleteToDo":
                     await _intentExecutor.Handle(new RemoveListEntry(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult();
-                case "ToDo.DisplayDetails":
+                case "Bring.DisplayDetails":
                     await _intentExecutor.Handle(new ShoppingListDisplayType(true));
                     return new SpeechOutputResult();
-                case "ToDo.HideDetails":
+                case "Bring.HideDetails":
                     await _intentExecutor.Handle(new ShoppingListDisplayType(false));
                     return new SpeechOutputResult();
-                case "Places.GetRoute":
+                case "Routes.GetRoute":
                         var routeResponse = await _intentExecutor.Handle(new GetDistanceRequest(predictionResponse.Prediction.Entities));
                         return new SpeechOutputResult("Route gefunden");
-                case "Places.DisplayDetails":
+                case "Routes.DisplayDetails":
                     await _intentExecutor.Handle(new RoutesDisplayType(true));
                     return new SpeechOutputResult();
-                case "Places.HideDetails":
+                case "Routes.HideDetails":
                     await _intentExecutor.Handle(new RoutesDisplayType(false));
                     return new SpeechOutputResult();
                 case "Spotify.NextSong":
                     await _intentExecutor.Handle(new NextSongRequested());
+                    return new SpeechOutputResult();
+                case "Calendar.DisplayDays":
+                    await _intentExecutor.Handle(new SetCalendarDays(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult();
                 default:
                     return new SpeechOutputResult();

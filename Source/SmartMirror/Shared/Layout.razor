@@ -34,42 +34,16 @@
     [CascadingParameter]
     private static string Profile { get; set; } = GetInitialProfile();
 
-    private static Dictionary<Type, object> DI = new Dictionary<Type, object>();
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var authState = await authenticationStateTask;
         var user = authState.User;
-
-        base.OnAfterRenderAsync(firstRender);
     }
 
     public void SetProfile(string profile)
     {
         Profile = profile;
         InvokeAsync(() => { StateHasChanged(); });
-    }
-
-    public void AddToParent<T>(T child)
-    {
-        if (!DI.ContainsKey(typeof(T)))
-        {
-            DI.Add(typeof(T), child);
-        }
-        else
-        {
-            DI[typeof(T)] = child;
-        }
-    }
-
-    public T GetFromParent<T>()
-    {
-        if (DI.ContainsKey(typeof(T)))
-        {
-            return (T)DI[typeof(T)];
-        }
-
-        return default;
     }
 
     private static string GetInitialProfile()

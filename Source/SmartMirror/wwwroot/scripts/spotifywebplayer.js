@@ -62,8 +62,19 @@
             }
         }
 
+        document.getElementById('spotify_play').innerHTML = '&#9654';
         document.getElementById('spotify_track').innerHTML = current_track.name;
         document.getElementById('spotify_image').src = current_track.album.images[0].url;
+
+        document.getElementById('spotify_next').innerHTML = '&#9193';
+        document.getElementById('spotify_next_track').innerHTML = next_track.name;
+        document.getElementById('spotify_next_artist').innerHTML = '';
+        for (let i = 0; i < next_track.artists.length; i++) {
+            document.getElementById('spotify_next_artist').innerHTML += next_track.artists[i].name;
+            if (i < next_track.artists.length - 1) {
+                document.getElementById('spotify_next_artist').innerHTML += ', ';
+            }
+        }
     });
 
     // Ready

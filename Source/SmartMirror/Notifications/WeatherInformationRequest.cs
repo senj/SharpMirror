@@ -1,12 +1,11 @@
-﻿namespace SmartMirror.Notifications
+﻿using System.Collections.Generic;
+
+namespace SmartMirror.Notifications
 {
     public class WeatherInformationRequest
     {
-        public WeatherInformationRequest(bool displayForecast)
+        public WeatherInformationRequest(IDictionary<string, object> entities)
         {
-            DisplayForecast = displayForecast;
         }
-
-        public bool DisplayForecast { get; }
     }
 }

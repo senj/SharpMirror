@@ -1,5 +1,6 @@
 ﻿using SmartMirror.Extensions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartMirror.Notifications
 {
@@ -7,10 +8,14 @@ namespace SmartMirror.Notifications
     {
         public RemoveListEntry(IDictionary<string, object> entities)
         {
-            entities.TryGetValueAsStringArray("ToDo.TaskContent", out string[] taskContent);
+            entities.TryGetValueAsStringArray("Bring.Items", out string[] taskContent);
+            entities.TryGetValueAsStringArray("Bring.ListType", out string[] listType);
             ItemNames = taskContent;
+            ListType = listType.FirstOrDefault();
         }
 
         public string[] ItemNames { get; }
+
+        public string ListType { get; }
     }
 }

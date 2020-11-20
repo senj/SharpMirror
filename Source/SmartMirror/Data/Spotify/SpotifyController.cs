@@ -22,8 +22,6 @@ namespace SmartMirror.Data.Spotify
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly SpotifyConfiguration _spotifyConfiguration;
 
-        public event EventHandler<NextSongEventArgs> NextSongRequested;
-
         public SpotifyController(
             ILogger<SpotifyController> logger,
             HttpClient httpClient,
@@ -105,11 +103,6 @@ namespace SmartMirror.Data.Spotify
             }
 
             return accessToken;
-        }
-
-        public void PlayNextSong()
-        {
-            NextSongRequested?.Invoke(this, new NextSongEventArgs());
         }
 
         private async Task<string> RefreshToken(string refreshToken)

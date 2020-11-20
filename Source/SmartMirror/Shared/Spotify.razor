@@ -1,30 +1,56 @@
 ﻿@using SmartMirror.Data.Spotify;
 @inject IJSRuntime JSRuntime
-@inject IWebHostEnvironment environment
-@inject SpotifyService SpotifyService
+@inject SpotifyState State
+@implements IDisposable
 
 @if (!Show)
 {
     return;
 }
 
-<div class="container-fluid card-1">
+<div class="container-fluid card-1" style="overflow: auto;">
     <div class="row">
         <div class="col-12">
             <p class="box-heading">SPOTIFY</p>
         </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <img id="spotify_image" height="150" width="150" src="/images/spotify/spotify.png" />
+    <img id="spotify_image" height="100" width="100" src="/images/spotify/spotify.png" style="float: left;" />
+    @if (!ShowDetails)
+    {
+        <div class="row">
+            <div class="col-6">
+                <p id="spotify_track" style="font-weight: bold;"></p>
+            </div>
+            <div class="col-6">
+                <p id="spotify_artist"></p>
+            </div>
         </div>
-        <div class="col-4">
-            <span id="spotify_track" style="font-weight: bold;"></span>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-1">
+                <p id="spotify_play"></p>
+            </div>
+            <div class="col-5">
+                <p id="spotify_track" style="font-weight: bold;"></p>
+            </div>
+            <div class="col-6">
+                <p id="spotify_artist"></p>
+            </div>
         </div>
-        <div class="col-4">
-            <span id="spotify_artist"></span>
+        <div class="row">
+            <div class="col-1">
+                <p id="spotify_next"></p>
+            </div>
+            <div class="col-5">
+                <p id="spotify_next_track" style="font-weight: bold;"></p>
+            </div>
+            <div class="col-6">
+                <p id="spotify_next_artist"></p>
+            </div>
         </div>
-    </div>
+    }
 </div>
 <br />
 
@@ -32,18 +58,29 @@
     [Parameter]
     public bool Show { get; set; }
 
-    private EventHandler<NextSongEventArgs> nextSongEventHandler;
+    bool ShowDetails => State.ShowDetails;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
-        nextSongEventHandler = new EventHandler<NextSongEventArgs>(OnNextSongRequested);
-        SpotifyService.NextSongRequested += nextSongEventHandler;
+        State.OnChange += StateHasChangedAsync;
+        State.OnNextSongRequested += OnNextSongRequested;
 
-        await base.OnAfterRenderAsync(firstRender);
+        State.SetShowDetails(true);
     }
 
-    public void OnNextSongRequested(object sender, NextSongEventArgs args)
+    public async Task OnNextSongRequested()
     {
-        JSRuntime.InvokeVoidAsync("nextSong");
+        await JSRuntime.InvokeVoidAsync("nextSong");
+    }
+
+    public async void StateHasChangedAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChangedAsync;
+        State.OnNextSongRequested += OnNextSongRequested;
     }
 }

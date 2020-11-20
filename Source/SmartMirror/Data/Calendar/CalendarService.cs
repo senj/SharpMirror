@@ -26,9 +26,9 @@ namespace SmartMirror.Data.Calendar
             _calendarConfiguration = calendarConfiguration.Value;
         }
 
-        public async Task<IEnumerable<Event>> GetCalendarAsync(int numberOfDays)
-        {
-            if (_cache.TryGetValue("calendar", out IEnumerable<Event> cachedEvents))
+        public async Task<IEnumerable<Event>> GetCalendarAsync(int numberOfDays, bool useCache = true)
+        { 
+            if (useCache && _cache.TryGetValue("calendar", out IEnumerable<Event> cachedEvents))
             {
                 _logger.LogInformation("[CACHE] Got calendar from cache.");
                 return cachedEvents;
@@ -38,7 +38,9 @@ namespace SmartMirror.Data.Calendar
             {
                 var stream = await _httpClient.GetStreamAsync(_calendarConfiguration.CalendarUrl);
                 var calendar = Ical.Net.Calendar.Load(stream);
-                var events = calendar.Events.Where(p => p.DtStart.AsSystemLocal.Date >= DateTime.Now.Date).OrderBy(p => p.DtStart).Take(numberOfDays);
+                var events = calendar.Events
+                    .Where(p => p.DtStart.AsSystemLocal.Date >= DateTime.Now.Date && p.DtStart.AsSystemLocal.Date <= DateTime.Now.AddDays(numberOfDays).Date)
+                    .OrderBy(p => p.DtStart);
 
                 IEnumerable<Event> mappedEvents = events.Select(p => new Event 
                 {
@@ -67,8 +69,7 @@ namespace SmartMirror.Data.Calendar
             {
                 _logger.LogError(ex, "Error loading calendar");
                 return null;
-            }
-            
+            }            
         }
     }
 }

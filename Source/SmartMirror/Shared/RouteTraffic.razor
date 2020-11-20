@@ -74,9 +74,10 @@
                 }
                 else
                 {
-                    <p>@SourceGeoResponse.results.FirstOrDefault().address.freeformAddress - @DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress</p>
-                    <br />
-                    <p>@trafficString</p>
+                    <p>
+                        @SourceGeoResponse.results.FirstOrDefault().address.freeformAddress
+                        - @DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress: @trafficString
+                    </p>
                 }
             }
         </div>

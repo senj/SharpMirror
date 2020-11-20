@@ -61,12 +61,14 @@ namespace SmartMirror
             services.AddSingleton<RouteService>();
             services.AddSingleton<SpeechRecognitionService>();
             services.AddSingleton<GoogleFitService>();
-            services.AddSingleton<SpotifyService>();
+            services.AddSingleton<SpotifyState>();
 
             // State
             services.AddSingleton<BringState>();
             services.AddSingleton<WeatherState>();
             services.AddSingleton<RouteState>();
+            services.AddSingleton<HueState>();
+            services.AddSingleton<CalendarState>();
 
             services.AddSingleton<HttpClient>();
 

@@ -1,6 +1,7 @@
 ﻿@using SmartMirror.SmartHome.Hue;
-@inject HueService HueService
 @inject IStringLocalizer<HueLights> Localizer
+@inject HueState State
+@implements IDisposable
 
 @if (!Show)
 {
@@ -32,16 +33,17 @@
                         <span class="lightIcon">&#9744;</span>
                     }
                 </p>
-                @{
+                @if (ShowDetails)
+                {                    
                     double bri = Math.Round(Convert.ToDouble(LightInfo.state.bri) / 254 * 100, 0);
                     double sat = Math.Round(Convert.ToDouble(LightInfo.state.sat) / 254 * 100, 0);
                     string color = $"hsl({ Math.Round(Convert.ToDouble(LightInfo.state.hue) / 178, 0) }, {sat}%, {bri}%)!important";
-                }
 
-                <span>@Localizer["Brightness"]: @bri%</span>
-                <span>@Localizer["Saturation"]: @sat%</span>
-                <br />
-                <span>@Localizer["Color"]: <span style="background-color: @color">&emsp;&emsp;</span></span>
+                    <span>@Localizer["Brightness"]: @bri%</span>
+                    <span>@Localizer["Saturation"]: @sat%</span>
+                    <br />
+                    <span>@Localizer["Color"]: <span style="background-color: @color">&emsp;&emsp;</span></span>
+                }
             </div>
         </div>
     }
@@ -52,36 +54,22 @@
     [Parameter]
     public bool Show { get; set; }
 
-    [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
-
-    private HueLightInfo LightInfo { get; set; }
-    EventHandler<LightStateChangedEventArgs> LightStateChangedEventHandler;
+    private bool ShowDetails => State.ShowDetails;
+    private HueLightInfo LightInfo => State.HueLightInfo;
 
     protected override async Task OnInitializedAsync()
     {
-        LightStateChangedEventHandler = new EventHandler<LightStateChangedEventArgs>(OnLightStateChanged);
-        HueService.LightStateChanged += OnLightStateChanged;
-
-        LightInfo = await HueService.GetLightInfoAsync(1);
-        Layout.AddToParent<HueLights>(this);
-        base.OnInitializedAsync();
+        State.OnChange += StateHasChangedAsync;
+        await State.GetLightInfoAsync(1);
     }
 
-    public async Task SwitchLightAsync(int lightId, LightState lightState = null)
+    public async void StateHasChangedAsync()
     {
-        LightInfo = await HueService.GetLightInfoAsync(1);
-        await HueService.SetLightStateAsync(lightId, new LightState
-        {
-            on = lightState?.on ?? !LightInfo.state.on,
-            sat = lightState?.sat ?? LightInfo.state.sat,
-            bri = lightState?.bri ?? LightInfo.state.bri,
-            hue = lightState?.hue ?? LightInfo.state.hue
-        });
+        await InvokeAsync(StateHasChanged);
     }
 
-    private void OnLightStateChanged(object sender, LightStateChangedEventArgs args)
+    public void Dispose()
     {
-        //LightInfo = HueService.GetLightInfoAsync(1).GetAwaiter().GetResult();
-        //InvokeAsync(() => StateHasChanged());
+        State.OnChange -= StateHasChangedAsync;
     }
 }

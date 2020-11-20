@@ -1,7 +1,8 @@
 ﻿@using SmartMirror.Data.Calendar;
-@inject CalendarService CalendarService
+@inject CalendarState State
+@implements IDisposable
 
-@if(!Show)
+@if (!Show)
 {
     return;
 }
@@ -20,6 +21,7 @@
     {
         <div class="row">
             <div class="col-12">
+                <small>Termine der nächsten @NumberOfDays Tage</small>
                 <table>
                     <thead>
                         <tr>
@@ -73,17 +75,25 @@
 <br />
 
 @code {
-    IEnumerable<Event> Events { get; set; }
-
-    [Parameter]
-    public int NumberOfDays { get; set; }
+    IEnumerable<Event> Events => State.Events;
+    int NumberOfDays => State.NumberOfDays;
 
     [Parameter]
     public bool Show { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Events = await CalendarService.GetCalendarAsync(NumberOfDays);
-        await base.OnInitializedAsync();
+        State.OnChange += StateHasChangedAsync;
+        await State.GetEventsAsync(5);
+    }
+
+    public async void StateHasChangedAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChangedAsync;
     }
 }

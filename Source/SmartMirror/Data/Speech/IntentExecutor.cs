@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SmartMirror.Data.Bring;
+using SmartMirror.Data.Calendar;
 using SmartMirror.Data.Routes;
 using SmartMirror.Data.Spotify;
 using SmartMirror.Data.WeatherForecast;
@@ -14,24 +15,27 @@ namespace SmartMirror.Data.Speech
         private readonly ILogger<IntentExecutor> _logger;
         private readonly BringState _bringState;
         private readonly RouteState _routeState;
-        private readonly SpotifyService _spotifyService;
-        private readonly HueService _hueService;
+        private readonly SpotifyState _spotifyState;
+        private readonly HueState _hueState;
         private readonly WeatherState _weatherState;
+        private readonly CalendarState _calendarState;
 
         public IntentExecutor(
             ILogger<IntentExecutor> logger,
             BringState bringState,
             RouteState routeState,
-            SpotifyService spotifyService,
-            HueService hueService,
-            WeatherState weatherState)
+            SpotifyState spotifyState,
+            HueState hueState,
+            WeatherState weatherState,
+            CalendarState calendarState)
         {
             _logger = logger;
             _bringState = bringState;
             _routeState = routeState;
-            _spotifyService = spotifyService;
-            _hueService = hueService;
+            _spotifyState = spotifyState;
+            _hueState = hueState;
             _weatherState = weatherState;
+            _calendarState = calendarState;
         }
 
         public Task<OneCallWeatherForecast> Handle(WeatherInformationRequest request)
@@ -54,7 +58,7 @@ namespace SmartMirror.Data.Speech
                 bri = 127
             };
 
-            await _hueService.SetLightStateAsync(notification.LightId, lightState);
+            await _hueState.SetLightStateAsync(notification.LightId, lightState);
         }
 
         public async Task Handle(TurnOff notification)
@@ -64,12 +68,12 @@ namespace SmartMirror.Data.Speech
                 on = false
             };
 
-            await _hueService.SetLightStateAsync(notification.LightId, lightState);
+            await _hueState.SetLightStateAsync(notification.LightId, lightState);
         }
+
         public Task Handle(NextSongRequested notification)
         {
-            _spotifyService.PlayNextSong();
-            return Task.CompletedTask;
+            return _spotifyState.PlayNextSongAsync();
         }
 
         public Task Handle(ShoppingListDisplayType request)
@@ -103,6 +107,11 @@ namespace SmartMirror.Data.Speech
         {
             _routeState.SetShowDetails(routesDisplayType.ShowDetails);
             return Task.CompletedTask;
+        }
+
+        public Task Handle(SetCalendarDays setCalendarDays)
+        {
+            return _calendarState.GetEventsAsync(setCalendarDays.NumberOfDays);
         }
     }
 }
