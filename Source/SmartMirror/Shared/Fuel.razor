@@ -1,6 +1,7 @@
 ﻿@using SmartMirror.Data.Fuel
 @inject IJSRuntime JSRuntime
-@inject FuelService FuelService
+@inject FuelState State
+@implements IDisposable
 
 @if (!Show)
 {
@@ -20,9 +21,13 @@
         }
         else
         {
-            <div class="col-12">
-                <canvas id="fuelChart" width="400" height="150"></canvas>
-            </div>
+            if (ShowDetails)
+            {
+                <div class="col-12">
+                    <canvas id="fuelChart" width="400" height="150"></canvas>
+                </div>
+            }
+
             <div class="col-12">
                 <table class="table" style="color:white;">
                     <thead>
@@ -61,15 +66,19 @@
     [Parameter]
     public int Limit { get; set; }
 
-    private FuelResponse FuelResponse { get; set; }
+    private FuelResponse FuelResponse => State.FuelResponse;
+    bool ShowDetails => State.ShowDetails;
+
     private Dictionary<string, Dataset<float>> datasets { get; set; }
     private string Time { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        FuelResponse = await FuelService.GetFuelResponseAsync(Limit);
-
+        State.OnChange += StateHasChangedAsync;
         datasets = new Dictionary<string, Dataset<float>>();
+        State.SetShowDetails(true);
+
+        await State.GetFuelResponseAsync(Limit);
         var timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
@@ -77,9 +86,7 @@
             {
                 try
                 {
-                    FuelResponse = await FuelService.GetFuelResponseAsync(Limit);
-                    PopulateFuelDatasets();
-                    StateHasChanged();
+                    await State.GetFuelResponseAsync(Limit);
                 }
                 catch (ObjectDisposedException)
                 {
@@ -90,9 +97,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (datasets?.Any() == true && Show)
+        if (datasets?.Any() == true && Show && ShowDetails)
         {
             await JSRuntime.InvokeAsync<string>("renderChart", "fuelChart", FuelResponse.Keys, datasets.Values);
         }
@@ -100,6 +105,8 @@
 
     private void PopulateFuelDatasets()
     {
+        if (FuelResponse == null) return;
+
         Random random = new Random();
         foreach (var timestampEntry in FuelResponse.Values)
         {
@@ -126,5 +133,16 @@
                 }
             }
         }
+    }
+
+    public async void StateHasChangedAsync()
+    {
+        PopulateFuelDatasets();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChangedAsync;
     }
 }

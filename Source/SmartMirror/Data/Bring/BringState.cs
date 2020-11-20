@@ -20,11 +20,10 @@ namespace SmartMirror.Data.Bring
 
         public async Task<BringItemResponse> GetItemsAsync(bool loadFromCache)
         {
-            BringItemResponse items = await _bringService.GetItemsAsync(loadFromCache);
-            Items = items;
+            Items = await _bringService.GetItemsAsync(loadFromCache);
             OnChange?.Invoke();
 
-            return items;
+            return Items;
         }
 
         public async Task AddItemAsync(string name, string detail)

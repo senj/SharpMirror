@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SmartMirror.Notifications
+namespace SmartMirror.Intents
 {
-    public class TurnOff
+    public class HueTurnOn
     {
-        public TurnOff(IDictionary<string, object> entities)
+        public HueTurnOn(IDictionary<string, object> entities)
         {
             entities.TryGetValueAsStringListArray("HomeAutomation.DeviceType", out string[][] deviceType);
             entities.TryGetValueAsStringArray("HomeAutomation.Location", out string[] location);

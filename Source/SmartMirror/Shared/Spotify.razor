@@ -60,11 +60,10 @@
 
     bool ShowDetails => State.ShowDetails;
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnInitialized()
     {
         State.OnChange += StateHasChangedAsync;
         State.OnNextSongRequested += OnNextSongRequested;
-
         State.SetShowDetails(true);
     }
 

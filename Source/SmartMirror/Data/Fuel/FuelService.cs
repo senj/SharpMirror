@@ -30,12 +30,12 @@ namespace SmartMirror.Data.Fuel
             _fuelConfiguration = fuelConfiguration.Value;
         }
 
-        public async Task<FuelResponse> GetFuelResponseAsync(int limit = 10)
+        public async Task<FuelResponse> GetFuelResponseAsync(int limit, bool useCache)
         {
             FuelStationResponse stationJsonResponse;
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
 
-            if (_cache.TryGetValue(FUEL_PRICES_CACHE_KEY, out FuelResponse cachedFuelResponse))
+            if (useCache && _cache.TryGetValue(FUEL_PRICES_CACHE_KEY, out FuelResponse cachedFuelResponse))
             {
                 _logger.LogInformation("[CACHE] Got fuel prices from cache");
                 return cachedFuelResponse;

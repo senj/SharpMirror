@@ -43,39 +43,38 @@
 
     protected override async Task OnInitializedAsync()
     {
-        CodeResponse = await GoogleFitService.StartAuthorizationAsync();
-        GoogleFitService.AuthorizationPolling(CodeResponse)
-            .ContinueWith((response) =>
-            {
-                if (response != null)
-                {
-                    CodeResponse = null;
-                    InvokeAsync(() => StateHasChanged());
-                }
-            });
+        //CodeResponse = await GoogleFitService.StartAuthorizationAsync();
+        //await GoogleFitService.AuthorizationPolling(CodeResponse)
+        //    .ContinueWith((response) =>
+        //    {
+        //        if (response != null)
+        //        {
+        //            CodeResponse = null;
+        //        }
+        //    });
 
-        var timer = new Timer((_) =>
-        {
-            Time = DateTime.UtcNow.ToString();
-            InvokeAsync(async () =>
-            {
-                try
-                {
-                    string token = await GoogleFitService.GetAccessTokenAsync();
-                    if (!string.IsNullOrEmpty(token))
-                    {
-                        Weight = await GoogleFitService.GetWeight(token, 30);
-                        PopulateWeightDatasets("Lukas");
-                        StateHasChanged();
-                    }
-                }
-                catch (ObjectDisposedException)
-                {
-                }
-            });
-        }, null, 0, 29000 * 1000);
+        //var timer = new Timer((_) =>
+        //{
+        //    Time = DateTime.UtcNow.ToString();
+        //    InvokeAsync(async () =>
+        //    {
+        //        try
+        //        {
+        //            string token = await GoogleFitService.GetAccessTokenAsync();
+        //            if (!string.IsNullOrEmpty(token))
+        //            {
+        //                Weight = await GoogleFitService.GetWeight(token, 30);
+        //                PopulateWeightDatasets("Lukas");
+        //                StateHasChanged();
+        //            }
+        //        }
+        //        catch (ObjectDisposedException)
+        //        {
+        //        }
+        //    });
+        //}, null, 0, 29000 * 1000);
 
-        await base.OnInitializedAsync();
+        //await base.OnInitializedAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

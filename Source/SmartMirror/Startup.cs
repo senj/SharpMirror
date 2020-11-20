@@ -63,12 +63,13 @@ namespace SmartMirror
             services.AddSingleton<GoogleFitService>();
             services.AddSingleton<SpotifyState>();
 
-            // State
+            // State (make scoped for multiple users)
             services.AddSingleton<BringState>();
             services.AddSingleton<WeatherState>();
             services.AddSingleton<RouteState>();
             services.AddSingleton<HueState>();
             services.AddSingleton<CalendarState>();
+            services.AddSingleton<FuelState>();
 
             services.AddSingleton<HttpClient>();
 

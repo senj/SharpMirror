@@ -80,11 +80,27 @@
 
     [Parameter]
     public bool Show { get; set; }
+    private string Time { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         State.OnChange += StateHasChangedAsync;
         await State.GetEventsAsync(5);
+
+        //var timer = new System.Threading.Timer((_) =>
+        //{
+        //    Time = DateTime.UtcNow.ToString();
+        //    InvokeAsync(async () =>
+        //    {
+        //        try
+        //        {
+        //            await State.GetEventsAsync(NumberOfDays);
+        //        }
+        //        catch (ObjectDisposedException)
+        //        {
+        //        }
+        //    });
+        //}, null, 0, 7200 * 1000);
     }
 
     public async void StateHasChangedAsync()

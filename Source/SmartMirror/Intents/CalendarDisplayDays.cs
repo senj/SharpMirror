@@ -3,11 +3,11 @@ using SmartMirror.Data.Speech.DefaultEntities;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SmartMirror.Notifications
+namespace SmartMirror.Intents
 {
-    public class SetCalendarDays
+    public class CalendarDisplayDays
     {
-        public SetCalendarDays(IDictionary<string, object> entities)
+        public CalendarDisplayDays(IDictionary<string, object> entities)
         {
             NumberOfDays = 5;
             string entity = JsonConvert.SerializeObject(entities.Where(p => p.Key == "datetimeV2"));

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SmartMirror.Notifications
+namespace SmartMirror.Intents
 {
-    public class RemoveListEntry
+    public class BringAddToDo
     {
-        public RemoveListEntry(IDictionary<string, object> entities)
+        public BringAddToDo(IDictionary<string, object> entities)
         {
             entities.TryGetValueAsStringArray("Bring.Items", out string[] taskContent);
             entities.TryGetValueAsStringArray("Bring.ListType", out string[] listType);
@@ -15,6 +15,8 @@ namespace SmartMirror.Notifications
         }
 
         public string[] ItemNames { get; }
+
+        public string Details { get; }
 
         public string ListType { get; }
     }

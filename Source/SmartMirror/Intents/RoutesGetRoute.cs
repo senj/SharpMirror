@@ -1,11 +1,11 @@
 ﻿using SmartMirror.Extensions;
 using System.Collections.Generic;
 
-namespace SmartMirror.Notifications
+namespace SmartMirror.Intents
 {
-    public class GetDistanceRequest
+    public class RoutesGetRoute
     {
-        public GetDistanceRequest(IDictionary<string, object> entities)
+        public RoutesGetRoute(IDictionary<string, object> entities)
         {
             entities.TryGetValueAsStringArray("Places.Start", out string[] sourceArray);
             entities.TryGetValueAsStringArray("Places.Destination", out string[] destinationArray);

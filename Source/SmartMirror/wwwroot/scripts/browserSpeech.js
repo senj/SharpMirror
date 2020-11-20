@@ -35,7 +35,7 @@ recognition.onresult = (event) => {
 
             validateSpeechIntent(finalTranscript);
             interimTranscript = '';
-            setTimeout(stopRecognition, 4000)
+            setTimeout(stopRecognition, 2000)
         } else {
             interimTranscript += transcript;
         }

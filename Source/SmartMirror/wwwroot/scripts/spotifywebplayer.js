@@ -49,11 +49,16 @@
     player.addListener('player_state_changed', state => {
         console.log(state);
 
+        if (state === null) {
+            return;
+        }
+
         let {
             current_track,
             next_tracks: [next_track]
         } = state.track_window;
 
+        document.getElementById('spotify_track').innerHTML = current_track.name;
         document.getElementById('spotify_artist').innerHTML = '';
         for (let i = 0; i < current_track.artists.length; i++) {
             document.getElementById('spotify_artist').innerHTML += current_track.artists[i].name;
@@ -62,17 +67,18 @@
             }
         }
 
-        document.getElementById('spotify_play').innerHTML = '&#9654';
-        document.getElementById('spotify_track').innerHTML = current_track.name;
-        document.getElementById('spotify_image').src = current_track.album.images[0].url;
+        if (document.getElementById('spotify_play') !== null) {
+            document.getElementById('spotify_play').innerHTML = '&#9654';
+            document.getElementById('spotify_image').src = current_track.album.images[0].url;
 
-        document.getElementById('spotify_next').innerHTML = '&#9193';
-        document.getElementById('spotify_next_track').innerHTML = next_track.name;
-        document.getElementById('spotify_next_artist').innerHTML = '';
-        for (let i = 0; i < next_track.artists.length; i++) {
-            document.getElementById('spotify_next_artist').innerHTML += next_track.artists[i].name;
-            if (i < next_track.artists.length - 1) {
-                document.getElementById('spotify_next_artist').innerHTML += ', ';
+            document.getElementById('spotify_next').innerHTML = '&#9193';
+            document.getElementById('spotify_next_track').innerHTML = next_track.name;
+            document.getElementById('spotify_next_artist').innerHTML = '';
+            for (let i = 0; i < next_track.artists.length; i++) {
+                document.getElementById('spotify_next_artist').innerHTML += next_track.artists[i].name;
+                if (i < next_track.artists.length - 1) {
+                    document.getElementById('spotify_next_artist').innerHTML += ', ';
+                }
             }
         }
     });

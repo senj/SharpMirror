@@ -55,7 +55,7 @@
 
                     <p>@(summary.lengthInMeters / 1000) km</p>
 
-                    <p>@trafficString</p>
+                    <p><b>@trafficString</b></p>
 
                     if (summary.departureTime.Date != summary.arrivalTime.Date)
                     {
@@ -76,7 +76,7 @@
                 {
                     <p>
                         @SourceGeoResponse.results.FirstOrDefault().address.freeformAddress
-                        - @DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress: @trafficString
+                        - @DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress: <b>@trafficString</b>
                     </p>
                 }
             }
