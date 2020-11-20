@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SmartMirror.Data.Bring;
 using SmartMirror.Data.Calendar;
+using SmartMirror.Data.Clock;
 using SmartMirror.Data.Fuel;
 using SmartMirror.Data.Routes;
 using SmartMirror.Data.Spotify;
@@ -21,6 +22,7 @@ namespace SmartMirror.Data.Speech
         private readonly WeatherState _weatherState;
         private readonly CalendarState _calendarState;
         private readonly FuelState _fuelState;
+        private readonly ClockState _clockState;
 
         public IntentExecutor(
             ILogger<IntentExecutor> logger,
@@ -30,7 +32,8 @@ namespace SmartMirror.Data.Speech
             HueState hueState,
             WeatherState weatherState,
             CalendarState calendarState,
-            FuelState fuelState)
+            FuelState fuelState,
+            ClockState clockState)
         {
             _logger = logger;
             _bringState = bringState;
@@ -40,6 +43,7 @@ namespace SmartMirror.Data.Speech
             _weatherState = weatherState;
             _calendarState = calendarState;
             _fuelState = fuelState;
+            _clockState = clockState;
         }
 
         public Task<OneCallWeatherForecast> Handle(WeatherQueryWeather request)
@@ -132,6 +136,13 @@ namespace SmartMirror.Data.Speech
         public Task Handle(FuelDisplayDetails fuelDisplayDetails)
         {
             _fuelState.SetShowDetails(fuelDisplayDetails.ShowDetails);
+            return Task.CompletedTask;
+        }
+
+        public Task Handle(ClockTimer clockTimer)
+        {
+            _clockState.StopTimer();
+            _clockState.SetTimer(clockTimer.Name, clockTimer.DurationSeconds);
             return Task.CompletedTask;
         }
     }

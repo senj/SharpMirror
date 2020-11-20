@@ -130,6 +130,9 @@ namespace SmartMirror.Data.Speech
                 case "Fuel.HideDetails":
                     await _intentExecutor.Handle(new FuelDisplayDetails(false));
                     return new SpeechOutputResult();
+                case "Clock.Timer":
+                    await _intentExecutor.Handle(new ClockTimer(predictionResponse.Prediction.Entities));
+                    return new SpeechOutputResult("Timer läuft");
                 default:
                     return new SpeechOutputResult();
             };

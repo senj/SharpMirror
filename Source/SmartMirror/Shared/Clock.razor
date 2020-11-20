@@ -1,4 +1,7 @@
-﻿
+﻿@using SmartMirror.Data.Clock;
+@inject ClockState State
+@implements IDisposable
+
 @if (!Show)
 {
     return;
@@ -6,9 +9,13 @@
 
 <div class="container-fluid card-1">
     <div class="row">
-        <div class="col-10">
+        <div class="col-5">
             <span>@DateTime.Now.ToString("dddd, dd. MMMM, yyyy")</span><br />
             <span class="important">@DateTime.Now.ToString("HH:mm")</span>
+        </div>
+        <div class="col-5">
+            <span>@State.TimerName</span><br />
+            <span>@State.TimerDuration.Hours.ToString("00"):@State.TimerDuration.Minutes.ToString("00"):@State.TimerDuration.Seconds.ToString("00")</span>
         </div>
         <div class="col-2">
             <span style=""><small>KW @KW</small></span>
@@ -23,12 +30,15 @@
 
     private string Time { get; set; }
     private int KW { get; set; }
+    private Timer Timer { get; set; }
 
     protected override void OnInitialized()
     {
+        State.OnTimerChange += StateHasChangedAsync;
+
         CultureInfo ci = new CultureInfo("de-DE");
         KW = ci.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-        var timer = new Timer((_) =>
+        Timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
             InvokeAsync(() =>
@@ -44,5 +54,16 @@
         }, null, 0, 1000);
 
         base.OnInitialized();
+    }
+
+    public async void StateHasChangedAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnTimerChange -= StateHasChangedAsync;
+        Timer?.Dispose();
     }
 }

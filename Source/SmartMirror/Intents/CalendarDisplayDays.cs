@@ -26,6 +26,7 @@ namespace SmartMirror.Intents
                     string period = timex.Split(',')[2];
                     if (period?.StartsWith("P") == true)
                     {
+                        // TODO: does not work for numbers with more than 1 digit
                         if (period[2] == 'D')
                         {
                             NumberOfDays = int.Parse(period[1].ToString());

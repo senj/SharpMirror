@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using SmartMirror.Data;
 using SmartMirror.Data.Bring;
 using SmartMirror.Data.Calendar;
+using SmartMirror.Data.Clock;
 using SmartMirror.Data.Fitbit;
 using SmartMirror.Data.Fuel;
 using SmartMirror.Data.GoogleFit;
@@ -70,6 +71,7 @@ namespace SmartMirror
             services.AddSingleton<HueState>();
             services.AddSingleton<CalendarState>();
             services.AddSingleton<FuelState>();
+            services.AddSingleton<ClockState>();
 
             services.AddSingleton<HttpClient>();
 
