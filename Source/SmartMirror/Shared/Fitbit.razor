@@ -1,9 +1,11 @@
 ﻿@using SmartMirror.Data.Fitbit
+@using System.ComponentModel
 @inject IJSRuntime JSRuntime
-@inject FitbitService FitbitService
+@inject FitbitState State
 @inject IStringLocalizer<Fitbit> Localizer
+@implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -42,34 +44,46 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
+
+    private bool Enabled => State.Enabled;
+
+    private Data.Fitbit.User User => State.FitbitUserResponse?.user;
+    private FitbitSleepResponse Sleep => State.FitbitSleepResponse;
+    private FitbitDevice Device => State.FitbitDeviceResponse?.Last();
+    private Dictionary<string, ActiveMinutes> ActiveMinutes => State.ActiveMinutes;
+
+    private Dictionary<string, Dataset<float>> datasets { get; set; }
+
+    private string _token;
+    private string Token
+    {
+        get
+        {
+            return _token;
+        }
+
+        set
+        {
+            _token = value;
+            OnPropertyChanged();
+        }
+    }
 
     private string Time { get; set; }
-    private Data.Fitbit.User User { get; set; }
-    private FitbitSleepResponse Sleep { get; set; }
-    private FitbitDevice Device { get; set; }
-    private Dictionary<string, ActiveMinutes> ActiveMinutes { get; set; }
-    private Dictionary<string, Dataset<float>> datasets { get; set; }
-    private static string Token { get; set; }
+    private Timer Timer { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Token = await JSRuntime.InvokeAsync<string>("getFitbitToken");
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (firstRender)
+        if (string.IsNullOrEmpty(Token))
         {
-            if (!string.IsNullOrEmpty(Token))
-            {
-                UpdateDataAsync();
-            }
+            Token = await JSRuntime.InvokeAsync<string>("getFitbitToken");
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        var timer = new Timer((_) =>
+        State.OnChange += StateHasChangedAsync;
+        Timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
             InvokeAsync(async () =>
@@ -78,7 +92,8 @@
                 {
                     if (!string.IsNullOrEmpty(Token))
                     {
-                        UpdateDataAsync();
+                        await UpdateDataAsync();
+                        StateHasChanged();
                     }
                 }
                 catch (ObjectDisposedException)
@@ -86,31 +101,26 @@
                 }
             });
         }, null, 0, 300 * 1000);
-
-        base.OnInitializedAsync();
     }
 
     private async Task UpdateDataAsync()
     {
-        User = (await FitbitService.GetUserInfoAsync(Token))?.user;
-        Sleep = (await FitbitService.GetSleepOfAsync(Token, DateTime.UtcNow));
-        Device = (await FitbitService.GetDeviceAsync(Token))?.Last();
+        await State.PopulateDataAsync(Token, DateTime.UtcNow);
+        await State.PopulateActiveMinutesAsync(Token);
 
-        ActiveMinutes = new Dictionary<string, ActiveMinutes>();
         datasets = new Dictionary<string, Dataset<float>>();
-
-        AddToDict("high", await FitbitService.GetActiveMinutes("minutesVeryActive", Token));
-        AddToDict("mid", await FitbitService.GetActiveMinutes("minutesFairlyActive", Token));
-        AddToDict("low", await FitbitService.GetActiveMinutes("minutesLightlyActive", Token));
-        AddToDict("verylow", await FitbitService.GetActiveMinutes("minutesSedentary", Token));
-
         PopulateDatasets();
         StateHasChanged();
 
-        if (datasets?.Any() == true && Show)
+        if (Enabled && datasets?.Any() == true)
         {
-            JSRuntime.InvokeVoidAsync("renderPieChart", "activityChart0", new[] { "Very", "Fairly", "Lightly", "Sedentary" }, new Dataset<float>[] { datasets.Last().Value });
+            await JSRuntime.InvokeVoidAsync("renderPieChart", "activityChart0", new[] { "Very", "Fairly", "Lightly", "Sedentary" }, new Dataset<float>[] { datasets.Last().Value });
         }
+    }
+
+    protected void OnPropertyChanged(string name = null)
+    {
+        UpdateDataAsync();
     }
 
     private void PopulateDatasets()
@@ -192,15 +202,24 @@
         }
     }
 
-    private void AddToDict(string key, ActiveMinutes activeMinutes)
+    public async void StateHasChangedAsync()
     {
-        if (ActiveMinutes.ContainsKey(key))
+        if (Enabled && State.FitbitUserResponse == null && !string.IsNullOrEmpty(Token))
         {
-            ActiveMinutes[key] = activeMinutes;
+            await State.PopulateDataAsync(Token, DateTime.UtcNow);
         }
-        else
+
+        if (Enabled && State.ActiveMinutes == null && !string.IsNullOrEmpty(Token))
         {
-            ActiveMinutes.Add(key, activeMinutes);
+            await State.PopulateActiveMinutesAsync(Token);
         }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChangedAsync;
+        Timer?.Dispose();
     }
 }

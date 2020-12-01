@@ -4,6 +4,10 @@ html, body {
     font-family: 'Roboto', sans-serif;
 }
 
+.fullWidth {
+    width: 100%;
+}
+
 p {
     margin-bottom: 0.2rem !important;
 }

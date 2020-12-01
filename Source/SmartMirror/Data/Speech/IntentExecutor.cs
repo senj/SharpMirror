@@ -2,9 +2,11 @@
 using SmartMirror.Data.Bring;
 using SmartMirror.Data.Calendar;
 using SmartMirror.Data.Clock;
+using SmartMirror.Data.Fitbit;
 using SmartMirror.Data.Fuel;
 using SmartMirror.Data.Routes;
 using SmartMirror.Data.Spotify;
+using SmartMirror.Data.VVS;
 using SmartMirror.Data.WeatherForecast;
 using SmartMirror.Intents;
 using SmartMirror.SmartHome.Hue;
@@ -24,6 +26,8 @@ namespace SmartMirror.Data.Speech
         private readonly CalendarState _calendarState;
         private readonly FuelState _fuelState;
         private readonly ClockState _clockState;
+        private readonly VvsState _vvsState;
+        private readonly FitbitState _fitbitState;
 
         public IntentExecutor(
             ILogger<IntentExecutor> logger,
@@ -34,7 +38,9 @@ namespace SmartMirror.Data.Speech
             WeatherState weatherState,
             CalendarState calendarState,
             FuelState fuelState,
-            ClockState clockState)
+            ClockState clockState,
+            VvsState vvsState,
+            FitbitState fitbitState)
         {
             _logger = logger;
             _bringState = bringState;
@@ -45,6 +51,8 @@ namespace SmartMirror.Data.Speech
             _calendarState = calendarState;
             _fuelState = fuelState;
             _clockState = clockState;
+            _vvsState = vvsState;
+            _fitbitState = fitbitState;
         }
 
         internal Task<OneCallWeatherForecast> Handle(WeatherQueryWeather request)
@@ -195,6 +203,18 @@ namespace SmartMirror.Data.Speech
             return Task.CompletedTask;
         }
 
+        internal Task Handle(VvsShow vvsShow)
+        {
+            _vvsState.SetEnabled(vvsShow.DisplayVvs);
+            return Task.CompletedTask;
+        }
+
+        internal Task Handle(FitbitShow fitbitShow)
+        {
+            _fitbitState.SetEnabled(fitbitShow.DisplayFitbit);
+            return Task.CompletedTask;
+        }
+
         internal Task Handle(MirrorShow mirrorShow)
         {
             _bringState.SetEnabled(mirrorShow.ShowWidgets);
@@ -203,6 +223,9 @@ namespace SmartMirror.Data.Speech
             _weatherState.SetEnabled(mirrorShow.ShowWidgets);
             _spotifyState.SetEnabled(mirrorShow.ShowWidgets);
             _routeState.SetEnabled(mirrorShow.ShowWidgets);
+            _clockState.SetEnabled(mirrorShow.ShowWidgets);
+            _vvsState.SetEnabled(mirrorShow.ShowWidgets);
+            _fitbitState.SetEnabled(mirrorShow.ShowWidgets);
 
             return Task.CompletedTask;
         }

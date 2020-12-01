@@ -7,6 +7,8 @@
 @using SmartMirror.Data.Spotify;
 @using SmartMirror.Data.Routes;
 @using SmartMirror.Data.Clock;
+@using SmartMirror.Data.VVS;
+@using SmartMirror.Data.Fitbit;
 
 @inject IJSRuntime JSRuntime
 @inject SpeechRecognitionService SpeechService
@@ -19,6 +21,8 @@
 @inject SpotifyState SpotifyState
 @inject RouteState RouteState
 @inject ClockState ClockState
+@inject VvsState VvsState
+@inject FitbitState FitbitState
 
 <div class="container-fluid card-1 speech">
     <div class="row">
@@ -43,6 +47,8 @@
             <span><img src="/icons/status/spotify.png" width="25" height="25" class="icon @spotifyDisplay" /></span>
             <span><img src="/icons/status/routes.png" width="25" height="25" class="icon @routesDisplay" /></span>
             <span><img src="/icons/status/clock.png" width="25" height="25" class="icon @clockDisplay" /></span>
+            <span><img src="/icons/status/train.png" width="25" height="25" class="icon @vvsDisplay" /></span>
+            <span><img src="/icons/status/fitbit.png" width="25" height="25" class="icon @fitbitDisplay" /></span>
         </div>
     </div>
 </div>
@@ -62,6 +68,8 @@
     string spotifyDisplay;
     string routesDisplay;
     string clockDisplay;
+    string vvsDisplay;
+    string fitbitDisplay;
 
     private static Func<string, Task> action;
 
@@ -103,6 +111,8 @@
         spotifyDisplay = SpotifyState.Enabled ? "icon-white" : "icon-disabled";
         routesDisplay = RouteState.Enabled ? "icon-black" : "icon-disabled";
         clockDisplay = ClockState.Enabled ? "icon-black" : "icon-disabled";
+        vvsDisplay = VvsState.Enabled ? "icon-black" : "icon-disabled";
+        fitbitDisplay = FitbitState.Enabled ? "icon-black" : "icon-disabled";
     }
 
     private void SetInitialWidgets()
@@ -110,5 +120,7 @@
         WeatherState.SetEnabled(true);
         CalendarState.SetEnabled(true);
         ClockState.SetEnabled(true);
+
+        FitbitState.SetEnabled(true);
     }
 }

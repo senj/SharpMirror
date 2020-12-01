@@ -178,6 +178,18 @@ namespace SmartMirror.Data.Speech
                 case "Clock.Stoptimer":
                     await _intentExecutor.Handle(new StopClockTimer());
                     return new SpeechOutputResult();
+                case "Vvs.Show":
+                    await _intentExecutor.Handle(new VvsShow(true));
+                    return new SpeechOutputResult();
+                case "Vvs.Hide":
+                    await _intentExecutor.Handle(new VvsShow(false));
+                    return new SpeechOutputResult();
+                case "Fitbit.Show":
+                    await _intentExecutor.Handle(new FitbitShow(true));
+                    return new SpeechOutputResult();
+                case "Fitbit.Hide":
+                    await _intentExecutor.Handle(new FitbitShow(false));
+                    return new SpeechOutputResult();
                 case "Mirror.Show":
                     await _intentExecutor.Handle(new MirrorShow(true));
                     return new SpeechOutputResult();

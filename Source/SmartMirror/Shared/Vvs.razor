@@ -1,7 +1,8 @@
 ﻿@using SmartMirror.Data.VVS
-@inject VvsService VvsService
+@inject VvsState State
+@implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -78,35 +79,37 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
-
-    [Parameter]
-    public int Limit { get; set; }
-
-    [Parameter]
-    public string[] SpecialDestinations { get; set; } = new string[] { "stuttgart", "herrenberg", "osterburken" };
-
     /// <summary>
     /// 0 R-Bahn, 1 S-Bahn, 3 Stadtbahn, 5 Bus, 7 Nachtbus, 10 Ruftaxi, 11 Sonstige
     /// </summary>
-    [Parameter]
-    public int[] Filter { get; set; }
 
-    private VvsResponse VvsResponse { get; set; }
+    private string[] SpecialDestinations { get; set; } = new string[] { "stuttgart", "herrenberg", "osterburken" };
+    private bool Enabled => State.Enabled;
+    private int Limit => State.Limit;
+    private int[] Filter => State.Filter;
+    private VvsResponse VvsResponse => State.VvsResponse;
+
     private string Time { get; set; }
+    private Timer Timer { get; set; }
 
     protected override void OnInitialized()
     {
-        var timer = new Timer((_) =>
+        State.OnChange += StateHasChangedAsync;
+        State.SetLimit(5);
+        State.SetFilter(new int[] { 0, 1 });
+
+        Timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
             InvokeAsync(async () =>
             {
                 try
                 {
-                    VvsResponse = await VvsService.GetVvsResponseAsync(Limit, Filter);
-                    StateHasChanged();
+                    if (Enabled)
+                    {
+                        await State.GetVvsResponseAsync(Limit, Filter);
+                        StateHasChanged();
+                    }
                 }
                 catch (ObjectDisposedException)
                 {
@@ -115,5 +118,21 @@
         }, null, 0, 120 * 1000);
 
         base.OnInitialized();
+    }
+
+    public async void StateHasChangedAsync()
+    {
+        if (Enabled && State.VvsResponse == null)
+        {
+            await State.GetVvsResponseAsync(Limit, Filter);
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChangedAsync;
+        Timer?.Dispose();
     }
 }

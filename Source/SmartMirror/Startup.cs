@@ -63,6 +63,8 @@ namespace SmartMirror
             services.AddSingleton<SpeechRecognitionService>();
             services.AddSingleton<GoogleFitService>();
             services.AddSingleton<SpotifyState>();
+            services.AddSingleton<VvsState>();
+            services.AddSingleton<FitbitState>();
 
             // State (make scoped for multiple users)
             services.AddSingleton<BringState>();
