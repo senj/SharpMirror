@@ -26,7 +26,7 @@
                 {
                     @for (int i = 0; i < State.Items.purchase.Length; i += 3)
                     {
-                        <div class="row col-12" style="padding:0.4em">
+                        <div class="row col-12" style="padding:0.2em">
                             <span class="bring-item col-3">
                                 @State.Items.purchase[i].name
                                 @if (!string.IsNullOrEmpty(State.Items.purchase[i].specification))
@@ -56,7 +56,7 @@
                                     }
                                 </span>
                             }
-                        </div><br />
+                        </div>
                     }
                 }
             }

@@ -125,6 +125,8 @@
 
     private void PopulateDatasets()
     {
+        if (ActiveMinutes == null) return;
+
         @foreach (var activityType in ActiveMinutes)
         {
             if (activityType.Key == "high")
