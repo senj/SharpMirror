@@ -20,20 +20,25 @@ namespace SmartMirror.Intents
             DateTimeV2 dateTimeV2 = JsonConvert.DeserializeObject<DateTimeV2>(entity);
             if (dateTimeV2.Value?.FirstOrDefault()?.type == "daterange")
             {
+                // (2020-12-02,2020-12-12,P10D)
                 string timex = dateTimeV2.Value.First().values.First().timex;
                 if (timex?.Length >= 3)
                 {
                     string period = timex.Split(',')[2];
+                    period = period.Remove(period.Length - 1);
+
+                    // P10D)
                     if (period?.StartsWith("P") == true)
                     {
-                        // TODO: does not work for numbers with more than 1 digit
-                        if (period[2] == 'D')
+                        if (period.Last() == 'D')
                         {
-                            NumberOfDays = int.Parse(period[1].ToString());
+                            string timeOnly = period.Replace("P", "").Replace("D", "");
+                            NumberOfDays = int.Parse(timeOnly);
                         }
                         else if (period[2] == 'W')
                         {
-                            NumberOfDays = int.Parse(period[1].ToString()) * 7;
+                            string timeOnly = period.Replace("P", "").Replace("D", "");
+                            NumberOfDays = int.Parse(timeOnly) * 7;
                         }
                     }
                 }

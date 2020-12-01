@@ -42,17 +42,20 @@ namespace SmartMirror.Intents
                 if (timex?.StartsWith("PT") == true)
                 {
                     // TODO: does not work for numbers with more than 1 digit
-                    if (timex[3] == 'S')
+                    if (timex.Last() == 'S')
                     {
-                        DurationSeconds = int.Parse(timex[2].ToString());
+                        string timeOnly = timex.Replace("PT", "").Replace("S", "");
+                        DurationSeconds = int.Parse(timeOnly);
                     }
-                    else if (timex[3] == 'M')
+                    else if (timex.Last() == 'M')
                     {
-                        DurationSeconds = int.Parse(timex[2].ToString()) * 60;
+                        string timeOnly = timex.Replace("PT", "").Replace("M", "");
+                        DurationSeconds = int.Parse(timeOnly) * 60;
                     }
-                    else if (timex[3] == 'H')
+                    else if (timex.Last() == 'H')
                     {
-                        DurationSeconds = int.Parse(timex[2].ToString()) * 3600;
+                        string timeOnly = timex.Replace("PT", "").Replace("H", "");
+                        DurationSeconds = int.Parse(timeOnly) * 3600;
                     }
                 }
             }
