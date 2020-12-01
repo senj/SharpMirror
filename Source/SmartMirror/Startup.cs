@@ -62,9 +62,6 @@ namespace SmartMirror
             services.AddSingleton<RouteService>();
             services.AddSingleton<SpeechRecognitionService>();
             services.AddSingleton<GoogleFitService>();
-            services.AddSingleton<SpotifyState>();
-            services.AddSingleton<VvsState>();
-            services.AddSingleton<FitbitState>();
 
             // State (make scoped for multiple users)
             services.AddSingleton<BringState>();
@@ -74,6 +71,9 @@ namespace SmartMirror
             services.AddSingleton<CalendarState>();
             services.AddSingleton<FuelState>();
             services.AddSingleton<ClockState>();
+            services.AddSingleton<SpotifyState>();
+            services.AddSingleton<VvsState>();
+            services.AddSingleton<FitbitState>();
 
             services.AddSingleton<HttpClient>();
 

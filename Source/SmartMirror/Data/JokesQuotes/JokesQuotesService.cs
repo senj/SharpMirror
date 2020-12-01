@@ -34,10 +34,5 @@ namespace SmartMirror.Data.Jokes
             _logger.LogInformation("Got joke from chuck norris api");
             return chuckNorrisResponse;
         }
-
-        public Task<string[]> GetQuotesAsync()
-        {
-            return File.ReadAllLinesAsync(@"wwwroot/germanQuotes.json");
-        }
     }
 }

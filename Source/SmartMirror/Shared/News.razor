@@ -1,6 +1,7 @@
 ﻿@using SmartMirror.Data.News;
 @inject NewsService NewsService
 @inject IStringLocalizer<News> Localizer
+@implements IDisposable
 
 @if (!Show)
 {
@@ -44,6 +45,7 @@
     private int Index { get; set; }
     private string Time { get; set; }
     private IEnumerable<NewsResponse> NewsResponse { get; set; }
+    private Timer Timer { get; set; }
 
     [Parameter]
     public int RefreshIntervalSeconds { get; set; }
@@ -53,7 +55,7 @@
         NewsResponse = await NewsService.GetFeeds();
         Random random = new Random();
 
-        var timer = new Timer((_) =>
+        Timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
             InvokeAsync(() =>
@@ -68,7 +70,10 @@
                 }
             });
         }, null, 0, RefreshIntervalSeconds * 1000);
+    }
 
-        base.OnInitializedAsync();
+    public void Dispose()
+    {
+        Timer?.Dispose();
     }
 }
