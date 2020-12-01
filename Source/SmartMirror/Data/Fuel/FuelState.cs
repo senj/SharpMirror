@@ -18,7 +18,7 @@ namespace SmartMirror.Data.Fuel
 
         public bool ShowDetails { get; private set; }
 
-        public async Task<FuelResponse> GetFuelResponseAsync(int limit = 10, bool useCache = true)
+        public async Task<FuelResponse> GetFuelResponseAsync(int limit = 5, bool useCache = true)
         {
             FuelResponse = await _fuelService.GetFuelResponseAsync(limit, useCache);
             OnChange?.Invoke();

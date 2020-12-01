@@ -31,6 +31,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\VVS\Models\" />
+  </ItemGroup>
+
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="7" /></VisualStudio></ProjectExtensions>
 
 </Project>
