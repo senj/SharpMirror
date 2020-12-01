@@ -5,6 +5,7 @@
 @using SmartMirror.Data.Bring;
 @using SmartMirror.Data.Calendar;
 @using SmartMirror.Data.Spotify;
+@using SmartMirror.Data.Routes;
 
 @inject IJSRuntime JSRuntime
 @inject SpeechRecognitionService SpeechService
@@ -15,6 +16,7 @@
 @inject BringState BringState
 @inject CalendarState CalendarState
 @inject SpotifyState SpotifyState
+@inject RouteState RouteState
 
 <div class="container-fluid card-1 speech">
     <div class="row">
@@ -32,11 +34,12 @@
             <span id="speechTextOutput" style="display: none;"></span><span>@_output</span>
         </div>
         <div class="col-xl-3 d-none d-lg-block">
-            <span><img src="/icons/status/weather.png" width="15" height="15" style="filter: invert(@weatherDisplay%);" /></span>
-            <span><img src="/icons/status/fuel.png" width="15" height="15" style="filter: invert(@fuelDisplay%);" /></span>
-            <span><img src="/icons/status/bring.png" width="15" height="15" style="filter: invert(@bringDisplay%);" /></span>
-            <span><img src="/icons/status/calendar.png" width="15" height="15" style="filter: invert(@calendarDisplay%);" /></span>
-            <span><img src="/icons/status/spotify.png" width="15" height="15" style="filter: invert(@spotifyDisplay%);" /></span>
+            <span><img src="/icons/status/weather.png" width="25" height="25" class="icon @weatherDisplay" /></span>
+            <span><img src="/icons/status/fuel.png" width="25" height="25" class="icon @fuelDisplay" /></span>
+            <span><img src="/icons/status/bring.png" width="25" height="25" class="icon @bringDisplay" /></span>
+            <span><img src="/icons/status/calendar.png" width="25" height="25" class="icon @calendarDisplay" /></span>
+            <span><img src="/icons/status/spotify.png" width="25" height="25" class="icon @spotifyDisplay" /></span>
+            <span><img src="/icons/status/routes.png" width="25" height="25" class="icon @routesDisplay" /></span>
         </div>
     </div>
 </div>
@@ -49,11 +52,12 @@
     private string _symbol { get; set; } = "silent.png";
     private string _output { get; set; }
 
-    int weatherDisplay;
-    int fuelDisplay;
-    int bringDisplay;
-    int calendarDisplay;
-    int spotifyDisplay;
+    string weatherDisplay;
+    string fuelDisplay;
+    string bringDisplay;
+    string calendarDisplay;
+    string spotifyDisplay;
+    string routesDisplay;
 
     private static Func<string, Task> action;
 
@@ -87,10 +91,11 @@
 
     private void SetIcons()
     {
-        weatherDisplay = WeatherState.Enabled ? 100 : 50;
-        fuelDisplay = FuelState.Enabled ? 100 : 50;
-        bringDisplay = BringState.Enabled ? 100 : 50;
-        calendarDisplay = CalendarState.Enabled ? 100 : 50;
-        spotifyDisplay = SpotifyState.Enabled ? 0 : 50;
+        weatherDisplay = WeatherState.Enabled ? "icon-black" : "icon-disabled";
+        fuelDisplay = FuelState.Enabled ? "icon-black" : "icon-disabled";
+        bringDisplay = BringState.Enabled ? "icon-black" : "icon-disabled";
+        calendarDisplay = CalendarState.Enabled ? "icon-black" : "icon-disabled";
+        spotifyDisplay = SpotifyState.Enabled ? "icon-white" : "icon-disabled";
+        routesDisplay = RouteState.Enabled ? "icon-black" : "icon-disabled";
     }
 }

@@ -116,12 +116,7 @@ function updateScroll() {
 async function validateSpeechIntent(text) {
     var input = text.toLowerCase();
 
-    if (input.includes('stop') || input.includes('stopp')) {
-        finalTranscript = '';
-        recognition.abort();
-        console.log('recognition aborted');
-    }
-    else if (input.includes('spiegel') || input.includes('spiegel'))
+    if (input.includes('spiegel') || input.includes('spiegel'))
     {
         stopRecognitionByKeyword();
     }
@@ -130,43 +125,3 @@ async function validateSpeechIntent(text) {
         await DotNet.invokeMethodAsync('SmartMirror', 'SetSpeechInputCaller', input)
     }
 }
-
-//recognition.onaudiostart = (event) => {
-//    document.getElementById('speechStatusImageWeb').src = '/images/voice/speaking.png';
-//    document.getElementById('speechStatusImageMobile').src = '/images/voice/speaking.png';
-//}
-
-//recognition.onaudioend = (event) => {
-//    document.getElementById('speechStatusImageWeb').src = '/images/voice/active.png';
-//document.getElementById('speechStatusImageMobile').src = '/images/voice/active.png';
-//}
-
-//recognition.onstart = (event) => {
-//    document.getElementById('speechStatusImageWeb').src = '/images/voice/active.png';
-//    document.getElementById('speechStatusImageMobile').src = '/images/voice/active.png';
-//}
-
-//recognition.onnomatch = (event) => {
-//    console.log('Speech not recognised');
-//    recognition.start();
-//}
-
-
-//function startRecognition() {
-//    finalTranscript = '';
-
-//    var domElement = document.getElementById('speechTextOutput');
-//    if (domElement !== null) {
-//        domElement.innerHTML = '';
-//    }
-
-//    recognition.start();
-//}
-
-//function stopRecognition() {
-//    recognition.stop();
-//}
-
-//function abortRecognition() {
-//    recognition.abort();
-//}

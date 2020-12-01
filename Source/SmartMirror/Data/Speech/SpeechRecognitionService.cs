@@ -127,6 +127,12 @@ namespace SmartMirror.Data.Speech
                 case "Routes.HideDetails":
                     await _intentExecutor.Handle(new RoutesDisplayDetails(false));
                     return new SpeechOutputResult();
+                case "Routes.Show":
+                    await _intentExecutor.Handle(new RoutesShow(true));
+                    return new SpeechOutputResult();
+                case "Routes.Hide":
+                    await _intentExecutor.Handle(new RoutesShow(false));
+                    return new SpeechOutputResult();
                 case "Spotify.NextSong":
                     await _intentExecutor.Handle(new SpotifyNextSong());
                     return new SpeechOutputResult();

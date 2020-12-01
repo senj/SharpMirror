@@ -134,6 +134,12 @@ namespace SmartMirror.Data.Speech
             _routeState.SetShowDetails(routesDisplayType.ShowDetails);
             return Task.CompletedTask;
         }
+        
+        internal Task Handle(RoutesShow routesShow)
+        {
+            _routeState.SetEnabled(routesShow.DisplayRoutes);
+            return Task.CompletedTask;
+        }
 
         internal Task Handle(WeatherShow weatherShow)
         {
@@ -182,6 +188,8 @@ namespace SmartMirror.Data.Speech
             _calendarState.SetEnabled(mirrorShow.ShowWidgets);
             _fuelState.SetEnabled(mirrorShow.ShowWidgets);
             _weatherState.SetEnabled(mirrorShow.ShowWidgets);
+            _spotifyState.SetEnabled(mirrorShow.ShowWidgets);
+            _routeState.SetEnabled(mirrorShow.ShowWidgets);
 
             return Task.CompletedTask;
         }

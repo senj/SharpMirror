@@ -2,7 +2,7 @@
 @inject RouteState State
 @implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -86,29 +86,44 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
 
     public RouteResponse RouteResponse => State.RouteResponse;
     public GeosearchResponse SourceGeoResponse => State.Source;
     public GeosearchResponse DestinationGeoResponse => State.Destination;
 
+    private bool Enabled => State.Enabled;
+
     protected override async Task OnInitializedAsync()
     {
         State.OnChange += StateHasChangedAsync;
 
-        try
+        if (Enabled)
         {
-            await State.FindRouteAsync("Deutschland, 73240 Wendlingen am Neckar, Bessarabienstr. 32",
-            "Deutschland, 73240 Wendlingen am Neckar, Wertstr. 20");
-        }
-        catch (Exception)
-        {
+            try
+            {
+                await State.FindRouteAsync("Deutschland, 73240 Wendlingen am Neckar, Bessarabienstr. 32",
+                "Deutschland, 73240 Wendlingen am Neckar, Wertstr. 20");
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 
     public async void StateHasChangedAsync()
     {
+        if (Enabled && State.RouteResponse == null)
+        {
+            try
+            {
+                await State.FindRouteAsync("Deutschland, 73240 Wendlingen am Neckar, Bessarabienstr. 32",
+                "Deutschland, 73240 Wendlingen am Neckar, Wertstr. 20");
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 

@@ -72,6 +72,11 @@
 
     public async void StateHasChangedAsync()
     {
+        if (Enabled)
+        {
+            await JSRuntime.InvokeVoidAsync("onSpotifyWebPlaybackSDKReady");
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 
