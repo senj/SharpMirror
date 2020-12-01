@@ -2,7 +2,7 @@
 @inject ClockState State
 @implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -14,8 +14,11 @@
             <span class="important">@DateTime.Now.ToString("HH:mm")</span>
         </div>
         <div class="col-5">
-            <span>@State.TimerName</span><br />
-            <span>@State.TimerDuration.Hours.ToString("00"):@State.TimerDuration.Minutes.ToString("00"):@State.TimerDuration.Seconds.ToString("00")</span>
+            @if (!string.IsNullOrEmpty(State.TimerName))
+            {
+                <span>@State.TimerName</span><br />
+                <span>@State.TimerDuration.Hours.ToString("00"):@State.TimerDuration.Minutes.ToString("00"):@State.TimerDuration.Seconds.ToString("00")</span>
+            }
         </div>
         <div class="col-2">
             <span style=""><small>KW @KW</small></span>
@@ -25,12 +28,11 @@
 <br />
 
 @code  {
-    [Parameter]
-    public bool Show { get; set; }
-
     private string Time { get; set; }
     private int KW { get; set; }
     private Timer Timer { get; set; }
+
+    private bool Enabled => State.Enabled;
 
     protected override void OnInitialized()
     {

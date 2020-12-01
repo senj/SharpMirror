@@ -6,6 +6,7 @@
 @using SmartMirror.Data.Calendar;
 @using SmartMirror.Data.Spotify;
 @using SmartMirror.Data.Routes;
+@using SmartMirror.Data.Clock;
 
 @inject IJSRuntime JSRuntime
 @inject SpeechRecognitionService SpeechService
@@ -17,6 +18,7 @@
 @inject CalendarState CalendarState
 @inject SpotifyState SpotifyState
 @inject RouteState RouteState
+@inject ClockState ClockState
 
 <div class="container-fluid card-1 speech">
     <div class="row">
@@ -40,6 +42,7 @@
             <span><img src="/icons/status/calendar.png" width="25" height="25" class="icon @calendarDisplay" /></span>
             <span><img src="/icons/status/spotify.png" width="25" height="25" class="icon @spotifyDisplay" /></span>
             <span><img src="/icons/status/routes.png" width="25" height="25" class="icon @routesDisplay" /></span>
+            <span><img src="/icons/status/clock.png" width="25" height="25" class="icon @clockDisplay" /></span>
         </div>
     </div>
 </div>
@@ -58,11 +61,13 @@
     string calendarDisplay;
     string spotifyDisplay;
     string routesDisplay;
+    string clockDisplay;
 
     private static Func<string, Task> action;
 
     protected override void OnInitialized()
     {
+        SetInitialWidgets();
         SetIcons();
         action = ValidateSpeechInput;
     }
@@ -97,5 +102,13 @@
         calendarDisplay = CalendarState.Enabled ? "icon-black" : "icon-disabled";
         spotifyDisplay = SpotifyState.Enabled ? "icon-white" : "icon-disabled";
         routesDisplay = RouteState.Enabled ? "icon-black" : "icon-disabled";
+        clockDisplay = ClockState.Enabled ? "icon-black" : "icon-disabled";
+    }
+
+    private void SetInitialWidgets()
+    {
+        WeatherState.SetEnabled(true);
+        CalendarState.SetEnabled(true);
+        ClockState.SetEnabled(true);
     }
 }

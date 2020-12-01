@@ -8,6 +8,7 @@ using SmartMirror.Data.Spotify;
 using SmartMirror.Data.WeatherForecast;
 using SmartMirror.Intents;
 using SmartMirror.SmartHome.Hue;
+using System;
 using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Speech
@@ -179,6 +180,18 @@ namespace SmartMirror.Data.Speech
         {
             _clockState.StopTimer();
             _clockState.SetTimer(clockTimer.Name, clockTimer.DurationSeconds);
+            return Task.CompletedTask;
+        }
+
+        internal Task Handle(ClockShow clockShow)
+        {
+            _clockState.SetEnabled(clockShow.DisplayClock);
+            return Task.CompletedTask;
+        }
+
+        internal Task Handle(StopClockTimer stopClockTimer)
+        {
+            _clockState.StopTimer();
             return Task.CompletedTask;
         }
 

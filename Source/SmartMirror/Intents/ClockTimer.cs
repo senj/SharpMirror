@@ -41,7 +41,7 @@ namespace SmartMirror.Intents
                 string timex = dateTimeV2.Value.First().values.First().timex;
                 if (timex?.StartsWith("PT") == true)
                 {
-                    // TODO: does not work for numbers with more than 1 digit
+                    // TODO: does not work for things like 2H30M
                     if (timex.Last() == 'S')
                     {
                         string timeOnly = timex.Replace("PT", "").Replace("S", "");

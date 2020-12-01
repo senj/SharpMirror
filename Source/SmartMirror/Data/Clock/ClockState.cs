@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace SmartMirror.Data.Clock
 {
-    public class ClockState : IDisposable
+    public class ClockState : Displayable, IDisposable
     {
         public TimeSpan TimerDuration { get; private set; }
 
@@ -33,6 +33,7 @@ namespace SmartMirror.Data.Clock
 
         public void StopTimer()
         {
+            TimerName = string.Empty;
             TimerDuration = TimeSpan.FromSeconds(0);
             Timer?.Dispose();
             Timer = null;

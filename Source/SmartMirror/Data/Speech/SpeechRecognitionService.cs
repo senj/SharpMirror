@@ -169,6 +169,15 @@ namespace SmartMirror.Data.Speech
                 case "Clock.Timer":
                     await _intentExecutor.Handle(new ClockTimer(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult("Timer läuft");
+                case "Clock.Show":
+                    await _intentExecutor.Handle(new ClockShow(true));
+                    return new SpeechOutputResult();
+                case "Clock.Hide":
+                    await _intentExecutor.Handle(new ClockShow(false));
+                    return new SpeechOutputResult();
+                case "Clock.Stoptimer":
+                    await _intentExecutor.Handle(new StopClockTimer());
+                    return new SpeechOutputResult();
                 case "Mirror.Show":
                     await _intentExecutor.Handle(new MirrorShow(true));
                     return new SpeechOutputResult();
