@@ -4,25 +4,8 @@
     <br />
     <div class="row">
         @*add 5 for bus on VVS*@
-        <CascadingValue Value="this" Name="LayoutRazor">
-            <CascadingValue Value="Profile" Name="Profile">
-                @if (Profile == "morgens")
-                {
-                    <Layout_morning></Layout_morning>
-                }
-                else if (Profile == "mittags")
-                {
-                    <Layout_mid></Layout_mid>
-                }
-                else if (Profile == "abends")
-                {
-                    <Layout_evening></Layout_evening>
-                }
-                else if (Profile == "spiegel")
-                {
-                    <Layout_spiegel></Layout_spiegel>
-                }
-            </CascadingValue>
+        <CascadingValue Value="User" Name="User">
+                <Layout_mid></Layout_mid>
         </CascadingValue>
     </div>
 </div>
@@ -30,40 +13,11 @@
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
-
-    [CascadingParameter]
-    private static string Profile { get; set; } = GetInitialProfile();
+    private System.Security.Claims.ClaimsPrincipal User { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var authState = await authenticationStateTask;
-        var user = authState.User;
-    }
-
-    public void SetProfile(string profile)
-    {
-        Profile = profile;
-        InvokeAsync(() => { StateHasChanged(); });
-    }
-
-    private static string GetInitialProfile()
-    {
-        var currentHour = DateTime.UtcNow.Hour;
-        if (currentHour >= 0 && currentHour < 11)
-        {
-            return "morgens";
-        }
-        else if (currentHour >= 11 && currentHour < 17)
-        {
-            return "mittags";
-        }
-        else if (currentHour >= 17 && currentHour < 24)
-        {
-            return "abends";
-        }
-        else
-        {
-            return "spiegel";
-        }
+        User = authState.User;
     }
 }

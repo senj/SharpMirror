@@ -3,7 +3,7 @@
 @inject FuelState State
 @implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -60,14 +60,13 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
 
     [Parameter]
     public int Limit { get; set; }
 
     private FuelResponse FuelResponse => State.FuelResponse;
     bool ShowDetails => State.ShowDetails;
+    bool Enabled => State.Enabled;
 
     private Dictionary<string, Dataset<float>> datasets { get; set; }
     private string Time { get; set; }
@@ -78,7 +77,11 @@
         datasets = new Dictionary<string, Dataset<float>>();
         State.SetShowDetails(true);
 
-        await State.GetFuelResponseAsync(Limit);
+        if (Enabled)
+        {
+            await State.GetFuelResponseAsync(Limit);
+        }
+
         var timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
@@ -86,7 +89,10 @@
             {
                 try
                 {
-                    await State.GetFuelResponseAsync(Limit);
+                    if (Enabled)
+                    {
+                        await State.GetFuelResponseAsync(Limit);
+                    }
                 }
                 catch (ObjectDisposedException)
                 {
@@ -97,7 +103,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (datasets?.Any() == true && Show && ShowDetails)
+        if (datasets?.Any() == true && Enabled && ShowDetails)
         {
             await JSRuntime.InvokeAsync<string>("renderChart", "fuelChart", FuelResponse.Keys, datasets.Values);
         }
@@ -137,6 +143,11 @@
 
     public async void StateHasChangedAsync()
     {
+        if (Enabled && State.FuelResponse == null)
+        {
+            await State.GetFuelResponseAsync(Limit);
+        }
+
         PopulateFuelDatasets();
         await InvokeAsync(StateHasChanged);
     }

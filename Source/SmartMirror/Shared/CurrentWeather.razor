@@ -3,7 +3,7 @@
 @inject WeatherState State
 @implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        @if (State.ShowDetails)
+        @if (ShowDetails)
         {
             <div class="row">
                 <table class="table" style="color:white;">
@@ -58,18 +58,20 @@
 
 @code {
     [Parameter]
-    public bool Show { get; set; }
-
-    [Parameter]
     public int NumberOfDays { get; set; }
 
     public OneCallWeatherForecast Forecast => State.WeatherForecast;
+    public bool Enabled => State.Enabled;
+    public bool ShowDetails => State.ShowDetails;
 
     protected override async Task OnInitializedAsync()
     {
         State.OnChange += StateHasChangedAsync;
 
-        await State.GetWeatherForecastAsync();
+        if (Enabled)
+        {
+            await State.GetWeatherForecastAsync();
+        }
     }
 
     private DateTime EpochToLocalTime(int epochDateTime)
@@ -115,6 +117,11 @@
 
     public async void StateHasChangedAsync()
     {
+        if (Enabled && State.WeatherForecast == null)
+        {
+            await State.GetWeatherForecastAsync();
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 

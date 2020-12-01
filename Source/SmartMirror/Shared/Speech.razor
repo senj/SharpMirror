@@ -1,29 +1,42 @@
 ﻿@using Microsoft.Extensions.Logging;
 @using SmartMirror.Data.Speech;
+@using SmartMirror.Data.WeatherForecast;
+@using SmartMirror.Data.Fuel;
+@using SmartMirror.Data.Bring;
+@using SmartMirror.Data.Calendar;
+@using SmartMirror.Data.Spotify;
 
 @inject IJSRuntime JSRuntime
 @inject SpeechRecognitionService SpeechService
 @inject ILogger<Speech> Logger
 
-@if (!Show)
-{
-    return;
-}
+@inject WeatherState WeatherState
+@inject FuelState FuelState
+@inject BringState BringState
+@inject CalendarState CalendarState
+@inject SpotifyState SpotifyState
 
-<div class="container-fluid card-1">
+<div class="container-fluid card-1 speech">
     <div class="row">
         <!-- display larger (click events) -->
-        <div class="col-xl-2 d-none d-lg-block">
+        <div class="col-xl-1 d-none d-lg-block">
             @*<input type="button" class="btn btn-md btn-circle btn-secondary" onmousedown="startRecognition()" onmouseup="stopRecognition()" value="Voice" />*@
-            <p class="speechIcon" id="speechStatusImageWeb">@((MarkupString)_symbol)</p>
+            <img id="speechStatusImageWeb" src="/icons/speech/@_symbol" width="25" height="25" />
         </div>
         <!-- only display on mobile (touch events) -->
-        <div class="col-4 d-lg-none">
+        <div class="col-2 d-lg-none">
             @*<input type="button" class="btn btn-md btn-circle btn-secondary" ontouchstart="startRecognition()" ontouchend="stopRecognition()" value="Voice" />*@
-            <p class="speechIcon" id="speechStatusImageMobile">@((MarkupString)_symbol)</p>
+            <img id="speechStatusImageMobile" src="/icons/speech/@_symbol" width="25" height="25" />
         </div>
-        <div id="speechContainer" class="col-8 col-xl-10 overflow-auto">
-            <p id="speechTextOutput"></p><span>@_output</span>
+        <div id="speechContainer" class="col-8 col-xl-8 overflow-auto">
+            <span id="speechTextOutput" style="display: none;"></span><span>@_output</span>
+        </div>
+        <div class="col-xl-3 d-none d-lg-block">
+            <span><img src="/icons/status/weather.png" width="15" height="15" style="filter: invert(@weatherDisplay%);" /></span>
+            <span><img src="/icons/status/fuel.png" width="15" height="15" style="filter: invert(@fuelDisplay%);" /></span>
+            <span><img src="/icons/status/bring.png" width="15" height="15" style="filter: invert(@bringDisplay%);" /></span>
+            <span><img src="/icons/status/calendar.png" width="15" height="15" style="filter: invert(@calendarDisplay%);" /></span>
+            <span><img src="/icons/status/spotify.png" width="15" height="15" style="filter: invert(@spotifyDisplay%);" /></span>
         </div>
     </div>
 </div>
@@ -31,20 +44,22 @@
 
 @code {
     [Parameter]
-    public bool Show { get; set; }
-
-    [Parameter]
     public bool VoiceOutput { get; set; }
 
-    private string _symbol { get; set; } = "&#128360";
+    private string _symbol { get; set; } = "silent.png";
     private string _output { get; set; }
 
-    [CascadingParameter(Name = "LayoutRazor")] protected Layout Layout { get; set; }
+    int weatherDisplay;
+    int fuelDisplay;
+    int bringDisplay;
+    int calendarDisplay;
+    int spotifyDisplay;
 
     private static Func<string, Task> action;
 
     protected override void OnInitialized()
     {
+        SetIcons();
         action = ValidateSpeechInput;
     }
 
@@ -59,6 +74,7 @@
             await JSRuntime.InvokeVoidAsync("speak", recognitionResponse.VoiceResponse);
         }
 
+        SetIcons();
         await InvokeAsync(() => StateHasChanged());
     }
 
@@ -67,5 +83,14 @@
     {
         // This is async
         action.Invoke(speechInput);
+    }
+
+    private void SetIcons()
+    {
+        weatherDisplay = WeatherState.Enabled ? 100 : 50;
+        fuelDisplay = FuelState.Enabled ? 100 : 50;
+        bringDisplay = BringState.Enabled ? 100 : 50;
+        calendarDisplay = CalendarState.Enabled ? 100 : 50;
+        spotifyDisplay = SpotifyState.Enabled ? 0 : 50;
     }
 }

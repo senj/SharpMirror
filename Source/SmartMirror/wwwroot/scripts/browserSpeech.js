@@ -12,6 +12,9 @@ window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecogn
 let finalTranscript = '';
 let recognition = new window.SpeechRecognition();
 
+// init state for text recognition
+let display = false;
+
 recognition.interimResults = true;
 recognition.maxAlternatives = 10;
 recognition.continuous = true;
@@ -50,11 +53,19 @@ function stopRecognition() {
     console.log('recognition aborted');
 }
 
+function stopRecognitionByKeyword() {
+    finalTranscript = '';
+    stopRecognition();
+    setTimeout(() => {
+        display = true;
+    }, 1000);
+}
+
 recognition.onend = (event) => {
     console.log('recognition ended');
 
-    document.getElementById('speechStatusImageWeb').innerHTML = '&#128360;';
-    document.getElementById('speechStatusImageMobile').innerHTML = '&#128360;';
+    document.getElementById('speechStatusImageWeb').src = '/icons/speech/silent.png';
+    document.getElementById('speechStatusImageMobile').src = '/icons/speech/silent.png';
 
     finalTranscript = '';
     document.getElementById('speechTextOutput').innerHTML = ''
@@ -64,23 +75,35 @@ recognition.onend = (event) => {
 
 recognition.onspeechstart = (event) => {
     console.log('speech started');
-
-    document.getElementById('speechStatusImageWeb').innerHTML = '&#128362;';
-    document.getElementById('speechStatusImageMobile').innerHTML = '&#128362;';
 }
 
 recognition.onspeechend = (event) => {
     console.log('speech ended');
 
-    document.getElementById('speechStatusImageWeb').innerHTML = '&#128360;';
-    document.getElementById('speechStatusImageMobile').innerHTML = '&#128360;';
+    document.getElementById('speechStatusImageWeb').src = '/icons/speech/silent.png';
+    document.getElementById('speechStatusImageMobile').src = '/icons/speech/silent.png';
+
+    if (finalTranscript !== '') {
+        document.getElementById('speechTextOutput').style.display = "none";
+        //document.getElementById('speechStatusImageWeb').style.display = "none";
+        display = false;
+    }
 
     finalTranscript = '';
     document.getElementById('speechTextOutput').innerHTML = ''
 }
-
+    
 recognition.onstart = (event) => {
     console.log('recognition started');
+
+    if (display) {
+        document.getElementById('speechStatusImageWeb').src = '/icons/speech/speaking.png';
+        document.getElementById('speechStatusImageMobile').src = '/icons/speech/speaking.png';
+        document.getElementById('speechTextOutput').style.display = "block";
+        //document.getElementById('speechStatusImageWeb').style.display = "block";
+
+        speak("Ja?");
+    }
 }
 
 recognition.start();
@@ -98,13 +121,11 @@ async function validateSpeechIntent(text) {
         recognition.abort();
         console.log('recognition aborted');
     }
-    //else if (input.includes('okay spiegel') || input.includes('ok spiegel'))
-    //{
-    //    display = true;
-    //    finalTranscript = '';
-    //    recognition.abort();
-    //}
-    else {
+    else if (input.includes('spiegel') || input.includes('spiegel'))
+    {
+        stopRecognitionByKeyword();
+    }
+    else if (display === true) {
         console.log("validate " + input);
         await DotNet.invokeMethodAsync('SmartMirror', 'SetSpeechInputCaller', input)
     }

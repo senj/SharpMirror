@@ -88,6 +88,12 @@ namespace SmartMirror.Data.Speech
                         var forecast = await _intentExecutor.Handle(new WeatherQueryWeather(predictionResponse.Prediction.Entities));
                         return new SpeechOutputResult($"Heute gibt es in Wendlingen {forecast.Daily[0].Temp.Day} Grad und es ist {forecast.Daily[0].Weather[0].Description}.");
                     }
+                case "Weather.Show":
+                    await _intentExecutor.Handle(new WeatherShow(true));
+                    return new SpeechOutputResult();
+                case "Weather.Hide":
+                    await _intentExecutor.Handle(new WeatherShow(false));
+                    return new SpeechOutputResult();
                 case "Weather.DisplayForecast":
                     await _intentExecutor.Handle(new WeatherDisplayForecast(true));
                     return new SpeechOutputResult();
@@ -102,6 +108,12 @@ namespace SmartMirror.Data.Speech
                     return new SpeechOutputResult();
                 case "Bring.DisplayDetails":
                     await _intentExecutor.Handle(new BringDisplayDetails(true));
+                    return new SpeechOutputResult();
+                case "Bring.Show":
+                    await _intentExecutor.Handle(new BringShow(true));
+                    return new SpeechOutputResult();
+                case "Bring.Hide":
+                    await _intentExecutor.Handle(new BringShow(false));
                     return new SpeechOutputResult();
                 case "Bring.HideDetails":
                     await _intentExecutor.Handle(new BringDisplayDetails(false));
@@ -118,8 +130,26 @@ namespace SmartMirror.Data.Speech
                 case "Spotify.NextSong":
                     await _intentExecutor.Handle(new SpotifyNextSong());
                     return new SpeechOutputResult();
+                case "Spotify.Show":
+                    await _intentExecutor.Handle(new SpotifyShow(true));
+                    return new SpeechOutputResult();
+                case "Spotify.Hide":
+                    await _intentExecutor.Handle(new SpotifyShow(false));
+                    return new SpeechOutputResult();
                 case "Calendar.DisplayDays":
                     await _intentExecutor.Handle(new CalendarDisplayDays(predictionResponse.Prediction.Entities));
+                    return new SpeechOutputResult();
+                case "Calendar.Show":
+                    await _intentExecutor.Handle(new CalendarShow(true));
+                    return new SpeechOutputResult();
+                case "Calendar.Hide":
+                    await _intentExecutor.Handle(new CalendarShow(false));
+                    return new SpeechOutputResult();
+                case "Fuel.Show":
+                    await _intentExecutor.Handle(new FuelShow(true));
+                    return new SpeechOutputResult();
+                case "Fuel.Hide":
+                    await _intentExecutor.Handle(new FuelShow(false));
                     return new SpeechOutputResult();
                 case "Fuel.Refresh":
                     await _intentExecutor.Handle(new FuelRefresh());
@@ -133,6 +163,9 @@ namespace SmartMirror.Data.Speech
                 case "Clock.Timer":
                     await _intentExecutor.Handle(new ClockTimer(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult("Timer läuft");
+                case "Mirror.Show":
+                    await _intentExecutor.Handle(new MirrorShow(true));
+                    return new SpeechOutputResult();
                 default:
                     return new SpeechOutputResult();
             };

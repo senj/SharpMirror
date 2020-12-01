@@ -2,7 +2,7 @@
 @inject BringState State
 @implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -31,7 +31,7 @@
                                 @State.Items.purchase[i].name
                                 @if (!string.IsNullOrEmpty(State.Items.purchase[i].specification))
                                 {
-                                    <span class="subtitle">(@State.Items.purchase[i].specification)</span>
+                                    <span class="subtitle"> (@State.Items.purchase[i].specification)</span>
                                 }
                             </span>
 
@@ -41,7 +41,7 @@
                                     @State.Items.purchase[i + 1].name
                                     @if (!string.IsNullOrEmpty(State.Items.purchase[i + 1].specification))
                                     {
-                                        <span class="subtitle">(@State.Items.purchase[i + 1].specification)</span>
+                                        <span class="subtitle"> (@State.Items.purchase[i + 1].specification)</span>
                                     }
                                 </span>
                             }
@@ -52,7 +52,7 @@
                                     @State.Items.purchase[i + 2].name
                                     @if (!string.IsNullOrEmpty(State.Items.purchase[i + 2].specification))
                                     {
-                                        <span class="subtitle">(@State.Items.purchase[i + 2].specification)</span>
+                                        <span class="subtitle"> (@State.Items.purchase[i + 2].specification)</span>
                                     }
                                 </span>
                             }
@@ -70,17 +70,20 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
-
     private bool ShowDetails => State.ShowDetails;
+    private bool Enabled => State.Enabled;
+
     private string Time { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         State.OnChange += StateHasChangedAsync;
 
-        await State.GetItemsAsync(true);
+        if (Enabled)
+        {
+            await State.GetItemsAsync(true);
+        }
+
         var timer = new System.Threading.Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
@@ -88,7 +91,10 @@
             {
                 try
                 {
-                    await State.GetItemsAsync(false);
+                    if (Enabled)
+                    {
+                        await State.GetItemsAsync(false);
+                    }
                 }
                 catch (ObjectDisposedException)
                 {
@@ -99,6 +105,11 @@
 
     public async void StateHasChangedAsync()
     {
+        if (Enabled && State.Items == null)
+        {
+            await State.GetItemsAsync(true);
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 

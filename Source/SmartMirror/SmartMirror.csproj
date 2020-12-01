@@ -26,6 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\icons\spotify.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="smartmirror.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -33,6 +37,8 @@
 
   <ItemGroup>
     <Folder Include="Data\VVS\Models\" />
+    <Folder Include="wwwroot\icons\speech\" />
+    <Folder Include="wwwroot\icons\weather\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="7" /></VisualStudio></ProjectExtensions>

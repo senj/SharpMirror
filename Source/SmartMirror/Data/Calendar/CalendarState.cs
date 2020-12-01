@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Calendar
 {
-    public class CalendarState
+    public class CalendarState : Displayable
     {
         private readonly CalendarService _calendarService;
 
@@ -13,14 +12,14 @@ namespace SmartMirror.Data.Calendar
             _calendarService = calendarService;
         }
 
-        public event Action OnChange;
-
         public IEnumerable<Event> Events { get; private set; }
 
         public int NumberOfDays { get; private set; }
         
-        public async Task<IEnumerable<Event>> GetEventsAsync(int numberOfDays)
+        public async Task<IEnumerable<Event>> GetEventsAsync(int numberOfDays = 0)
         {
+            if (numberOfDays == 0) numberOfDays = NumberOfDays;
+
             bool useCache = true;
             if (NumberOfDays != numberOfDays)
             {
@@ -29,9 +28,14 @@ namespace SmartMirror.Data.Calendar
 
             NumberOfDays = numberOfDays;
             Events = await _calendarService.GetCalendarAsync(numberOfDays, useCache: useCache);
-            OnChange?.Invoke();
+            RaiseOnChangeEvent();
 
             return Events;
+        }
+
+        public void SetNumberOfDays(int numberOfDays)
+        {
+            NumberOfDays = numberOfDays;
         }
     }
 }

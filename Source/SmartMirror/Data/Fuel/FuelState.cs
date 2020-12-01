@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Fuel
 {
-    public class FuelState
+    public class FuelState : Displayable
     {
         private readonly FuelService _fuelService;
 
@@ -12,24 +11,14 @@ namespace SmartMirror.Data.Fuel
             _fuelService = fuelService;
         }
 
-        public event Action OnChange;
-
         public FuelResponse FuelResponse { get; private set; }
-
-        public bool ShowDetails { get; private set; }
 
         public async Task<FuelResponse> GetFuelResponseAsync(int limit = 5, bool useCache = true)
         {
             FuelResponse = await _fuelService.GetFuelResponseAsync(limit, useCache);
-            OnChange?.Invoke();
+            RaiseOnChangeEvent();
 
             return FuelResponse;
-        }
-
-        public void SetShowDetails(bool showDetails)
-        {
-            ShowDetails = showDetails;
-            OnChange?.Invoke();
         }
     }
 }

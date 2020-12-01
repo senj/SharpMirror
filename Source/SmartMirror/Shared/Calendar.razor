@@ -2,7 +2,7 @@
 @inject CalendarState State
 @implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -75,36 +75,29 @@
 <br />
 
 @code {
-    IEnumerable<Event> Events => State.Events;
-    int NumberOfDays => State.NumberOfDays;
-
-    [Parameter]
-    public bool Show { get; set; }
+    private IEnumerable<Event> Events => State.Events;
+    private int NumberOfDays => State.NumberOfDays;
+    private bool Enabled => State.Enabled;
     private string Time { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         State.OnChange += StateHasChangedAsync;
-        await State.GetEventsAsync(5);
+        State.SetNumberOfDays(5);
 
-        //var timer = new System.Threading.Timer((_) =>
-        //{
-        //    Time = DateTime.UtcNow.ToString();
-        //    InvokeAsync(async () =>
-        //    {
-        //        try
-        //        {
-        //            await State.GetEventsAsync(NumberOfDays);
-        //        }
-        //        catch (ObjectDisposedException)
-        //        {
-        //        }
-        //    });
-        //}, null, 0, 7200 * 1000);
+        if (Enabled)
+        {
+            await State.GetEventsAsync();
+        }
     }
 
     public async void StateHasChangedAsync()
     {
+        if (Enabled && State.Events == null)
+        {
+            await State.GetEventsAsync();
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 

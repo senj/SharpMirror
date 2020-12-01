@@ -13,6 +13,14 @@ p {
     color: #fff;
 }
 
+.speech {
+    position: fixed;
+    bottom: 0%;
+    width: 100%;
+    opacity: 1;
+    right: 0%;
+}
+
 .important {
     font-size: 3.5em;
     font-weight: 300;

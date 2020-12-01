@@ -46,18 +46,18 @@ namespace SmartMirror.Data.Speech
             _clockState = clockState;
         }
 
-        public Task<OneCallWeatherForecast> Handle(WeatherQueryWeather request)
+        internal Task<OneCallWeatherForecast> Handle(WeatherQueryWeather request)
         {
             return _weatherState.GetWeatherForecastAsync();
         }
 
-        public Task Handle(WeatherDisplayForecast request)
+        internal Task Handle(WeatherDisplayForecast request)
         {
             _weatherState.SetShowDetails(request.DisplayForecast);
             return Task.CompletedTask;
         }
 
-        public async Task Handle(HueTurnOn notification)
+        internal async Task Handle(HueTurnOn notification)
         {
             LightState lightState = new LightState
             {
@@ -69,7 +69,7 @@ namespace SmartMirror.Data.Speech
             await _hueState.SetLightStateAsync(notification.LightId, lightState);
         }
 
-        public async Task Handle(HueTurnOff notification)
+        internal async Task Handle(HueTurnOff notification)
         {
             LightState lightState = new LightState
             {
@@ -79,24 +79,30 @@ namespace SmartMirror.Data.Speech
             await _hueState.SetLightStateAsync(notification.LightId, lightState);
         }
 
-        public Task Handle(HueDisplayDetails hueDisplayDetails)
+        internal Task Handle(HueDisplayDetails hueDisplayDetails)
         {
             _hueState.SetShowDetails(hueDisplayDetails.ShowDetails);
             return Task.CompletedTask;
         }
 
-        public Task Handle(SpotifyNextSong notification)
+        internal Task Handle(SpotifyNextSong notification)
         {
             return _spotifyState.PlayNextSongAsync();
         }
 
-        public Task Handle(BringDisplayDetails request)
+        internal Task Handle(SpotifyShow spotifyShow)
+        {
+            _spotifyState.SetEnabled(spotifyShow.DisplaySpotify);
+            return Task.CompletedTask;
+        }
+
+        internal Task Handle(BringDisplayDetails request)
         {
             _bringState.SetShowDetails(request.ShowDetails);
             return Task.CompletedTask;
         }
 
-        public async Task Handle(BringAddToDo request)
+        internal async Task Handle(BringAddToDo request)
         {
             foreach (string entry in request.ItemNames)
             {
@@ -104,7 +110,7 @@ namespace SmartMirror.Data.Speech
             }
         }
 
-        public async Task Handle(BringDeleteToDo request)
+        internal async Task Handle(BringDeleteToDo request)
         {
             foreach (string entry in request.ItemNames)
             {
@@ -112,37 +118,71 @@ namespace SmartMirror.Data.Speech
             }
         }
 
-        public Task<(RouteResponse route, GeosearchResponse source, GeosearchResponse destination)> Handle(RoutesGetRoute request)
+        internal Task Handle(BringShow bringShow)
+        {
+            _bringState.SetEnabled(bringShow.DisplayBring);
+            return Task.CompletedTask;
+        }
+
+        internal Task<(RouteResponse route, GeosearchResponse source, GeosearchResponse destination)> Handle(RoutesGetRoute request)
         {
             return _routeState.FindRouteAsync(request.Source, request.Destination);
         }
 
-        public Task Handle(RoutesDisplayDetails routesDisplayType)
+        internal Task Handle(RoutesDisplayDetails routesDisplayType)
         {
             _routeState.SetShowDetails(routesDisplayType.ShowDetails);
             return Task.CompletedTask;
         }
 
-        public Task Handle(CalendarDisplayDays setCalendarDays)
+        internal Task Handle(WeatherShow weatherShow)
+        {
+            _weatherState.SetEnabled(weatherShow.DisplayWeather);
+            return Task.CompletedTask;
+        }
+
+        internal Task Handle(CalendarDisplayDays setCalendarDays)
         {
             return _calendarState.GetEventsAsync(setCalendarDays.NumberOfDays);
         }
 
-        public Task Handle(FuelRefresh fuelRefresh)
+        internal Task Handle(CalendarShow calendarShow)
+        {
+            _calendarState.SetEnabled(calendarShow.DisplayCalendar);
+            return Task.CompletedTask;
+        }
+
+        internal Task Handle(FuelRefresh fuelRefresh)
         {
             return _fuelState.GetFuelResponseAsync(useCache: false);
         }
 
-        public Task Handle(FuelDisplayDetails fuelDisplayDetails)
+        internal Task Handle(FuelDisplayDetails fuelDisplayDetails)
         {
             _fuelState.SetShowDetails(fuelDisplayDetails.ShowDetails);
             return Task.CompletedTask;
         }
 
-        public Task Handle(ClockTimer clockTimer)
+        internal Task Handle(FuelShow fuelShow)
+        {
+            _fuelState.SetEnabled(fuelShow.DisplayFuel);
+            return Task.CompletedTask;
+        }
+
+        internal Task Handle(ClockTimer clockTimer)
         {
             _clockState.StopTimer();
             _clockState.SetTimer(clockTimer.Name, clockTimer.DurationSeconds);
+            return Task.CompletedTask;
+        }
+
+        internal Task Handle(MirrorShow mirrorShow)
+        {
+            _bringState.SetEnabled(mirrorShow.ShowWidgets);
+            _calendarState.SetEnabled(mirrorShow.ShowWidgets);
+            _fuelState.SetEnabled(mirrorShow.ShowWidgets);
+            _weatherState.SetEnabled(mirrorShow.ShowWidgets);
+
             return Task.CompletedTask;
         }
     }

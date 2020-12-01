@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Bring
 {
-    public class BringState
+    public class BringState : Displayable
     {
         private readonly BringService _bringService;
 
@@ -12,16 +11,12 @@ namespace SmartMirror.Data.Bring
             _bringService = bringService;
         }
 
-        public event Action OnChange; 
-        
         public BringItemResponse Items { get; private set; }
-
-        public bool ShowDetails { get; private set; }
 
         public async Task<BringItemResponse> GetItemsAsync(bool loadFromCache)
         {
             Items = await _bringService.GetItemsAsync(loadFromCache);
-            OnChange?.Invoke();
+            RaiseOnChangeEvent();
 
             return Items;
         }
@@ -40,12 +35,6 @@ namespace SmartMirror.Data.Bring
 
             // This will refresh items property and trigger onChange
             await GetItemsAsync(false);
-        }
-
-        public void SetShowDetails(bool showDetails)
-        {
-            ShowDetails = showDetails;
-            OnChange?.Invoke();
         }
     }
 }

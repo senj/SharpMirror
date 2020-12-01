@@ -3,7 +3,7 @@
 @inject SpotifyState State
 @implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -55,10 +55,8 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
-
     bool ShowDetails => State.ShowDetails;
+    bool Enabled => State.Enabled;
 
     protected override void OnInitialized()
     {
