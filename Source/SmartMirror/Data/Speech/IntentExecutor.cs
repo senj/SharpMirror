@@ -62,6 +62,7 @@ namespace SmartMirror.Data.Speech
 
         internal Task Handle(WeatherDisplayForecast request)
         {
+            _weatherState.SetEnabled(true);
             _weatherState.SetShowDetails(request.DisplayForecast);
             return Task.CompletedTask;
         }
@@ -113,6 +114,7 @@ namespace SmartMirror.Data.Speech
 
         internal Task Handle(BringDisplayDetails request)
         {
+            _bringState.SetEnabled(true);
             _bringState.SetShowDetails(request.ShowDetails);
             return Task.CompletedTask;
         }
@@ -146,6 +148,7 @@ namespace SmartMirror.Data.Speech
 
         internal Task Handle(RoutesDisplayDetails routesDisplayType)
         {
+            _routeState.SetEnabled(true);
             _routeState.SetShowDetails(routesDisplayType.ShowDetails);
             return Task.CompletedTask;
         }
@@ -164,6 +167,7 @@ namespace SmartMirror.Data.Speech
 
         internal Task Handle(CalendarDisplayDays setCalendarDays)
         {
+            _calendarState.SetEnabled(true);
             return _calendarState.GetEventsAsync(setCalendarDays.NumberOfDays);
         }
 
@@ -180,6 +184,7 @@ namespace SmartMirror.Data.Speech
 
         internal Task Handle(FuelDisplayDetails fuelDisplayDetails)
         {
+            _fuelState.SetEnabled(true);
             _fuelState.SetShowDetails(fuelDisplayDetails.ShowDetails);
             return Task.CompletedTask;
         }
