@@ -94,6 +94,12 @@ namespace SmartMirror.Data.Speech
             return Task.CompletedTask;
         }
 
+        internal Task Handle(HueShow hueShow)
+        {
+            _hueState.SetEnabled(hueShow.DisplayHue); 
+            return Task.CompletedTask;
+        }
+
         internal Task Handle(SpotifyNextSong notification)
         {
             return _spotifyState.PlayNextSongAsync();

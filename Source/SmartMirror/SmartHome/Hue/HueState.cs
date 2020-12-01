@@ -1,9 +1,10 @@
-﻿using System;
+﻿using SmartMirror.Data;
+using System;
 using System.Threading.Tasks;
 
 namespace SmartMirror.SmartHome.Hue
 {
-    public class HueState
+    public class HueState : Displayable
     {
         private readonly HueService _hueService;
 
@@ -12,16 +13,12 @@ namespace SmartMirror.SmartHome.Hue
             _hueService = hueService;
         }
 
-        public event Action OnChange;
-
-        public bool ShowDetails { get; private set; }
-
         public HueLightInfo HueLightInfo { get; private set; }
 
         public async Task<HueLightInfo> GetLightInfoAsync(int lightId)
         {
             HueLightInfo = await _hueService.GetLightInfoAsync(lightId);
-            OnChange?.Invoke();
+            RaiseOnChangeEvent();
 
             return HueLightInfo;
         }
@@ -33,12 +30,6 @@ namespace SmartMirror.SmartHome.Hue
             {
                 await GetLightInfoAsync(lightId);
             }
-        }
-
-        public void SetShowDetails(bool showDetails)
-        {
-            ShowDetails = showDetails;
-            OnChange?.Invoke();
         }
     }
 }

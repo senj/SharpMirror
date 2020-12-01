@@ -82,6 +82,12 @@ namespace SmartMirror.Data.Speech
                 case "Hue.HideDetails":
                     await _intentExecutor.Handle(new HueDisplayDetails(false));
                     return new SpeechOutputResult();
+                case "Hue.Show":
+                    await _intentExecutor.Handle(new HueShow(true));
+                    return new SpeechOutputResult();
+                case "Hue.Hide":
+                    await _intentExecutor.Handle(new HueShow(false));
+                    return new SpeechOutputResult();
                 case "Weather.CheckWeatherValue":
                 case "Weather.QueryWeather":
                     {

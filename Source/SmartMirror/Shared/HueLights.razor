@@ -3,7 +3,7 @@
 @inject HueState State
 @implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -51,20 +51,28 @@
 <br />
 
 @code  {
-    [Parameter]
-    public bool Show { get; set; }
 
+    private bool Enabled => State.Enabled;
     private bool ShowDetails => State.ShowDetails;
     private HueLightInfo LightInfo => State.HueLightInfo;
 
     protected override async Task OnInitializedAsync()
     {
         State.OnChange += StateHasChangedAsync;
-        await State.GetLightInfoAsync(1);
+
+        if (Enabled)
+        {
+            await State.GetLightInfoAsync(1);
+        }
     }
 
     public async void StateHasChangedAsync()
     {
+        if (Enabled && LightInfo == null)
+        {
+            await State.GetLightInfoAsync(1);
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 
