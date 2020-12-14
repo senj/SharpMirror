@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <RuntimeIdentifiers>linux-arm</RuntimeIdentifiers>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <RestoreFallbackFolders>clear</RestoreFallbackFolders>
     <UserSecretsId>ddd44be4-b345-4d16-95d4-dd1e2920d780</UserSecretsId>
