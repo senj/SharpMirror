@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   smartmirror:
-    image: zailregistry.azurecr.io/smartmirror:210
+    image: zailregistry.azurecr.io/smartmirror:#{BUILD_ID}#
     container_name: smartmirror
     restart: always
     ports:
