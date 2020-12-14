@@ -8,10 +8,10 @@ services:
       - "80:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=
-      - CalendarConfiguration__CalendarUrl=
+      - WeatherConfiguration__ApiKey=
       - FuelConfiguration__ApiKey=
       - SpotifyConfiguration__ClientSecret=
-      - WeatherConfiguration__ApiKey=
+      - CalendarConfiguration__CalendarUrl=
       - FitbitConfiguration__ClientSecret=
       - RedisConfiguration__Configuration=
       - BringConfiguration__Email=
@@ -23,4 +23,3 @@ services:
       - SpeechRecognitionConfiguration__LuisEndpoint=
       - GoogleApiConfiguration__ClientId=
       - GoogleApiConfiguration__ClientSecret=
-  }

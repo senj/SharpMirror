@@ -1,5 +1,5 @@
 ## Build
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:5.0 AS build
 
 # Change directory and copy all files
 WORKDIR /src
@@ -12,11 +12,11 @@ RUN dotnet restore
 RUN dotnet build SmartMirror/SmartMirror.csproj -c Release -o /app --no-restore
 
 # Publish API-Service
-RUN dotnet publish SmartMirror/SmartMirror.csproj -c Release -o /app --no-restore
+RUN dotnet publish SmartMirror/SmartMirror.csproj -c Release -o /app --no-restore -r linux-arm
 
 ## Base
 # 3.1.4-buster-slim-arm32v7
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.4-buster-slim-arm32v7 AS base
+FROM mcr.microsoft.com/dotnet/runtime:5.0.1-buster-slim-arm32v7 AS base
 WORKDIR /app
 COPY --from=build /app .
 
