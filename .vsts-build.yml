@@ -26,3 +26,10 @@ steps:
     azureContainerRegistry: zailregistry.azurecr.io
     command: 'Push an image'
     imageName: '$(Build.Repository.Name)'
+- task: CopyFiles@2
+  inputs:
+    Contents: '**/docker-compose.yml'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+    CleanTargetFolder: true
+    OverWrite: true
+    flattenFolders: true
