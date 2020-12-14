@@ -1,5 +1,5 @@
 ## Build
-FROM mcr.microsoft.com/dotnet/core/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 
 # Change directory and copy all files
 WORKDIR /src
