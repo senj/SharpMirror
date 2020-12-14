@@ -7,19 +7,19 @@ services:
     ports:
       - "80:80"
     environment:
-      - ASPNETCORE_ENVIRONMENT=
-      - WeatherConfiguration__ApiKey=
-      - FuelConfiguration__ApiKey=
-      - SpotifyConfiguration__ClientSecret=
-      - CalendarConfiguration__CalendarUrl=
-      - FitbitConfiguration__ClientSecret=
-      - RedisConfiguration__Configuration=
-      - BringConfiguration__Email=
-      - BringConfiguration__Password=
-      - RouteConfiguration__ApiKey=
-      - SpeechRecognitionConfiguration__SpeechApiSubscriptionKey=
-      - SpeechRecognitionConfiguration__LuisAppId=
-      - SpeechRecognitionConfiguration__LuisSubscriptionKey=
-      - SpeechRecognitionConfiguration__LuisEndpoint=
-      - GoogleApiConfiguration__ClientId=
-      - GoogleApiConfiguration__ClientSecret=
+      - ASPNETCORE_ENVIRONMENT=#{ASPNETCORE_ENVIRONMENT}#
+      - WeatherConfiguration__ApiKey=#{WeatherConfiguration__ApiKey}#
+      - FuelConfiguration__ApiKey=#{FuelConfiguration__ApiKey}#
+      - SpotifyConfiguration__ClientSecret=#{SpotifyConfiguration__ClientSecret}#
+      - CalendarConfiguration__CalendarUrl=#{CalendarConfiguration__CalendarUrl}#
+      - FitbitConfiguration__ClientSecret=#{FitbitConfiguration__ClientSecret}#
+      - RedisConfiguration__Configuration=#{RedisConfiguration__Configuration}#
+      - BringConfiguration__Email=#{BringConfiguration__Email}#
+      - BringConfiguration__Password=#{BringConfiguration__Password}#
+      - RouteConfiguration__ApiKey=#{RouteConfiguration__ApiKey}#
+      - SpeechRecognitionConfiguration__SpeechApiSubscriptionKey=#{SpeechRecognitionConfiguration__SpeechApiSubscriptionKey}#
+      - SpeechRecognitionConfiguration__LuisAppId=#{SpeechRecognitionConfiguration__LuisAppId}#
+      - SpeechRecognitionConfiguration__LuisSubscriptionKey=#{SpeechRecognitionConfiguration__LuisSubscriptionKey}#
+      - SpeechRecognitionConfiguration__LuisEndpoint=#{SpeechRecognitionConfiguration__LuisEndpoint}#
+      - GoogleApiConfiguration__ClientId=#{GoogleApiConfiguration__ClientId}#
+      - GoogleApiConfiguration__ClientSecret=#{GoogleApiConfiguration__ClientSecret}#
