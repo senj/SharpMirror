@@ -72,15 +72,19 @@
     private string Time { get; set; }
     private Timer Timer { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        State.OnChange += StateHasChangedAsync;
-
-        if (string.IsNullOrEmpty(Token))
+        if (firstRender)
         {
             Token = await JSRuntime.InvokeAsync<string>("getFitbitToken");
         }
 
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        State.OnChange += StateHasChangedAsync;
         Timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
@@ -92,10 +96,6 @@
                     {
                         await UpdateDataAsync();
                         StateHasChanged();
-                    }
-                    else
-                    {
-                        Token = await JSRuntime.InvokeAsync<string>("getFitbitToken");
                     }
                 }
                 catch (ObjectDisposedException)
