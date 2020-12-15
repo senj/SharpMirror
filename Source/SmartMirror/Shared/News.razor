@@ -52,7 +52,7 @@
     protected override async Task OnInitializedAsync()
     {
         State.OnChange += StateHasChangedAsync;
-        State.SetEnabled(true);
+
         await State.GetNewsAsync();
 
         Random random = new Random();

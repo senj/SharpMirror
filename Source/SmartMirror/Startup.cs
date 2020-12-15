@@ -75,7 +75,8 @@ namespace SmartMirror
             services.AddScoped<VvsState>();
             services.AddScoped<FitbitState>();
             services.AddScoped<NewsState>();
-            services.AddTransient<GoogleFitState>();
+            services.AddScoped<GoogleFitState>();
+            services.AddScoped<BundesligaState>();
 
             services.AddSingleton<HttpClient>();
 

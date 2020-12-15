@@ -40,9 +40,9 @@
     private Timer Timer { get; set; }
     private string Time { get; set; }
 
-    private GoogleCodeResponse CodeResponse => State.GoogleCodeResponse;
-    private IEnumerable<WeightDataPoint> Weight => State.WeightData;
-    private string Token => State.Token;
+    private GoogleCodeResponse CodeResponse => State.GetGoogleCodeResponse(User);
+    private IEnumerable<WeightDataPoint> Weight => State.GetWeightData(User);
+    private string Token => State.GetToken(User);
 
     private Dictionary<string, Dataset<float>> datasets { get; set; }
 
@@ -53,11 +53,10 @@
     {
         PieElement = $"{User}googleFit";
         State.OnChange += StateHasChangedAsync;
-        State.SetEnabled(true);
-
+        
         if (string.IsNullOrEmpty(Token))
         {
-            await State.StartAuthorizationAsync();
+            await State.StartAuthorizationAsync(User);
             State.AuthorizationPollingAsync(User);
         }
 
@@ -70,7 +69,7 @@
                 {
                     if (!string.IsNullOrEmpty(Token))
                     {
-                        await State.GetWeight(30);
+                        await State.UpdateWeightData(User, 30);
                         PopulateWeightDatasets($"{User} Weight");
                         StateHasChanged();
                     }
@@ -97,12 +96,11 @@
     private void PopulateWeightDatasets(string label)
     {
         datasets = new Dictionary<string, Dataset<float>>();
-        Random random = new Random();
         foreach (var weightEntry in Weight)
         {
             if (!datasets.ContainsKey(label) && weightEntry.Value != null)
             {
-                int r = random.Next(0, 256), g = random.Next(0, 256), b = random.Next(0, 256);
+                int r = 255, g = 255, b = 255;
                 datasets.Add(label, new Dataset<float>
                 {
                     id = label,
@@ -126,7 +124,7 @@
     {
         if (!string.IsNullOrEmpty(Token) && Weight == null)
         {
-            await State.GetWeight(30);
+            await State.UpdateWeightData(User, 30);
             PopulateWeightDatasets($"{User} Weight");
         }
 

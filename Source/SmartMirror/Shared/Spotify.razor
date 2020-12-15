@@ -58,11 +58,20 @@
     bool ShowDetails => State.ShowDetails;
     bool Enabled => State.Enabled;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Enabled && firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("onSpotifyWebPlaybackSDKReady");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     protected override void OnInitialized()
     {
         State.OnChange += StateHasChangedAsync;
         State.OnNextSongRequested += OnNextSongRequested;
-        State.SetShowDetails(true);
     }
 
     public async Task OnNextSongRequested()
@@ -72,11 +81,6 @@
 
     public async void StateHasChangedAsync()
     {
-        if (Enabled)
-        {
-            await JSRuntime.InvokeVoidAsync("onSpotifyWebPlaybackSDKReady");
-        }
-
         await InvokeAsync(StateHasChanged);
     }
 

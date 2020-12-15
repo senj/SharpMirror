@@ -27,13 +27,11 @@ namespace SmartMirror.Data.Soccer
         {
             if (DateTime.Now.DayOfWeek != DayOfWeek.Friday
                 && DateTime.Now.DayOfWeek != DayOfWeek.Saturday
-                && DateTime.Now.DayOfWeek != DayOfWeek.Sunday)
+                && DateTime.Now.DayOfWeek != DayOfWeek.Sunday 
+                && _cache.TryGetValue(SOCCER_CACHE_KEY, out BundesligaModel cachedModel))
             {
-                if (_cache.TryGetValue(SOCCER_CACHE_KEY, out BundesligaModel cachedModel))
-                {
-                    _logger.LogInformation("[CACHE] Got soccer results from cache");
-                    return cachedModel;
-                }
+                _logger.LogInformation("[CACHE] Got soccer results from cache");
+                return cachedModel;
             }
 
             string baseUrl = "https://www.openligadb.de/api/getmatchdata/bl1";

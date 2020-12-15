@@ -58,7 +58,7 @@ function stopRecognitionByKeyword() {
     stopRecognition();
     setTimeout(() => {
         display = true;
-    }, 1000);
+    }, 500);
 }
 
 recognition.onend = (event) => {

@@ -1,9 +1,8 @@
 ﻿@using SmartMirror.Data.Soccer
-@inject BundesligaService BundesligaService
+@inject BundesligaState State
+@implements IDisposable
 
-@if (!Show || (DateTime.UtcNow.DayOfWeek != DayOfWeek.Friday
-&& DateTime.UtcNow.DayOfWeek != DayOfWeek.Saturday
-&& DateTime.UtcNow.DayOfWeek != DayOfWeek.Sunday))
+@if (!Enabled)
 {
     return;
 }
@@ -88,14 +87,29 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
-
-    BundesligaModel Matches { get; set; }
+    private bool Enabled => State.Enabled;
+    private BundesligaModel Matches => State.MatchResults;
 
     protected override async Task OnInitializedAsync()
     {
-        Matches = await BundesligaService.GetCurrentPlayDayAsync();
+        State.OnChange += StateHasChangedAsync;
+
+        await State.GetCurrentPlayDayAsync();
         await base.OnInitializedAsync();
+    }
+
+    public async void StateHasChangedAsync()
+    {
+        if (Enabled && Matches == null)
+        {
+            await State.GetCurrentPlayDayAsync();
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChangedAsync;
     }
 }

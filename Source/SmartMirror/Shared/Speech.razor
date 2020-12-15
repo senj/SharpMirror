@@ -7,8 +7,11 @@
 @using SmartMirror.Data.Spotify;
 @using SmartMirror.Data.Routes;
 @using SmartMirror.Data.Clock;
-@using SmartMirror.Data.VVS
+@using SmartMirror.Data.VVS;
 @using SmartMirror.Data.Fitbit;
+@using SmartMirror.Data.Soccer;
+@using SmartMirror.Data.News;
+@using SmartMirror.Data.GoogleFit;
 @using SmartMirror.SmartHome.Hue;
 
 @inject IJSRuntime JSRuntime
@@ -25,6 +28,9 @@
 @inject VvsState VvsState
 @inject HueState HueState
 @inject FitbitState FitbitState
+@inject NewsState NewsState
+@inject BundesligaState SoccerState
+@inject GoogleFitState GoogleFitState
 
 <div class="container-fluid card-1 speech">
     <div class="row">
@@ -74,6 +80,11 @@
     string vvsDisplay;
     string fitbitDisplay;
     string hueDisplay;
+
+    // TODO
+    string newsDisplay;
+    string googleFitDisplay;
+    string soccerDisplay;
 
     private static Func<string, Task> action;
 
@@ -125,8 +136,12 @@
         WeatherState.SetEnabled(true);
         CalendarState.SetEnabled(true);
         ClockState.SetEnabled(true);
+        NewsState.SetEnabled(true);
 
-        BringState.SetEnabled(true);
-        BringState.SetShowDetails(true);
+        SpotifyState.SetEnabled(true);
+        SpotifyState.SetShowDetails(true);
+
+        GoogleFitState.SetEnabled(true);
+        SoccerState.SetEnabled(true);
     }
 }
