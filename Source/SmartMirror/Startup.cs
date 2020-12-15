@@ -47,33 +47,35 @@ namespace SmartMirror
             services.AddLocalization(p => p.ResourcesPath = "Resources");
 
             // Services
-            services.AddSingleton<IntentExecutor>();
-            services.AddSingleton<WeatherForecastService>();
-            services.AddSingleton<VvsService>();
-            services.AddSingleton<FuelService>();
-            services.AddSingleton<CalendarService>();
-            services.AddSingleton<NewsService>();
-            services.AddSingleton<JokesQuotesService>();
-            services.AddSingleton<BundesligaService>();
-            services.AddSingleton<StockDataService>();
-            services.AddSingleton<HueService>();
-            services.AddSingleton<FitbitService>();
-            services.AddSingleton<BringService>();
-            services.AddSingleton<RouteService>();
-            services.AddSingleton<SpeechRecognitionService>();
-            services.AddSingleton<GoogleFitService>();
+            services.AddScoped<IntentExecutor>();
+            services.AddScoped<WeatherForecastService>();
+            services.AddScoped<VvsService>();
+            services.AddScoped<FuelService>();
+            services.AddScoped<CalendarService>();
+            services.AddScoped<NewsService>();
+            services.AddScoped<JokesQuotesService>();
+            services.AddScoped<BundesligaService>();
+            services.AddScoped<StockDataService>();
+            services.AddScoped<HueService>();
+            services.AddScoped<FitbitService>();
+            services.AddScoped<BringService>();
+            services.AddScoped<RouteService>();
+            services.AddScoped<SpeechRecognitionService>();
+            services.AddScoped<GoogleFitService>();
 
             // State (make scoped for multiple users)
-            services.AddSingleton<BringState>();
-            services.AddSingleton<WeatherState>();
-            services.AddSingleton<RouteState>();
-            services.AddSingleton<HueState>();
-            services.AddSingleton<CalendarState>();
-            services.AddSingleton<FuelState>();
-            services.AddSingleton<ClockState>();
-            services.AddSingleton<SpotifyState>();
-            services.AddSingleton<VvsState>();
-            services.AddSingleton<FitbitState>();
+            services.AddScoped<BringState>();
+            services.AddScoped<WeatherState>();
+            services.AddScoped<RouteState>();
+            services.AddScoped<HueState>();
+            services.AddScoped<CalendarState>();
+            services.AddScoped<FuelState>();
+            services.AddScoped<ClockState>();
+            services.AddScoped<SpotifyState>();
+            services.AddScoped<VvsState>();
+            services.AddScoped<FitbitState>();
+            services.AddScoped<NewsState>();
+            services.AddTransient<GoogleFitState>();
 
             services.AddSingleton<HttpClient>();
 
@@ -94,6 +96,7 @@ namespace SmartMirror
                 });
             }
 
+            services.Configure<GoogleApiConfiguration>(_configuration.GetSection(nameof(GoogleApiConfiguration)));
             services.Configure<WeatherConfiguration>(_configuration.GetSection(nameof(WeatherConfiguration)));
             services.Configure<FuelConfiguration>(_configuration.GetSection(nameof(FuelConfiguration)));
             services.Configure<SpotifyConfiguration>(_configuration.GetSection(nameof(SpotifyConfiguration)));

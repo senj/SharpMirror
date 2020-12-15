@@ -12,6 +12,9 @@ namespace SmartMirror.Data.GoogleFit
 {
     public class GoogleFitService
     {
+        private const string CacheKeyAccessToken = "google_access_token";
+        private const string CacheKeyRefreshToken = "google_refresh_token";
+
         private readonly ILogger<GoogleFitService> _logger;
         private readonly IDistributedCache _cache;
         private readonly HttpClient _httpClient;
@@ -41,14 +44,16 @@ namespace SmartMirror.Data.GoogleFit
 
             DeviceRegistrationEndpoint = await GetDeviceRegistrationEndpointAsync();
             HttpResponseMessage response = await _httpClient.PostAsync(DeviceRegistrationEndpoint, new FormUrlEncodedContent(content));
-            var codeResponse = JsonConvert.DeserializeObject<GoogleCodeResponse>(await response.Content.ReadAsStringAsync());
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            GoogleCodeResponse codeResponse = JsonConvert.DeserializeObject<GoogleCodeResponse>(responseContent);
 
             return codeResponse;
         }
 
-        public async Task<GoogleAuthResponse> AuthorizationPolling(GoogleCodeResponse googleCodeResponse)
+        public async Task<GoogleAuthResponse> AuthorizationPolling(string user, GoogleCodeResponse googleCodeResponse)
         {
-            var expiresDateTime = DateTime.UtcNow.AddSeconds(googleCodeResponse.expires_in);
+            DateTime expiresDateTime = DateTime.UtcNow.AddSeconds(googleCodeResponse.expires_in);
             List<KeyValuePair<string, string>> content = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("client_id", _configuration.ClientId),
@@ -57,15 +62,17 @@ namespace SmartMirror.Data.GoogleFit
                 new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:device_code")
             };
 
-            while (DateTime.UtcNow < expiresDateTime && string.IsNullOrEmpty(await GetAccessTokenAsync()))
+            while (DateTime.UtcNow < expiresDateTime && string.IsNullOrEmpty(await GetAccessTokenAsync(user)))
             {
                 HttpResponseMessage response = await _httpClient.PostAsync("https://oauth2.googleapis.com/token", new FormUrlEncodedContent(content));
-                var googleAuthResponse = JsonConvert.DeserializeObject<GoogleAuthResponse>(await response.Content.ReadAsStringAsync());
+
+                string responseContent = await response.Content.ReadAsStringAsync();
+                GoogleAuthResponse googleAuthResponse = JsonConvert.DeserializeObject<GoogleAuthResponse>(responseContent);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    _cache.SetString("google_refresh_token", googleAuthResponse.refresh_token);
-                    _cache.SetString("google_access_token", googleAuthResponse.access_token, new DistributedCacheEntryOptions
+                    _cache.SetString(GetCacheKey(CacheKeyRefreshToken, user), googleAuthResponse.refresh_token);
+                    _cache.SetString(GetCacheKey(CacheKeyAccessToken, user), googleAuthResponse.access_token, new DistributedCacheEntryOptions
                     {
                         AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(googleAuthResponse.expires_in - 30)
                     });
@@ -77,7 +84,10 @@ namespace SmartMirror.Data.GoogleFit
                 await Task.Delay(googleCodeResponse.interval * 1000);
             }
 
-            return null;
+            return new GoogleAuthResponse
+            {
+                access_token = await GetAccessTokenAsync(user)
+            };
         }
 
         public async Task<IEnumerable<WeightDataPoint>> GetWeight(string accessToken, int take)
@@ -86,8 +96,8 @@ namespace SmartMirror.Data.GoogleFit
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://www.googleapis.com/fitness/v1/users/me/dataSources/{dataSourceId}/dataPointChanges");
             request.Headers.Add("Authorization", $"Bearer {accessToken}");
 
-            var response = await _httpClient.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
+            string content = await response.Content.ReadAsStringAsync();
 
             GoogleDerivedWeightResponse weightResponse = JsonConvert.DeserializeObject<GoogleDerivedWeightResponse>(await response.Content.ReadAsStringAsync());
             IEnumerable<WeightDataPoint> weightValues = weightResponse?.insertedDataPoint?
@@ -98,18 +108,18 @@ namespace SmartMirror.Data.GoogleFit
                 .Take(take);
         }
 
-        public async Task<string> GetAccessTokenAsync()
+        public async Task<string> GetAccessTokenAsync(string user)
         {
-            string accessToken = _cache.GetString("google_access_token");
+            string accessToken = _cache.GetString(GetCacheKey(CacheKeyAccessToken, user));
             if (string.IsNullOrEmpty(accessToken))
             {
-                accessToken = await RefreshToken(_cache.GetString("google_refresh_token"));
+                accessToken = await RefreshToken(_cache.GetString(GetCacheKey(CacheKeyRefreshToken, user)), user);
             }
 
             return accessToken;
         }
 
-        private async Task<string> RefreshToken(string refreshToken)
+        private async Task<string> RefreshToken(string refreshToken, string user)
         {
             if (string.IsNullOrEmpty(refreshToken))
             {
@@ -126,7 +136,7 @@ namespace SmartMirror.Data.GoogleFit
 
             var response = await _httpClient.PostAsync("https://oauth2.googleapis.com/token", new FormUrlEncodedContent(content));
             GoogleRefreshTokenResponse refreshTokenResponse = JsonConvert.DeserializeObject<GoogleRefreshTokenResponse>(await response.Content.ReadAsStringAsync());
-            _cache.SetString("google_access_token", refreshTokenResponse.access_token, new DistributedCacheEntryOptions
+            _cache.SetString(GetCacheKey(CacheKeyAccessToken, user), refreshTokenResponse.access_token, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(refreshTokenResponse.expires_in - 30)
             });
@@ -139,6 +149,11 @@ namespace SmartMirror.Data.GoogleFit
             var response = await _httpClient.GetAsync("https://accounts.google.com/.well-known/openid-configuration");
             var discoveryResponse = JsonConvert.DeserializeObject<GoogleDiscoveryResponse>(await response.Content.ReadAsStringAsync());
             return discoveryResponse.device_authorization_endpoint;
+        }
+
+        private string GetCacheKey(string purpose, string user)
+        {
+            return $"{purpose}_{user}";
         }
     }
 }

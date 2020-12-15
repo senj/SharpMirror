@@ -1,8 +1,8 @@
 ﻿@using SmartMirror.Data.GoogleFit
-@inject GoogleFitService GoogleFitService
+@inject GoogleFitState State
 @inject IJSRuntime JSRuntime
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -15,8 +15,9 @@
     </div>
     <div class="row">
         <div class="col-12">
-            @if (CodeResponse != null)
+            @if (string.IsNullOrEmpty(Token) && CodeResponse != null)
             {
+                <p>@User</p>
                 <p>@CodeResponse?.user_code</p>
                 <p>@CodeResponse?.verification_url</p>
             }
@@ -24,7 +25,7 @@
             @if (Weight != null)
             {
                 <div class="col-12">
-                    <canvas id="googleFit" width="400" height="150"></canvas>
+                    <canvas id="@PieElement" width="400" height="150"></canvas>
                 </div>
             }
         </div>
@@ -33,73 +34,79 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
+    private bool Enabled => State.Enabled;
+    private string PieElement;
 
+    private Timer Timer { get; set; }
     private string Time { get; set; }
-    private GoogleCodeResponse CodeResponse { get; set; }
-    private IEnumerable<WeightDataPoint> Weight { get; set; }
+
+    private GoogleCodeResponse CodeResponse => State.GoogleCodeResponse;
+    private IEnumerable<WeightDataPoint> Weight => State.WeightData;
+    private string Token => State.Token;
+
     private Dictionary<string, Dataset<float>> datasets { get; set; }
+
+    [Parameter]
+    public string User { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        //CodeResponse = await GoogleFitService.StartAuthorizationAsync();
-        //await GoogleFitService.AuthorizationPolling(CodeResponse)
-        //    .ContinueWith((response) =>
-        //    {
-        //        if (response != null)
-        //        {
-        //            CodeResponse = null;
-        //        }
-        //    });
+        PieElement = $"{User}googleFit";
+        State.OnChange += StateHasChangedAsync;
+        State.SetEnabled(true);
 
-        //var timer = new Timer((_) =>
-        //{
-        //    Time = DateTime.UtcNow.ToString();
-        //    InvokeAsync(async () =>
-        //    {
-        //        try
-        //        {
-        //            string token = await GoogleFitService.GetAccessTokenAsync();
-        //            if (!string.IsNullOrEmpty(token))
-        //            {
-        //                Weight = await GoogleFitService.GetWeight(token, 30);
-        //                PopulateWeightDatasets("Lukas");
-        //                StateHasChanged();
-        //            }
-        //        }
-        //        catch (ObjectDisposedException)
-        //        {
-        //        }
-        //    });
-        //}, null, 0, 29000 * 1000);
+        if (string.IsNullOrEmpty(Token))
+        {
+            await State.StartAuthorizationAsync();
+            State.AuthorizationPollingAsync(User);
+        }
 
-        //await base.OnInitializedAsync();
+        Timer = new Timer((_) =>
+        {
+            Time = DateTime.UtcNow.ToString();
+            InvokeAsync(async () =>
+            {
+                try
+                {
+                    if (!string.IsNullOrEmpty(Token))
+                    {
+                        await State.GetWeight(30);
+                        PopulateWeightDatasets($"{User} Weight");
+                        StateHasChanged();
+                    }
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            });
+        }, null, 0, 29000 * 1000);
+
+        await base.OnInitializedAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        if (datasets?.Any() == true && Show)
+        if (datasets?.Any() == true && Enabled)
         {
-            await JSRuntime.InvokeAsync<string>("renderChart", "googleFit", Weight.Select(p => p.StartTime.ToShortDateString()), datasets.Values);
+            await JSRuntime.InvokeAsync<string>("renderChart", PieElement, Weight.Select(p => p.StartTime.ToShortDateString()), datasets.Values);
         }
     }
 
-    private void PopulateWeightDatasets(string user)
+    private void PopulateWeightDatasets(string label)
     {
         datasets = new Dictionary<string, Dataset<float>>();
         Random random = new Random();
         foreach (var weightEntry in Weight)
         {
-            if (!datasets.ContainsKey(user) && weightEntry.Value != null)
+            if (!datasets.ContainsKey(label) && weightEntry.Value != null)
             {
                 int r = random.Next(0, 256), g = random.Next(0, 256), b = random.Next(0, 256);
-                datasets.Add(user, new Dataset<float>
+                datasets.Add(label, new Dataset<float>
                 {
-                    id = user,
-                    label = user,
+                    id = label,
+                    label = label,
                     data = new List<float> { weightEntry.Value.Value },
                     fill = false,
                     backgroundColor = new string[] { $"rgba({r}, {g}, {b}, 1)" },
@@ -109,9 +116,26 @@
             }
             else
             {
-                var stationDataset = datasets[user];
+                var stationDataset = datasets[label];
                 stationDataset.data.Add(weightEntry.Value.Value);
             }
         }
+    }
+
+    public async void StateHasChangedAsync()
+    {
+        if (!string.IsNullOrEmpty(Token) && Weight == null)
+        {
+            await State.GetWeight(30);
+            PopulateWeightDatasets($"{User} Weight");
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChangedAsync;
+        Timer?.Dispose();
     }
 }

@@ -1,9 +1,9 @@
 ﻿@using SmartMirror.Data.News;
-@inject NewsService NewsService
+@inject NewsState State
 @inject IStringLocalizer<News> Localizer
 @implements IDisposable
 
-@if (!Show)
+@if (!Enabled)
 {
     return;
 }
@@ -39,22 +39,23 @@
 <br />
 
 @code {
-    [Parameter]
-    public bool Show { get; set; }
-
     private int Index { get; set; }
     private string Time { get; set; }
-    private IEnumerable<NewsResponse> NewsResponse { get; set; }
     private Timer Timer { get; set; }
 
     [Parameter]
     public int RefreshIntervalSeconds { get; set; }
 
+    private bool Enabled => State.Enabled;
+    private IEnumerable<NewsResponse> NewsResponse => State.News;
+
     protected override async Task OnInitializedAsync()
     {
-        NewsResponse = await NewsService.GetFeeds();
-        Random random = new Random();
+        State.OnChange += StateHasChangedAsync;
+        State.SetEnabled(true);
+        await State.GetNewsAsync();
 
+        Random random = new Random();
         Timer = new Timer((_) =>
         {
             Time = DateTime.UtcNow.ToString();
@@ -72,8 +73,14 @@
         }, null, 0, RefreshIntervalSeconds * 1000);
     }
 
+    public async void StateHasChangedAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
     public void Dispose()
     {
+        State.OnChange -= StateHasChangedAsync;
         Timer?.Dispose();
     }
 }
