@@ -8,6 +8,20 @@ html, body {
     width: 100%;
 }
 
+.timer {
+    font-size: 2.2em;
+    font-weight: 300;
+}
+
+.weather {
+    font-size: 4.7em;
+    font-weight: 300;
+}
+
+.table {
+    margin-bottom: 0px!important;
+}
+
 p {
     margin-bottom: 0.2rem !important;
 }

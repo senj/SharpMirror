@@ -16,21 +16,27 @@
     else
     {
         <div class="row">
-            <div class="col-4">
-                <p class="important">@Math.Round(Forecast.Current.Temp, 1) °C</p>
-                <p class="small">@Localizer["Feels like"]: @Forecast.Current.Feels_like °C</p>
+            <div class="col-7">
+                <p class="weather">@Math.Round(Forecast.Current.Temp, 1) °C</p>
             </div>
-            <div class="col-4">
-                <p class="important-symbol">@((MarkupString)ShowSimpleIcon(Forecast.Current.Weather.FirstOrDefault()?.Main))</p>
+            <div class="col-5">
+                @*<p class="important-symbol">@((MarkupString)ShowSimpleIcon(Forecast.Current.Weather.FirstOrDefault()?.Main))</p>*@
+                <img src="@ShowIcon(Forecast.Current.Weather.FirstOrDefault()?.Main)" width="100" />
                 @*<p class="small">@Forecast.Current.Weather.FirstOrDefault()?.Description</p>*@
             </div>
-            <div class="col-4">
-                <br />
-                <p style="text-align: center;">Wind: @Forecast.Current.Wind_speed km/h</p>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <p class="small">Gefühlt: @Forecast.Current.Feels_like °C</p>
+            </div>
+            <div class="col-3">
+                <p class="small">@Forecast.Current.Wind_speed km/h Wind</p>
+            </div>
+            <div class="col-6">
                 <p style="text-align: center;">&#9728; &uarr; @EpochToLocalTime(Forecast.Current.Sunrise).ToString("HH:mm") &nbsp; - &nbsp; &#9728; &darr; @EpochToLocalTime(Forecast.Current.Sunset).ToString("HH:mm")</p>
             </div>
         </div>
-
+                
         @if (ShowDetails)
         {
             <div class="row">
@@ -38,15 +44,16 @@
                     <tbody>
                         @foreach (Daily day in Forecast.Daily.Take(NumberOfDays))
                         {
-                            <tr>
-                                <th scope="row">@EpochToLocalTime(day.Dt).ToString("ddd, dd.MM.")</th>
-                                <td class="weatherIcon">@(@ShowSimpleIcon(day.Weather.FirstOrDefault()?.Main))</td>
-                                <td>
-                                    &darr; @Math.Round(day.Temp.Min, 1) °C &nbsp;&nbsp; &uarr; @Math.Round(day.Temp.Max, 1) °C
-                                    <br />@day.Weather.FirstOrDefault()?.Description
-                                </td>
-                                <td>@day.Wind_speed km/h | @day.Uvi UV</td>
-                            </tr>
+                        <tr>
+                            <th scope="row">@EpochToLocalTime(day.Dt).ToString("ddd, dd.MM.")</th>
+                            @*<td class="weatherIcon">@(@ShowSimpleIcon(day.Weather.FirstOrDefault()?.Main))</td>*@
+                            <td><img src="@ShowIcon(day.Weather.FirstOrDefault()?.Main)" width="45" /></td>
+                            <td>
+                                &darr; @Math.Round(day.Temp.Min, 1) °C &nbsp;&nbsp; &uarr; @Math.Round(day.Temp.Max, 1) °C
+                                <br />@day.Weather.FirstOrDefault()?.Description
+                            </td>
+                            <td>@day.Wind_speed km/h<br />@day.Uvi UV</td>
+                        </tr>
                         }
                     </tbody>
                 </table>
@@ -79,6 +86,41 @@
         TimeSpan timeSpan = TimeSpan.FromSeconds(epochDateTime);
         DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         return epoch.Add(timeSpan).ToLocalTime();
+    }
+
+    private string ShowIcon(string main)
+    {
+        string basePath = "icons/weather/";
+        if (main?.ToLower() == "clouds")
+        {
+            return basePath + "cloud.png";
+        }
+        else if (main?.ToLower() == "thunderstorm")
+        {
+            return basePath + "storm.png";
+        }
+        else if (main?.ToLower() == "drizzle")
+        {
+            return basePath + "rain_light.png";
+        }
+        else if (main?.ToLower() == "rain")
+        {
+            return basePath + "rain_heavy.png";
+        }
+        else if (main?.ToLower() == "snow")
+        {
+            return basePath + "snow.png";
+        }
+        else if (main?.ToLower() == "mist" || main?.ToLower() == "fog")
+        {
+            return basePath + "dust.png";
+        }
+        else if (main?.ToLower() == "clear")
+        {
+            return basePath + "sun.png";
+        }
+
+        return string.Empty;
     }
 
     private MarkupString ShowSimpleIcon(string main)
