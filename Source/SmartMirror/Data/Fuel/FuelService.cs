@@ -33,7 +33,7 @@ namespace SmartMirror.Data.Fuel
         public async Task<FuelResponse> GetFuelResponseAsync(int limit, bool useCache)
         {
             FuelStationResponse stationJsonResponse;
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
 
             if (useCache && _cache.TryGetValue(FUEL_PRICES_CACHE_KEY, out FuelResponse cachedFuelResponse))
             {
@@ -66,16 +66,16 @@ namespace SmartMirror.Data.Fuel
                 $"?ids={ids}" +
                 $"&apikey={_fuelConfiguration.ApiKey}";
 
-            var priceResponse = await _httpClient.GetAsync(priceUrl);
+            HttpResponseMessage priceResponse = await _httpClient.GetAsync(priceUrl);
             if (!priceResponse.IsSuccessStatusCode)
             {
                 _logger.LogError("Error getting fuel prices: {statusCode}", priceResponse.StatusCode);
                 return fuelResponse;
             }
-            
-            var stringPriceResponse = await priceResponse.Content.ReadAsStringAsync();
+
+            string stringPriceResponse = await priceResponse.Content.ReadAsStringAsync();
             stringPriceResponse = FixInvalidJsonStructure(stringPriceResponse);
-            var priceJsonResponse = JsonSerializer.Deserialize<FuelPriceResponse>(stringPriceResponse, options);
+            FuelPriceResponse priceJsonResponse = JsonSerializer.Deserialize<FuelPriceResponse>(stringPriceResponse, options);
 
             if (priceJsonResponse == null || priceJsonResponse.Ok == false)
             {
@@ -83,8 +83,8 @@ namespace SmartMirror.Data.Fuel
                 return fuelResponse;
             }
 
-            var fuelResults = new List<FuelResult>();
-            foreach (var station in stationJsonResponse.Stations)
+            List<FuelResult> fuelResults = new List<FuelResult>();
+            foreach (Station station in stationJsonResponse.Stations)
             {
                 if (station.IsOpen) 
                 {
@@ -97,7 +97,7 @@ namespace SmartMirror.Data.Fuel
 
             _logger.LogInformation("{opened}/{closed} stations are opened.", fuelResults.Count, stationJsonResponse.Stations.Count());
 
-            var currentTimestamp = DateTime.Now.ToString("dd.MM HH:mm");
+            string currentTimestamp = DateTime.Now.ToString("dd.MM HH:mm");
             if (!fuelResponse.ContainsKey(currentTimestamp))
             {
                 fuelResponse.Add(currentTimestamp, fuelResults);
@@ -127,15 +127,15 @@ namespace SmartMirror.Data.Fuel
                        $"&type={_fuelConfiguration.Type}" +
                        $"&apikey={_fuelConfiguration.ApiKey}";
 
-            var stationResponse = await _httpClient.GetAsync(stationsUrl);
+            HttpResponseMessage stationResponse = await _httpClient.GetAsync(stationsUrl);
             if (!stationResponse.IsSuccessStatusCode)
             {
                 _logger.LogError("Error getting gas stations: {statusCode}", stationResponse.StatusCode);
                 return null;
             }
 
-            var stringStationResponse = await stationResponse.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            string stringStationResponse = await stationResponse.Content.ReadAsStringAsync();
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
             FuelStationResponse stationJsonResponse = JsonSerializer.Deserialize<FuelStationResponse>(stringStationResponse, options);
 
             if (stationJsonResponse == null || stationJsonResponse.Ok == false)

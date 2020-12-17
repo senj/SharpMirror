@@ -30,7 +30,7 @@ namespace SmartMirror.SmartHome.Hue
         {
             _logger.LogInformation("Turning light {lightId} on: {isOn}", lightId, lightState.on);
 
-            var response = await _httpClient.PutAsync($"http://{_ipAddress}/api/{_userToken}/lights/{lightId}/state",
+            HttpResponseMessage response = await _httpClient.PutAsync($"http://{_ipAddress}/api/{_userToken}/lights/{lightId}/state",
                 new StringContent(JsonSerializer.Serialize(lightState), Encoding.UTF8, "application/json"));
 
             LightStateChanged?.Invoke(this, new LightStateChangedEventArgs());
@@ -53,8 +53,8 @@ namespace SmartMirror.SmartHome.Hue
 
             string stringResponse = await response.Content.ReadAsStringAsync();
 
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var lightInfo = JsonSerializer.Deserialize<HueLightInfo>(stringResponse, options);
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            HueLightInfo lightInfo = JsonSerializer.Deserialize<HueLightInfo>(stringResponse, options);
 
             return lightInfo;
         }
@@ -62,13 +62,13 @@ namespace SmartMirror.SmartHome.Hue
         public async Task<string> GetIpAddressAsync()
         {
             using HttpClient httpClient = new HttpClient();
-            var response = await httpClient.GetAsync("https://discovery.meethue.com/");
-            var stringResponse = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage response = await httpClient.GetAsync("https://discovery.meethue.com/");
+            string stringResponse = await response.Content.ReadAsStringAsync();
 
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var discoveryResponse = JsonSerializer.Deserialize<HueDiscoveryResponse>(stringResponse, options);
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            HueDiscoveryResponse discoveryResponse = JsonSerializer.Deserialize<HueDiscoveryResponse>(stringResponse, options);
 
-            var ipAddress = discoveryResponse.FirstOrDefault()?.internalipaddress;
+            string ipAddress = discoveryResponse.FirstOrDefault()?.internalipaddress;
 
             return ipAddress;
         }

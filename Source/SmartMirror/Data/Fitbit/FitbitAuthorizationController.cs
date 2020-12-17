@@ -58,21 +58,21 @@ namespace SmartMirror.Data.Fitbit
                 KeyValuePair.Create("client_secret", _fitbitConfiguration.ClientSecret)
             };
 
-            var formContent = new FormUrlEncodedContent(content);
+            FormUrlEncodedContent formContent = new FormUrlEncodedContent(content);
 
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://api.fitbit.com/oauth2/token");
             request.Headers.Add("Authorization", "Basic " + Base64Encode($"{_fitbitConfiguration.ClientId}:{_fitbitConfiguration.ClientSecret}"));
             request.Content = formContent;
-            var response = await _httpClient.SendAsync(request);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
             
             if (!response.IsSuccessStatusCode)
             {
                 return new StatusCodeResult(500);
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var authResponse = JsonSerializer.Deserialize<FitbitAuthResponse>(stringResponse, options);
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            FitbitAuthResponse authResponse = JsonSerializer.Deserialize<FitbitAuthResponse>(stringResponse, options);
 
             IdentityUser user = new IdentityUser("fitbit");
             await _signInManager.SignInAsync(user, true, "fitbit");
@@ -82,7 +82,7 @@ namespace SmartMirror.Data.Fitbit
 
         public static string Base64Encode(string plainText)
         {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            byte[] plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return System.Convert.ToBase64String(plainTextBytes);
         }
     }

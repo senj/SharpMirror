@@ -32,16 +32,16 @@ namespace SmartMirror.Data.Soccer
             }
 
             string baseUrl = "https://www.openligadb.de/api/getmatchdata/bl1";
-            var response = await _httpClient.GetAsync(baseUrl);
+            HttpResponseMessage response = await _httpClient.GetAsync(baseUrl);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Error getting match data: {statusCode}", response.StatusCode);
                 return new BundesligaModel();
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var playDayResponse = JsonSerializer.Deserialize<BundesligaModel>(stringResponse, options);
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            BundesligaModel playDayResponse = JsonSerializer.Deserialize<BundesligaModel>(stringResponse, options);
 
             if (playDayResponse == null)
             {

@@ -20,16 +20,16 @@ namespace SmartMirror.Data.Jokes
         public async Task<ChuckNorrisJokesModel> GetNextChuckNorrisJokeAsync()
         {
             string baseUrl = "https://api.chucknorris.io/jokes/random";
-            var response = await _httpClient.GetAsync(baseUrl);
+            HttpResponseMessage response = await _httpClient.GetAsync(baseUrl);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Error getting joke from chuck norris api: {statusCode}", response.StatusCode);
                 return new ChuckNorrisJokesModel();
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var chuckNorrisResponse = JsonSerializer.Deserialize<ChuckNorrisJokesModel>(stringResponse, options);
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            ChuckNorrisJokesModel chuckNorrisResponse = JsonSerializer.Deserialize<ChuckNorrisJokesModel>(stringResponse, options);
 
             _logger.LogInformation("Got joke from chuck norris api");
             return chuckNorrisResponse;

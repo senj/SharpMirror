@@ -63,7 +63,7 @@ namespace SmartMirror.Data.Routes
                $"&query={query}";
                 
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            var response = await _httpClient.SendAsync(request);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -71,10 +71,10 @@ namespace SmartMirror.Data.Routes
                 return new GeosearchResponse();
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
+            string stringResponse = await response.Content.ReadAsStringAsync();
 
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var geoJsonResponse = JsonSerializer.Deserialize<GeosearchResponse>(stringResponse, options);
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            GeosearchResponse geoJsonResponse = JsonSerializer.Deserialize<GeosearchResponse>(stringResponse, options);
 
             if (geoJsonResponse == null)
             {
@@ -96,7 +96,7 @@ namespace SmartMirror.Data.Routes
                 $"&traffic=true";
             
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            var response = await _httpClient.SendAsync(request);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -104,10 +104,10 @@ namespace SmartMirror.Data.Routes
                 return new RouteResponse();
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
+            string stringResponse = await response.Content.ReadAsStringAsync();
 
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var routeJsonResponse = JsonSerializer.Deserialize<RouteResponse>(stringResponse, options);
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            RouteResponse routeJsonResponse = JsonSerializer.Deserialize<RouteResponse>(stringResponse, options);
 
             if (routeJsonResponse == null)
             {

@@ -134,7 +134,7 @@ namespace SmartMirror.Data.GoogleFit
                 new KeyValuePair<string, string>("grant_type", "refresh_token")
             };
 
-            var response = await _httpClient.PostAsync("https://oauth2.googleapis.com/token", new FormUrlEncodedContent(content));
+            HttpResponseMessage response = await _httpClient.PostAsync("https://oauth2.googleapis.com/token", new FormUrlEncodedContent(content));
             GoogleRefreshTokenResponse refreshTokenResponse = JsonConvert.DeserializeObject<GoogleRefreshTokenResponse>(await response.Content.ReadAsStringAsync());
             _cache.SetString(GetCacheKey(CacheKeyAccessToken, user), refreshTokenResponse.access_token, new DistributedCacheEntryOptions
             {
@@ -146,8 +146,8 @@ namespace SmartMirror.Data.GoogleFit
 
         private async Task<string> GetDeviceRegistrationEndpointAsync()
         {
-            var response = await _httpClient.GetAsync("https://accounts.google.com/.well-known/openid-configuration");
-            var discoveryResponse = JsonConvert.DeserializeObject<GoogleDiscoveryResponse>(await response.Content.ReadAsStringAsync());
+            HttpResponseMessage response = await _httpClient.GetAsync("https://accounts.google.com/.well-known/openid-configuration");
+            GoogleDiscoveryResponse discoveryResponse = JsonConvert.DeserializeObject<GoogleDiscoveryResponse>(await response.Content.ReadAsStringAsync());
             return discoveryResponse.device_authorization_endpoint;
         }
 

@@ -41,17 +41,17 @@ namespace SmartMirror.Data.StockData
                 $"&interval=5min" +
                 $"&apikey={_apiKey}";
 
-            var response = await _httpClient.GetAsync(baseUrl);
+            HttpResponseMessage response = await _httpClient.GetAsync(baseUrl);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Unable to get stock information for {symbol}: {statusCode}", symbol, response.StatusCode);
                 return new StockViewModel();
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
+            string stringResponse = await response.Content.ReadAsStringAsync();
             stringResponse = stringResponse.Replace(" ", "");
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var stockResponse = JsonSerializer.Deserialize<StockDataModel>(stringResponse, options);
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            StockDataModel stockResponse = JsonSerializer.Deserialize<StockDataModel>(stringResponse, options);
 
             if (stockResponse == null || !stockResponse.TimeSeries.HasValue)
             {
@@ -63,8 +63,8 @@ namespace SmartMirror.Data.StockData
             IEnumerable<JsonProperty> stockData = stockResponse.TimeSeries.Value.EnumerateObject()
                 .Where(p => DateTime.ParseExact(p.Name, "yyyy-MM-ddHH:mm:ss", null).ToString("dd.MM.") == DateTime.Now.ToString("dd.MM."))
                 .Select(p => p);
-            
-            var stockViewModel = new StockViewModel { StockData = stockData };
+
+            StockViewModel stockViewModel = new StockViewModel { StockData = stockData };
 
             _cache.Set(symbol, stockViewModel, new DistributedCacheEntryOptions
             {

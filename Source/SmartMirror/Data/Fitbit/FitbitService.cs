@@ -35,8 +35,8 @@ namespace SmartMirror.Data.Fitbit
 
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://api.fitbit.com/1/user/-/profile.json");
             request.Headers.Add("Authorization", $"Bearer {token}");
-            
-            var response = await _httpClient.SendAsync(request);
+
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -44,8 +44,8 @@ namespace SmartMirror.Data.Fitbit
                 return null;
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
             FitbitUserResponse userResponse;
             try
             {
@@ -79,7 +79,7 @@ namespace SmartMirror.Data.Fitbit
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://api.fitbit.com/1.2/user/-/sleep/date/{dateTime.ToString("yyyy-MM-dd")}.json");
             request.Headers.Add("Authorization", $"Bearer {token}");
 
-            var response = await _httpClient.SendAsync(request);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -87,9 +87,9 @@ namespace SmartMirror.Data.Fitbit
                 return null;
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var sleepResponse = JsonSerializer.Deserialize<FitbitSleepResponse>(stringResponse, options);
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            FitbitSleepResponse sleepResponse = JsonSerializer.Deserialize<FitbitSleepResponse>(stringResponse, options);
             
             if (sleepResponse != null)
             {
@@ -113,7 +113,7 @@ namespace SmartMirror.Data.Fitbit
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://api.fitbit.com/1/user/-/devices.json");
             request.Headers.Add("Authorization", $"Bearer {token}");
 
-            var response = await _httpClient.SendAsync(request);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -121,9 +121,9 @@ namespace SmartMirror.Data.Fitbit
                 return null;
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var deviceResponse = JsonSerializer.Deserialize<FitbitDeviceResponse>(stringResponse, options);
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            FitbitDeviceResponse deviceResponse = JsonSerializer.Deserialize<FitbitDeviceResponse>(stringResponse, options);
 
             if (deviceResponse != null)
             {
@@ -147,7 +147,7 @@ namespace SmartMirror.Data.Fitbit
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://api.fitbit.com/1/user/-/activities/{type}/date/{date}/{time}.json");
             request.Headers.Add("Authorization", $"Bearer {token}");
 
-            var response = await _httpClient.SendAsync(request);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -155,9 +155,9 @@ namespace SmartMirror.Data.Fitbit
                 return null;
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var activeMinutesResponse = JsonSerializer.Deserialize<ActiveMinutes>(stringResponse, options);
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            ActiveMinutes activeMinutesResponse = JsonSerializer.Deserialize<ActiveMinutes>(stringResponse, options);
             
             if (activeMinutesResponse != null)
             {

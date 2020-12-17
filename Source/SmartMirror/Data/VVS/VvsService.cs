@@ -40,17 +40,17 @@ namespace SmartMirror.Data.VVS
                 "&type_dm=any" +
                 "&useRealtime=1";
 
-            var response = await _httpClient.GetAsync(baseUrl);
+            HttpResponseMessage response = await _httpClient.GetAsync(baseUrl);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Error getting VVS results: {statusCode}", response.StatusCode);
                 return new VvsResponse();
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
+            string stringResponse = await response.Content.ReadAsStringAsync();
 
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var vvsJsonResponse = JsonSerializer.Deserialize<VvsResponse>(stringResponse, options);
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            VvsResponse vvsJsonResponse = JsonSerializer.Deserialize<VvsResponse>(stringResponse, options);
 
             if (vvsJsonResponse == null)
             {

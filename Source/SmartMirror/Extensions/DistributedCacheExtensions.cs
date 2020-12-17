@@ -8,7 +8,7 @@ namespace SmartMirror.Extensions
     {
         public static bool TryGetValue<T>(this IDistributedCache cache, string key, out T value)
         {
-            var payload = cache.Get(key);
+            byte[] payload = cache.Get(key);
             if (payload != null)
             {
                 string decodedPayload = Encoding.UTF8.GetString(payload);

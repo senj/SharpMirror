@@ -36,9 +36,9 @@ namespace SmartMirror.Data.Calendar
 
             try
             {
-                var stream = await _httpClient.GetStreamAsync(_calendarConfiguration.CalendarUrl);
-                var calendar = Ical.Net.Calendar.Load(stream);
-                var events = calendar.Events
+                System.IO.Stream stream = await _httpClient.GetStreamAsync(_calendarConfiguration.CalendarUrl);
+                Ical.Net.Calendar calendar = Ical.Net.Calendar.Load(stream);
+                IOrderedEnumerable<Ical.Net.CalendarComponents.CalendarEvent> events = calendar.Events
                     .Where(p => p.DtStart.AsSystemLocal.Date >= DateTime.Now.Date && p.DtStart.AsSystemLocal.Date <= DateTime.Now.AddDays(numberOfDays).Date)
                     .OrderBy(p => p.DtStart);
 

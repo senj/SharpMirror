@@ -103,7 +103,7 @@ namespace SmartMirror.Data.Speech
                 case "Weather.CheckWeatherValue":
                 case "Weather.QueryWeather":
                     {
-                        var forecast = await _intentExecutor.Handle(new WeatherQueryWeather(predictionResponse.Prediction.Entities));
+                        OneCallWeatherForecast forecast = await _intentExecutor.Handle(new WeatherQueryWeather(predictionResponse.Prediction.Entities));
                         return new SpeechOutputResult($"Heute gibt es in Wendlingen {forecast.Daily[0].Temp.Day} Grad und es ist {forecast.Daily[0].Weather[0].Description}.");
                     }
                 case "Weather.Show":
@@ -137,7 +137,7 @@ namespace SmartMirror.Data.Speech
                     await _intentExecutor.Handle<BringState>(new BringDisplayDetails(false));
                     return new SpeechOutputResult();
                 case "Routes.GetRoute":
-                        var routeResponse = await _intentExecutor.Handle(new RoutesGetRoute(predictionResponse.Prediction.Entities));
+                    (RouteResponse route, GeosearchResponse source, GeosearchResponse destination) routeResponse = await _intentExecutor.Handle(new RoutesGetRoute(predictionResponse.Prediction.Entities));
                         return new SpeechOutputResult("Route gefunden");
                 case "Routes.DisplayDetails":
                     await _intentExecutor.Handle<RouteState>(new RoutesDisplayDetails(true));

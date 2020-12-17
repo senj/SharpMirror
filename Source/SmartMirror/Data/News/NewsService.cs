@@ -34,15 +34,15 @@ namespace SmartMirror.Data.News
 
         private async Task<List<NewsResponse>> GetNews(string feedUrl)
         {
-            var news = new List<NewsResponse>();
-            var feedUri = new Uri(feedUrl);
+            List<NewsResponse> news = new List<NewsResponse>();
+            Uri feedUri = new Uri(feedUrl);
 
-            using (var xmlReader = XmlReader.Create(feedUri.ToString(),
+            using (XmlReader xmlReader = XmlReader.Create(feedUri.ToString(),
                    new XmlReaderSettings { Async = true }))
             {
                 try
                 {
-                    var feedReader = new RssFeedReader(xmlReader);
+                    RssFeedReader feedReader = new RssFeedReader(xmlReader);
 
                     while (await feedReader.Read())
                     {

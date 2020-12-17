@@ -38,14 +38,14 @@ namespace SmartMirror.Data.WeatherForecast
             }
 
             // icons: https://openweathermap.org/weather-conditions
-            var apiCall = $"https://api.openweathermap.org/data/2.5/onecall" +
+            string apiCall = $"https://api.openweathermap.org/data/2.5/onecall" +
                 $"?lat={_configuration.Lat}" +
                 $"&lon={_configuration.Lon}" +
                 $"&appid={_configuration.ApiKey}" +
                 $"&units={_configuration.Unit}" +
                 $"&lang={_configuration.Language}";
 
-            var response = await _httpClient.GetAsync(apiCall);
+            HttpResponseMessage response = await _httpClient.GetAsync(apiCall);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -53,10 +53,10 @@ namespace SmartMirror.Data.WeatherForecast
                 return new OneCallWeatherForecast();
             }
 
-            var responseObj = await response.Content.ReadAsStringAsync();
+            string responseObj = await response.Content.ReadAsStringAsync();
 
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var oneCallWeatherForecast = JsonSerializer.Deserialize<OneCallWeatherForecast>(responseObj, options);
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            OneCallWeatherForecast oneCallWeatherForecast = JsonSerializer.Deserialize<OneCallWeatherForecast>(responseObj, options);
 
             if (oneCallWeatherForecast?.Current == null)
             {

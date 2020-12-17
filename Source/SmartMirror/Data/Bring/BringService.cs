@@ -50,11 +50,11 @@ namespace SmartMirror.Data.Bring
             request.Headers.Add("X-BRING-COUNTRY", "de");
             request.Content = new FormUrlEncodedContent(content);
 
-            var response = await _httpClient.SendAsync(request);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-            var bringAuthResponse = JsonSerializer.Deserialize<BringAuthResponse>(stringResponse, options);
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            BringAuthResponse bringAuthResponse = JsonSerializer.Deserialize<BringAuthResponse>(stringResponse, options);
 
             _accessToken = bringAuthResponse.access_token;
             _expiresIn = DateTime.UtcNow.AddSeconds(bringAuthResponse.expires_in);
@@ -81,15 +81,15 @@ namespace SmartMirror.Data.Bring
             request.Headers.Add("X-BRING-VERSION", "303070050");
             request.Headers.Add("X-BRING-COUNTRY", "de");
 
-            var response = await _httpClient.SendAsync(request);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Error getting bring items: {statusCode}", response.StatusCode);
                 return new BringItemResponse();
             }
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
             bringItemResponse = JsonSerializer.Deserialize<BringItemResponse>(stringResponse, options);
 
             if (bringItemResponse != null)
@@ -121,7 +121,7 @@ namespace SmartMirror.Data.Bring
             request.Headers.Add("X-BRING-VERSION", "303070050");
             request.Headers.Add("X-BRING-COUNTRY", "de");
 
-            var response = await _httpClient.SendAsync(request);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Error adding bring item: {statusCode}", response.StatusCode);
@@ -147,7 +147,7 @@ namespace SmartMirror.Data.Bring
             request.Headers.Add("X-BRING-VERSION", "303070050");
             request.Headers.Add("X-BRING-COUNTRY", "de");
 
-            var response = await _httpClient.SendAsync(request);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Error adding bring item: {statusCode}", response.StatusCode);

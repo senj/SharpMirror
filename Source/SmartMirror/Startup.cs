@@ -80,7 +80,7 @@ namespace SmartMirror
 
             services.AddSingleton<HttpClient>();
 
-            var redisSection = _configuration.GetSection(nameof(RedisConfiguration));
+            IConfigurationSection redisSection = _configuration.GetSection(nameof(RedisConfiguration));
             RedisConfiguration redisConfiguration = new RedisConfiguration();
             redisSection.Bind(redisConfiguration);
 
@@ -134,7 +134,7 @@ namespace SmartMirror
                 app.UseHsts();
             }
 
-            var supportedCultures = new[]
+            CultureInfo[] supportedCultures = new[]
             {
                 new CultureInfo("en"),
                 new CultureInfo("de"),
