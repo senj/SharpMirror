@@ -67,7 +67,7 @@
                         @stop.Transportation.origin.name - @stop.Transportation.destination.name
                         @if (SpecialDestinations.Any(s => stop.Transportation.destination.name.ToLower().Contains(s)))
                         {
-                            <span>&#9734;</span>
+                            <span> &#9734;</span>
                         }
                     </p>
                 </div>
@@ -83,7 +83,7 @@
     /// 0 R-Bahn, 1 S-Bahn, 3 Stadtbahn, 5 Bus, 7 Nachtbus, 10 Ruftaxi, 11 Sonstige
     /// </summary>
 
-    private string[] SpecialDestinations { get; set; } = new string[] { "stuttgart", "herrenberg", "osterburken" };
+    private string[] SpecialDestinations { get; set; } = new string[] { "stuttgart", "herrenberg", "osterburken", "heilbronn" };
     private bool Enabled => State.Enabled;
     private int Limit => State.Limit;
     private int[] Filter => State.Filter;

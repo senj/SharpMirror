@@ -10,7 +10,7 @@
 <div class="container-fluid card-1">
     <div class="row">
         <div class="col-12">
-            <p class="box-heading">ROUTES AND TRAFFIC</p>
+            <p class="box-heading">TRAFFIC</p>
         </div>
     </div>
     <div class="row">
@@ -46,37 +46,25 @@
                 {
                     trafficString += $" ({delayInMinutes} min delay)";
                 }
+                else
+                {
+                    trafficString += " (no delay)";
+                }
 
                 if (State.ShowDetails)
                 {
                     <p>@SourceGeoResponse.results.FirstOrDefault().address.freeformAddress -</p>
-                    <p>@DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress</p>
+                    <p>@DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress (@(summary.lengthInMeters / 1000) km)</p>
                     <br />
-
-                    <p>@(summary.lengthInMeters / 1000) km</p>
-
                     <p><b>@trafficString</b></p>
-
-                    if (summary.departureTime.Date != summary.arrivalTime.Date)
-                    {
-                        <p>
-                            @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
-                            - @summary.arrivalTime.ToString("dd.MM.") <b>@summary.arrivalTime.ToString("HH:mm")</b>
-                        </p>
-                    }
-                    else
-                    {
-                        <p>
-                            @summary.departureTime.ToString("dd.MM.") <b>@summary.departureTime.ToString("HH:mm")</b>
-                            - <b>@summary.arrivalTime.ToString("HH:mm")</b>
-                        </p>
-                    }
+                    <p>ETA: @summary.arrivalTime.ToString("dd.MM.") <b>@summary.arrivalTime.ToString("HH:mm")</b></p>
                 }
                 else
                 {
                     <p>
                         @SourceGeoResponse.results.FirstOrDefault().address.freeformAddress
-                        - @DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress: <b>@trafficString</b>
+                        - @DestinationGeoResponse.results.FirstOrDefault().address.freeformAddress:
+                        <b>@trafficString</b>
                     </p>
                 }
             }

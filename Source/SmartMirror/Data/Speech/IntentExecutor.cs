@@ -4,13 +4,14 @@ using SmartMirror.Data.Calendar;
 using SmartMirror.Data.Clock;
 using SmartMirror.Data.Fitbit;
 using SmartMirror.Data.Fuel;
+using SmartMirror.Data.GoogleFit;
 using SmartMirror.Data.Routes;
+using SmartMirror.Data.Soccer;
 using SmartMirror.Data.Spotify;
 using SmartMirror.Data.VVS;
 using SmartMirror.Data.WeatherForecast;
 using SmartMirror.Intents;
 using SmartMirror.SmartHome.Hue;
-using System;
 using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Speech
@@ -28,6 +29,8 @@ namespace SmartMirror.Data.Speech
         private readonly ClockState _clockState;
         private readonly VvsState _vvsState;
         private readonly FitbitState _fitbitState;
+        private readonly GoogleFitState _googleFitState;
+        private readonly BundesligaState _bundesligaState;
 
         public IntentExecutor(
             ILogger<IntentExecutor> logger,
@@ -40,7 +43,9 @@ namespace SmartMirror.Data.Speech
             FuelState fuelState,
             ClockState clockState,
             VvsState vvsState,
-            FitbitState fitbitState)
+            FitbitState fitbitState,
+            GoogleFitState googleFitState,
+            BundesligaState bundesligaState)
         {
             _logger = logger;
             _bringState = bringState;
@@ -53,6 +58,8 @@ namespace SmartMirror.Data.Speech
             _clockState = clockState;
             _vvsState = vvsState;
             _fitbitState = fitbitState;
+            _googleFitState = googleFitState;
+            _bundesligaState = bundesligaState;
         }
 
         internal Task<OneCallWeatherForecast> Handle(WeatherQueryWeather request)
@@ -226,6 +233,18 @@ namespace SmartMirror.Data.Speech
             return Task.CompletedTask;
         }
 
+        internal Task Handle(GoogleFitShow googleFitShow)
+        {
+            _googleFitState.SetEnabled(googleFitShow.DisplayGoogleFit);
+            return Task.CompletedTask;
+        }
+
+        internal Task Handle(SoccerShow soccerShow)
+        {
+            _bundesligaState.SetEnabled(soccerShow.DisplaySoccer);
+            return Task.CompletedTask;
+        }
+
         internal Task Handle(MirrorShow mirrorShow)
         {
             _bringState.SetEnabled(mirrorShow.ShowWidgets);
@@ -237,6 +256,8 @@ namespace SmartMirror.Data.Speech
             _clockState.SetEnabled(mirrorShow.ShowWidgets);
             _vvsState.SetEnabled(mirrorShow.ShowWidgets);
             _fitbitState.SetEnabled(mirrorShow.ShowWidgets);
+            _googleFitState.SetEnabled(mirrorShow.ShowWidgets);
+            _bundesligaState.SetEnabled(mirrorShow.ShowWidgets);
 
             return Task.CompletedTask;
         }

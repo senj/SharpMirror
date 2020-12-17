@@ -25,10 +25,7 @@ namespace SmartMirror.Data.Soccer
 
         public async Task<BundesligaModel> GetCurrentPlayDayAsync()
         {
-            if (DateTime.Now.DayOfWeek != DayOfWeek.Friday
-                && DateTime.Now.DayOfWeek != DayOfWeek.Saturday
-                && DateTime.Now.DayOfWeek != DayOfWeek.Sunday 
-                && _cache.TryGetValue(SOCCER_CACHE_KEY, out BundesligaModel cachedModel))
+            if (_cache.TryGetValue(SOCCER_CACHE_KEY, out BundesligaModel cachedModel))
             {
                 _logger.LogInformation("[CACHE] Got soccer results from cache");
                 return cachedModel;
@@ -54,7 +51,7 @@ namespace SmartMirror.Data.Soccer
 
             _cache.Set(SOCCER_CACHE_KEY, playDayResponse, new DistributedCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1)
             });
 
             _logger.LogInformation("Got playday results");

@@ -10,7 +10,7 @@
 <div class="container-fluid card-1">
     <div class="row">
         <div class="col-12">
-            <p class="box-heading">GOOGLE FIT</p>
+            <p class="box-heading">GOOGLE FIT (@User)</p>
         </div>
     </div>
     <div class="row">
@@ -125,7 +125,7 @@
         if (!string.IsNullOrEmpty(Token) && Weight == null)
         {
             await State.UpdateWeightData(User, 30);
-            PopulateWeightDatasets($"{User} Weight");
+            PopulateWeightDatasets($"Weight");
         }
 
         await InvokeAsync(StateHasChanged);

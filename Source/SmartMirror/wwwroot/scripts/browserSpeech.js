@@ -64,8 +64,8 @@ function stopRecognitionByKeyword() {
 recognition.onend = (event) => {
     console.log('recognition ended');
 
-    document.getElementById('speechStatusImageWeb').src = '/icons/speech/silent.png';
-    document.getElementById('speechStatusImageMobile').src = '/icons/speech/silent.png';
+    document.getElementById('speechStatusImageWeb').src = '/icons/speech/mic_off.png';
+    document.getElementById('speechStatusImageMobile').src = '/icons/speech/mic_off.png';
 
     finalTranscript = '';
     document.getElementById('speechTextOutput').innerHTML = ''
@@ -80,8 +80,8 @@ recognition.onspeechstart = (event) => {
 recognition.onspeechend = (event) => {
     console.log('speech ended');
 
-    document.getElementById('speechStatusImageWeb').src = '/icons/speech/silent.png';
-    document.getElementById('speechStatusImageMobile').src = '/icons/speech/silent.png';
+    document.getElementById('speechStatusImageWeb').src = '/icons/speech/mic_off.png';
+    document.getElementById('speechStatusImageMobile').src = '/icons/speech/mic_off.png';
 
     if (finalTranscript !== '') {
         document.getElementById('speechTextOutput').style.display = "none";
@@ -97,8 +97,8 @@ recognition.onstart = (event) => {
     console.log('recognition started');
 
     if (display) {
-        document.getElementById('speechStatusImageWeb').src = '/icons/speech/speaking.png';
-        document.getElementById('speechStatusImageMobile').src = '/icons/speech/speaking.png';
+        document.getElementById('speechStatusImageWeb').src = '/icons/speech/mic_on.png';
+        document.getElementById('speechStatusImageMobile').src = '/icons/speech/mic_on.png';
         document.getElementById('speechTextOutput').style.display = "block";
         //document.getElementById('speechStatusImageWeb').style.display = "block";
 

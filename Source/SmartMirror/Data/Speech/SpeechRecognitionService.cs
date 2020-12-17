@@ -196,6 +196,18 @@ namespace SmartMirror.Data.Speech
                 case "Fitbit.Hide":
                     await _intentExecutor.Handle(new FitbitShow(false));
                     return new SpeechOutputResult();
+                case "Googlefit.Show":
+                    await _intentExecutor.Handle(new GoogleFitShow(true));
+                    return new SpeechOutputResult();
+                case "Googlefit.Hide":
+                    await _intentExecutor.Handle(new GoogleFitShow(false));
+                    return new SpeechOutputResult();
+                case "Soccer.Show":
+                    await _intentExecutor.Handle(new SoccerShow(true));
+                    return new SpeechOutputResult();
+                case "Soccer.Hide":
+                    await _intentExecutor.Handle(new SoccerShow(false));
+                    return new SpeechOutputResult();
                 case "Mirror.Show":
                     await _intentExecutor.Handle(new MirrorShow(true));
                     return new SpeechOutputResult();

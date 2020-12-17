@@ -22,43 +22,6 @@
             else if (State.Items.purchase.Any())
             {
                 <p>@State.Items.purchase.Count() Artikel auf der Einkaufsliste</p>
-                if (ShowDetails)
-                {
-                    @for (int i = 0; i < State.Items.purchase.Length; i += 3)
-                    {
-                        <div class="row col-12" style="padding:0.2em">
-                            <span class="bring-item col-3">
-                                @State.Items.purchase[i].name
-                                @if (!string.IsNullOrEmpty(State.Items.purchase[i].specification))
-                                {
-                                    <span class="subtitle"> (@State.Items.purchase[i].specification)</span>
-                                }
-                            </span>
-
-                            @if (i + 1 < State.Items.purchase.Length)
-                            {
-                                <span class="bring-item col-3">
-                                    @State.Items.purchase[i + 1].name
-                                    @if (!string.IsNullOrEmpty(State.Items.purchase[i + 1].specification))
-                                    {
-                                        <span class="subtitle"> (@State.Items.purchase[i + 1].specification)</span>
-                                    }
-                                </span>
-                            }
-
-                            @if (i + 2 < State.Items.purchase.Length)
-                            {
-                                <span class="bring-item col-3">
-                                    @State.Items.purchase[i + 2].name
-                                    @if (!string.IsNullOrEmpty(State.Items.purchase[i + 2].specification))
-                                    {
-                                        <span class="subtitle"> (@State.Items.purchase[i + 2].specification)</span>
-                                    }
-                                </span>
-                            }
-                        </div>
-                    }
-                }
             }
             else
             {
@@ -66,6 +29,45 @@
             }
         </div>
     </div>
+
+    @if (ShowDetails && State.Items.purchase?.Any() == true)
+    {
+        <br />
+        <div class="row">
+            @for (int i = 0; i < State.Items.purchase.Length; i += 3)
+            {
+                <span class="col-4">
+                    @State.Items.purchase[i].name
+                    @if (!string.IsNullOrEmpty(State.Items.purchase[i].specification))
+                    {
+                        <span class="subtitle"> (@State.Items.purchase[i].specification)</span>
+                    }
+                </span>
+
+                @if (i + 1 < State.Items.purchase.Length)
+                {
+                    <span class="col-4">
+                        @State.Items.purchase[i + 1].name
+                        @if (!string.IsNullOrEmpty(State.Items.purchase[i + 1].specification))
+                        {
+                            <span class="subtitle"> (@State.Items.purchase[i + 1].specification)</span>
+                        }
+                    </span>
+                }
+
+                @if (i + 2 < State.Items.purchase.Length)
+                {
+                    <span class="col-4">
+                        @State.Items.purchase[i + 2].name
+                        @if (!string.IsNullOrEmpty(State.Items.purchase[i + 2].specification))
+                        {
+                            <span class="subtitle"> (@State.Items.purchase[i + 2].specification)</span>
+                        }
+                    </span>
+                }
+            }
+        </div>
+    }
 </div>
 <br />
 
