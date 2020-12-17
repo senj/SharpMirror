@@ -5,19 +5,25 @@ using SmartMirror.Data.Clock;
 using SmartMirror.Data.Fitbit;
 using SmartMirror.Data.Fuel;
 using SmartMirror.Data.GoogleFit;
+using SmartMirror.Data.News;
 using SmartMirror.Data.Routes;
 using SmartMirror.Data.Soccer;
 using SmartMirror.Data.Spotify;
 using SmartMirror.Data.VVS;
 using SmartMirror.Data.WeatherForecast;
 using SmartMirror.Intents;
+using SmartMirror.Intents.Show;
 using SmartMirror.SmartHome.Hue;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Speech
 {
     public class IntentExecutor
     {
+        private readonly Dictionary<Type, Displayable> _displayableDictionary;
+
         private readonly ILogger<IntentExecutor> _logger;
         private readonly BringState _bringState;
         private readonly RouteState _routeState;
@@ -30,7 +36,8 @@ namespace SmartMirror.Data.Speech
         private readonly VvsState _vvsState;
         private readonly FitbitState _fitbitState;
         private readonly GoogleFitState _googleFitState;
-        private readonly BundesligaState _bundesligaState;
+        private readonly SoccerState _bundesligaState;
+        private readonly NewsState _newsState;
 
         public IntentExecutor(
             ILogger<IntentExecutor> logger,
@@ -45,7 +52,8 @@ namespace SmartMirror.Data.Speech
             VvsState vvsState,
             FitbitState fitbitState,
             GoogleFitState googleFitState,
-            BundesligaState bundesligaState)
+            SoccerState bundesligaState,
+            NewsState newsState)
         {
             _logger = logger;
             _bringState = bringState;
@@ -60,18 +68,29 @@ namespace SmartMirror.Data.Speech
             _fitbitState = fitbitState;
             _googleFitState = googleFitState;
             _bundesligaState = bundesligaState;
+            _newsState = newsState;
+
+            _displayableDictionary = new Dictionary<Type, Displayable>
+            {
+                { typeof(BringState), bringState },
+                { typeof(RouteState), routeState },
+                { typeof(SpotifyState), spotifyState },
+                { typeof(HueState), hueState },
+                { typeof(WeatherState), weatherState },
+                { typeof(CalendarState), calendarState },
+                { typeof(FuelState), fuelState },
+                { typeof(ClockState), clockState },
+                { typeof(VvsState), vvsState },
+                { typeof(FitbitState), fitbitState },
+                { typeof(GoogleFitState), googleFitState },
+                { typeof(SoccerState), bundesligaState },
+                { typeof(NewsState), newsState },
+            };
         }
 
         internal Task<OneCallWeatherForecast> Handle(WeatherQueryWeather request)
         {
             return _weatherState.GetWeatherForecastAsync();
-        }
-
-        internal Task Handle(WeatherDisplayForecast request)
-        {
-            _weatherState.SetEnabled(true);
-            _weatherState.SetShowDetails(request.DisplayForecast);
-            return Task.CompletedTask;
         }
 
         internal async Task Handle(HueTurnOn notification)
@@ -96,34 +115,9 @@ namespace SmartMirror.Data.Speech
             await _hueState.SetLightStateAsync(notification.LightId, lightState);
         }
 
-        internal Task Handle(HueDisplayDetails hueDisplayDetails)
-        {
-            _hueState.SetShowDetails(hueDisplayDetails.ShowDetails);
-            return Task.CompletedTask;
-        }
-
-        internal Task Handle(HueShow hueShow)
-        {
-            _hueState.SetEnabled(hueShow.DisplayHue); 
-            return Task.CompletedTask;
-        }
-
         internal Task Handle(SpotifyNextSong notification)
         {
             return _spotifyState.PlayNextSongAsync();
-        }
-
-        internal Task Handle(SpotifyShow spotifyShow)
-        {
-            _spotifyState.SetEnabled(spotifyShow.DisplaySpotify);
-            return Task.CompletedTask;
-        }
-
-        internal Task Handle(BringDisplayDetails request)
-        {
-            _bringState.SetEnabled(true);
-            _bringState.SetShowDetails(request.ShowDetails);
-            return Task.CompletedTask;
         }
 
         internal async Task Handle(BringAddToDo request)
@@ -142,34 +136,9 @@ namespace SmartMirror.Data.Speech
             }
         }
 
-        internal Task Handle(BringShow bringShow)
-        {
-            _bringState.SetEnabled(bringShow.DisplayBring);
-            return Task.CompletedTask;
-        }
-
         internal Task<(RouteResponse route, GeosearchResponse source, GeosearchResponse destination)> Handle(RoutesGetRoute request)
         {
             return _routeState.FindRouteAsync(request.Source, request.Destination);
-        }
-
-        internal Task Handle(RoutesDisplayDetails routesDisplayType)
-        {
-            _routeState.SetEnabled(true);
-            _routeState.SetShowDetails(routesDisplayType.ShowDetails);
-            return Task.CompletedTask;
-        }
-        
-        internal Task Handle(RoutesShow routesShow)
-        {
-            _routeState.SetEnabled(routesShow.DisplayRoutes);
-            return Task.CompletedTask;
-        }
-
-        internal Task Handle(WeatherShow weatherShow)
-        {
-            _weatherState.SetEnabled(weatherShow.DisplayWeather);
-            return Task.CompletedTask;
         }
 
         internal Task Handle(CalendarDisplayDays setCalendarDays)
@@ -178,28 +147,9 @@ namespace SmartMirror.Data.Speech
             return _calendarState.GetEventsAsync(setCalendarDays.NumberOfDays);
         }
 
-        internal Task Handle(CalendarShow calendarShow)
-        {
-            _calendarState.SetEnabled(calendarShow.DisplayCalendar);
-            return Task.CompletedTask;
-        }
-
         internal Task Handle(FuelRefresh fuelRefresh)
         {
             return _fuelState.GetFuelResponseAsync(useCache: false);
-        }
-
-        internal Task Handle(FuelDisplayDetails fuelDisplayDetails)
-        {
-            _fuelState.SetEnabled(true);
-            _fuelState.SetShowDetails(fuelDisplayDetails.ShowDetails);
-            return Task.CompletedTask;
-        }
-
-        internal Task Handle(FuelShow fuelShow)
-        {
-            _fuelState.SetEnabled(fuelShow.DisplayFuel);
-            return Task.CompletedTask;
         }
 
         internal Task Handle(ClockTimer clockTimer)
@@ -211,7 +161,7 @@ namespace SmartMirror.Data.Speech
 
         internal Task Handle(ClockShow clockShow)
         {
-            _clockState.SetEnabled(clockShow.DisplayClock);
+            _clockState.SetEnabled(clockShow.Display);
             return Task.CompletedTask;
         }
 
@@ -221,43 +171,28 @@ namespace SmartMirror.Data.Speech
             return Task.CompletedTask;
         }
 
-        internal Task Handle(VvsShow vvsShow)
+        internal Task Handle<T>(BaseDisplayDetails displayDetails) where T : Displayable
         {
-            _vvsState.SetEnabled(vvsShow.DisplayVvs);
+            Displayable state = _displayableDictionary[typeof(T)];
+            state.SetEnabled(true);
+            state.SetShowDetails(displayDetails.Details);
             return Task.CompletedTask;
         }
 
-        internal Task Handle(FitbitShow fitbitShow)
+        internal Task Handle<T>(BaseDisplayWidget displayWidget) where T : Displayable
         {
-            _fitbitState.SetEnabled(fitbitShow.DisplayFitbit);
-            return Task.CompletedTask;
-        }
+            Displayable state = _displayableDictionary[typeof(T)];
+            state.SetEnabled(displayWidget.Display);
 
-        internal Task Handle(GoogleFitShow googleFitShow)
-        {
-            _googleFitState.SetEnabled(googleFitShow.DisplayGoogleFit);
-            return Task.CompletedTask;
-        }
-
-        internal Task Handle(SoccerShow soccerShow)
-        {
-            _bundesligaState.SetEnabled(soccerShow.DisplaySoccer);
             return Task.CompletedTask;
         }
 
         internal Task Handle(MirrorShow mirrorShow)
         {
-            _bringState.SetEnabled(mirrorShow.ShowWidgets);
-            _calendarState.SetEnabled(mirrorShow.ShowWidgets);
-            _fuelState.SetEnabled(mirrorShow.ShowWidgets);
-            _weatherState.SetEnabled(mirrorShow.ShowWidgets);
-            _spotifyState.SetEnabled(mirrorShow.ShowWidgets);
-            _routeState.SetEnabled(mirrorShow.ShowWidgets);
-            _clockState.SetEnabled(mirrorShow.ShowWidgets);
-            _vvsState.SetEnabled(mirrorShow.ShowWidgets);
-            _fitbitState.SetEnabled(mirrorShow.ShowWidgets);
-            _googleFitState.SetEnabled(mirrorShow.ShowWidgets);
-            _bundesligaState.SetEnabled(mirrorShow.ShowWidgets);
+            foreach (KeyValuePair<Type, Displayable> entry in _displayableDictionary)
+            {
+                entry.Value.SetEnabled(mirrorShow.Display);
+            }
 
             return Task.CompletedTask;
         }

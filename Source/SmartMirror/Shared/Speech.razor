@@ -29,7 +29,7 @@
 @inject HueState HueState
 @inject FitbitState FitbitState
 @inject NewsState NewsState
-@inject BundesligaState SoccerState
+@inject SoccerState SoccerState
 @inject GoogleFitState GoogleFitState
 
 <div class="container-fluid card-1 speech">
@@ -60,6 +60,7 @@
             <span><img src="/icons/status/hue.png" width="25" height="25" class="icon @hueDisplay" /></span>
             <span><img src="/icons/status/googleFit.png" width="25" height="25" class="icon @googleFitDisplay" /></span>
             <span><img src="/icons/status/soccer.png" width="25" height="25" class="icon @soccerDisplay" /></span>
+            <span><img src="/icons/status/news.png" width="25" height="25" class="icon @newsDisplay" /></span>
         </div>
     </div>
 </div>
@@ -84,8 +85,6 @@
     string hueDisplay;
     string googleFitDisplay;
     string soccerDisplay;
-
-    // TODO
     string newsDisplay;
 
     private static Func<string, Task> action;
@@ -133,6 +132,7 @@
         hueDisplay = HueState.Enabled ? "icon-white" : "icon-disabled";
         googleFitDisplay = GoogleFitState.Enabled ? "icon-white" : "icon-disabled";
         soccerDisplay = SoccerState.Enabled ? "icon-white" : "icon-disabled";
+        newsDisplay = NewsState.Enabled ? "icon-white" : "icon-disabled";
     }
 
     private void SetInitialWidgets()

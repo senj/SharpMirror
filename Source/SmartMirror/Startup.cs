@@ -54,7 +54,7 @@ namespace SmartMirror
             services.AddScoped<CalendarService>();
             services.AddScoped<NewsService>();
             services.AddScoped<JokesQuotesService>();
-            services.AddScoped<BundesligaService>();
+            services.AddScoped<SoccerService>();
             services.AddScoped<StockDataService>();
             services.AddScoped<HueService>();
             services.AddScoped<FitbitService>();
@@ -76,7 +76,7 @@ namespace SmartMirror
             services.AddScoped<FitbitState>();
             services.AddScoped<NewsState>();
             services.AddScoped<GoogleFitState>();
-            services.AddScoped<BundesligaState>();
+            services.AddScoped<SoccerState>();
 
             services.AddSingleton<HttpClient>();
 

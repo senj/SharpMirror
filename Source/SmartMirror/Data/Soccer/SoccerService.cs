@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Soccer
 {
-    public class BundesligaService
+    public class SoccerService
     {
         private const string SOCCER_CACHE_KEY = "buliga";
-        private readonly ILogger<BundesligaService> _logger;
+        private readonly ILogger<SoccerService> _logger;
         private readonly HttpClient _httpClient;
         private readonly IDistributedCache _cache;
 
-        public BundesligaService(ILogger<BundesligaService> logger, HttpClient httpClient, IDistributedCache cache)
+        public SoccerService(ILogger<SoccerService> logger, HttpClient httpClient, IDistributedCache cache)
         {
             _logger = logger;
             _httpClient = httpClient;

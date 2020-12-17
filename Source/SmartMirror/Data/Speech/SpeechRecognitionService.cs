@@ -2,7 +2,19 @@
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SmartMirror.Data.Bring;
+using SmartMirror.Data.Calendar;
+using SmartMirror.Data.Fitbit;
+using SmartMirror.Data.Fuel;
+using SmartMirror.Data.GoogleFit;
+using SmartMirror.Data.News;
+using SmartMirror.Data.Routes;
+using SmartMirror.Data.Soccer;
+using SmartMirror.Data.Spotify;
+using SmartMirror.Data.VVS;
+using SmartMirror.Data.WeatherForecast;
 using SmartMirror.Intents;
+using SmartMirror.SmartHome.Hue;
 using System;
 using System.Threading.Tasks;
 
@@ -77,16 +89,16 @@ namespace SmartMirror.Data.Speech
                     await _intentExecutor.Handle(new HueTurnOff(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult();
                 case "Hue.DisplayDetails":
-                    await _intentExecutor.Handle(new HueDisplayDetails(true));
+                    await _intentExecutor.Handle<HueState>(new HueDisplayDetails(true));
                     return new SpeechOutputResult();
                 case "Hue.HideDetails":
-                    await _intentExecutor.Handle(new HueDisplayDetails(false));
+                    await _intentExecutor.Handle<HueState>(new HueDisplayDetails(false));
                     return new SpeechOutputResult();
                 case "Hue.Show":
-                    await _intentExecutor.Handle(new HueShow(true));
+                    await _intentExecutor.Handle<HueState>(new HueShow(true));
                     return new SpeechOutputResult();
                 case "Hue.Hide":
-                    await _intentExecutor.Handle(new HueShow(false));
+                    await _intentExecutor.Handle<HueState>(new HueShow(false));
                     return new SpeechOutputResult();
                 case "Weather.CheckWeatherValue":
                 case "Weather.QueryWeather":
@@ -95,16 +107,16 @@ namespace SmartMirror.Data.Speech
                         return new SpeechOutputResult($"Heute gibt es in Wendlingen {forecast.Daily[0].Temp.Day} Grad und es ist {forecast.Daily[0].Weather[0].Description}.");
                     }
                 case "Weather.Show":
-                    await _intentExecutor.Handle(new WeatherShow(true));
+                    await _intentExecutor.Handle<WeatherState>(new WeatherShow(true));
                     return new SpeechOutputResult();
                 case "Weather.Hide":
-                    await _intentExecutor.Handle(new WeatherShow(false));
+                    await _intentExecutor.Handle<WeatherState>(new WeatherShow(false));
                     return new SpeechOutputResult();
                 case "Weather.DisplayForecast":
-                    await _intentExecutor.Handle(new WeatherDisplayForecast(true));
+                    await _intentExecutor.Handle<WeatherState>(new WeatherDisplayForecast(true));
                     return new SpeechOutputResult();
                 case "Weather.HideForecast":
-                    await _intentExecutor.Handle(new WeatherDisplayForecast(false));
+                    await _intentExecutor.Handle<WeatherState>(new WeatherDisplayForecast(false));
                     return new SpeechOutputResult();
                 case "Bring.AddToDo":
                     await _intentExecutor.Handle(new BringAddToDo(predictionResponse.Prediction.Entities));
@@ -113,64 +125,64 @@ namespace SmartMirror.Data.Speech
                     await _intentExecutor.Handle(new BringDeleteToDo(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult();
                 case "Bring.DisplayDetails":
-                    await _intentExecutor.Handle(new BringDisplayDetails(true));
+                    await _intentExecutor.Handle<BringState>(new BringDisplayDetails(true));
                     return new SpeechOutputResult();
                 case "Bring.Show":
-                    await _intentExecutor.Handle(new BringShow(true));
+                    await _intentExecutor.Handle<BringState>(new BringShow(true));
                     return new SpeechOutputResult();
                 case "Bring.Hide":
-                    await _intentExecutor.Handle(new BringShow(false));
+                    await _intentExecutor.Handle<BringState>(new BringShow(false));
                     return new SpeechOutputResult();
                 case "Bring.HideDetails":
-                    await _intentExecutor.Handle(new BringDisplayDetails(false));
+                    await _intentExecutor.Handle<BringState>(new BringDisplayDetails(false));
                     return new SpeechOutputResult();
                 case "Routes.GetRoute":
                         var routeResponse = await _intentExecutor.Handle(new RoutesGetRoute(predictionResponse.Prediction.Entities));
                         return new SpeechOutputResult("Route gefunden");
                 case "Routes.DisplayDetails":
-                    await _intentExecutor.Handle(new RoutesDisplayDetails(true));
+                    await _intentExecutor.Handle<RouteState>(new RoutesDisplayDetails(true));
                     return new SpeechOutputResult();
                 case "Routes.HideDetails":
-                    await _intentExecutor.Handle(new RoutesDisplayDetails(false));
+                    await _intentExecutor.Handle<RouteState>(new RoutesDisplayDetails(false));
                     return new SpeechOutputResult();
                 case "Routes.Show":
-                    await _intentExecutor.Handle(new RoutesShow(true));
+                    await _intentExecutor.Handle<RouteState>(new RoutesShow(true));
                     return new SpeechOutputResult();
                 case "Routes.Hide":
-                    await _intentExecutor.Handle(new RoutesShow(false));
+                    await _intentExecutor.Handle<RouteState>(new RoutesShow(false));
                     return new SpeechOutputResult();
                 case "Spotify.NextSong":
                     await _intentExecutor.Handle(new SpotifyNextSong());
                     return new SpeechOutputResult();
                 case "Spotify.Show":
-                    await _intentExecutor.Handle(new SpotifyShow(true));
+                    await _intentExecutor.Handle<SpotifyState>(new SpotifyShow(true));
                     return new SpeechOutputResult();
                 case "Spotify.Hide":
-                    await _intentExecutor.Handle(new SpotifyShow(false));
+                    await _intentExecutor.Handle<SpotifyState>(new SpotifyShow(false));
                     return new SpeechOutputResult();
                 case "Calendar.DisplayDays":
                     await _intentExecutor.Handle(new CalendarDisplayDays(predictionResponse.Prediction.Entities));
                     return new SpeechOutputResult();
                 case "Calendar.Show":
-                    await _intentExecutor.Handle(new CalendarShow(true));
+                    await _intentExecutor.Handle<CalendarState>(new CalendarShow(true));
                     return new SpeechOutputResult();
                 case "Calendar.Hide":
-                    await _intentExecutor.Handle(new CalendarShow(false));
+                    await _intentExecutor.Handle<CalendarState>(new CalendarShow(false));
                     return new SpeechOutputResult();
                 case "Fuel.Show":
-                    await _intentExecutor.Handle(new FuelShow(true));
+                    await _intentExecutor.Handle<FuelState>(new FuelShow(true));
                     return new SpeechOutputResult();
                 case "Fuel.Hide":
-                    await _intentExecutor.Handle(new FuelShow(false));
+                    await _intentExecutor.Handle<FuelState>(new FuelShow(false));
                     return new SpeechOutputResult();
                 case "Fuel.Refresh":
                     await _intentExecutor.Handle(new FuelRefresh());
                     return new SpeechOutputResult();
                 case "Fuel.DisplayDetails":
-                    await _intentExecutor.Handle(new FuelDisplayDetails(true));
+                    await _intentExecutor.Handle<FuelState>(new FuelDisplayDetails(true));
                     return new SpeechOutputResult();
                 case "Fuel.HideDetails":
-                    await _intentExecutor.Handle(new FuelDisplayDetails(false));
+                    await _intentExecutor.Handle<FuelState>(new FuelDisplayDetails(false));
                     return new SpeechOutputResult();
                 case "Clock.Timer":
                     await _intentExecutor.Handle(new ClockTimer(predictionResponse.Prediction.Entities));
@@ -185,28 +197,34 @@ namespace SmartMirror.Data.Speech
                     await _intentExecutor.Handle(new StopClockTimer());
                     return new SpeechOutputResult();
                 case "Vvs.Show":
-                    await _intentExecutor.Handle(new VvsShow(true));
+                    await _intentExecutor.Handle<VvsState>(new VvsShow(true));
                     return new SpeechOutputResult();
                 case "Vvs.Hide":
-                    await _intentExecutor.Handle(new VvsShow(false));
+                    await _intentExecutor.Handle<VvsState>(new VvsShow(false));
                     return new SpeechOutputResult();
                 case "Fitbit.Show":
-                    await _intentExecutor.Handle(new FitbitShow(true));
+                    await _intentExecutor.Handle<FitbitState>(new FitbitShow(true));
                     return new SpeechOutputResult();
                 case "Fitbit.Hide":
-                    await _intentExecutor.Handle(new FitbitShow(false));
+                    await _intentExecutor.Handle<FitbitState>(new FitbitShow(false));
                     return new SpeechOutputResult();
                 case "Googlefit.Show":
-                    await _intentExecutor.Handle(new GoogleFitShow(true));
+                    await _intentExecutor.Handle<GoogleFitState>(new GoogleFitShow(true));
                     return new SpeechOutputResult();
                 case "Googlefit.Hide":
-                    await _intentExecutor.Handle(new GoogleFitShow(false));
+                    await _intentExecutor.Handle<GoogleFitState>(new GoogleFitShow(false));
                     return new SpeechOutputResult();
                 case "Soccer.Show":
-                    await _intentExecutor.Handle(new SoccerShow(true));
+                    await _intentExecutor.Handle<SoccerState>(new SoccerShow(true));
                     return new SpeechOutputResult();
                 case "Soccer.Hide":
-                    await _intentExecutor.Handle(new SoccerShow(false));
+                    await _intentExecutor.Handle<SoccerState>(new SoccerShow(false));
+                    return new SpeechOutputResult();
+                case "News.Show":
+                    await _intentExecutor.Handle<NewsState>(new NewsShow(true));
+                    return new SpeechOutputResult();
+                case "News.Hide":
+                    await _intentExecutor.Handle<NewsState>(new NewsShow(false));
                     return new SpeechOutputResult();
                 case "Mirror.Show":
                     await _intentExecutor.Handle(new MirrorShow(true));

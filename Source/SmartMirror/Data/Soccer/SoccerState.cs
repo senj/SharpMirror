@@ -2,20 +2,20 @@
 
 namespace SmartMirror.Data.Soccer
 {
-    public class BundesligaState : Displayable
+    public class SoccerState : Displayable
     {
-        private readonly BundesligaService _bundesligaService;
+        private readonly SoccerService _soccerService;
 
-        public BundesligaState(BundesligaService bundesligaService)
+        public SoccerState(SoccerService soccerService)
         {
-            _bundesligaService = bundesligaService;
+            _soccerService = soccerService;
         }
 
         public BundesligaModel MatchResults { get; private set; }
 
         public async Task<BundesligaModel> GetCurrentPlayDayAsync()
         {
-            MatchResults = await _bundesligaService.GetCurrentPlayDayAsync();
+            MatchResults = await _soccerService.GetCurrentPlayDayAsync();
             RaiseOnChangeEvent();
 
             return MatchResults;
