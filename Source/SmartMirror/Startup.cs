@@ -63,7 +63,7 @@ namespace SmartMirror
             services.AddScoped<SpeechRecognitionService>();
             services.AddScoped<GoogleFitService>();
 
-            // State (make scoped for multiple users)
+            // State
             services.AddScoped<BringState>();
             services.AddScoped<WeatherState>();
             services.AddScoped<RouteState>();

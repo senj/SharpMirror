@@ -8,7 +8,7 @@ It's a development project and no out of the box product.
 There is heavy use of (experimental) browser APIs, best experience is with Chrome.
 
 ## Modules right now:
-- Clock
+- Clock & Timer
 - Calendar
 - Weather (current and next seven days)
 - News (choose your own RSS feed)
@@ -21,13 +21,8 @@ There is heavy use of (experimental) browser APIs, best experience is with Chrom
 - German football results (1. Bundesliga)
 - Space (moon phases, ISS live feed)
 - Chuck norris jokes
-- Static quotes
 - Google FIT Api
 - Route/Traffic information
-
-## Featuers
-- Customizable speech input & output
-- Different profiles / layouts
 
 ## API Access
 You need some ApiKeys or accounts to use all of the features.
@@ -58,25 +53,22 @@ For most of the APIs, request limits apply. Therefore this project makes heavy u
 - Spotify: login here and create a client application: https://developer.spotify.com/dashboard/ (Spotify uses OAuth2)
 - Fitbit: login here and create a client application: https://dev.fitbit.com/login (Fitbit uses OAuth2)
 - Route/Traffic: Azure Map Service
-
-## LUIS
-Use LUISGen to generate model for LUIS response
-https://github.com/microsoft/botbuilder-tools/blob/master/packages/LUISGen/src/npm/readme.md
-Export data model from luis.ai portal as JSON, then run `LUISGen <exported-luis-app>.json -cs ClassToGenerate -o`
+- Google FIT: Google Developer Console
 
 ## Build & Run
 - This can be built and run as a docker container.
 - Use the *Dockerfile* to build the docker container and *docker-compose.yml* to run the container.
 - You can also run the project with ASP.NET Core tools (https://dotnet.microsoft.com/download)
 
-This project can be hosted in a docker container on a raspberry pi. It should run within your local network for features like Hue Lights to work. Speech input / output only works using HTTPS, right now the container must be deployed behind a nginx reverse proxy terminating TLS. 
+This project can be hosted in a docker container on a raspberry pi. It should run within your local network for features like Hue Lights to work.
+Speech input / output only works using HTTPS, right now the container must be deployed behind a nginx reverse proxy terminating TLS. 
 
-There is also no concept of different users/logins right now, so changes to the layout on the server affects each client.
+There is also no concept of different users/logins right now, so your network should not be reachable from the outside.
 
 ## Software Design
-- Each component must work on it's own and can be (de)activated at every time
+- Each component must work on it's own and can be (de)activated at every time using speach input
 - There is no user input except speech. Therefore components must refresh themselfes on a regular basis or support speech commands.  
 
 ## Interface Design
 - Inspired by: https://material.io/design/
-- Because this application is used behind a mirror glass (e.g. https://www.brigla-shop.de/smart-mirror-1694.html) the background must be dark with high contrast to the content. 
+- Because this application is used behind a mirror glass the background should be dark with high contrast to the content. 
