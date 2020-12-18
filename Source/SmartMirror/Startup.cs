@@ -23,6 +23,7 @@ using SmartMirror.Data.VVS;
 using SmartMirror.Data.WeatherForecast;
 using SmartMirror.FakeAspNetIdentity;
 using SmartMirror.SmartHome.Hue;
+using System;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
@@ -32,6 +33,7 @@ namespace SmartMirror
     public class Startup
     {
         private readonly IConfiguration _configuration;
+        private HttpClient _httpClient;
 
         public Startup(IConfiguration configuration)
         {
@@ -78,7 +80,12 @@ namespace SmartMirror
             services.AddScoped<GoogleFitState>();
             services.AddScoped<SoccerState>();
 
-            services.AddSingleton<HttpClient>();
+            _httpClient = new HttpClient()
+            {
+                Timeout = TimeSpan.FromSeconds(10)
+            };
+
+            services.AddSingleton<HttpClient>(_httpClient);
 
             IConfigurationSection redisSection = _configuration.GetSection(nameof(RedisConfiguration));
             RedisConfiguration redisConfiguration = new RedisConfiguration();
@@ -119,8 +126,10 @@ namespace SmartMirror
             .AddSignInManager<InMemorySignInManager>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
+            applicationLifetime.ApplicationStopped.Register(OnApplicationStopped);
+
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();
@@ -163,6 +172,12 @@ namespace SmartMirror
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+        }
+
+        private void OnApplicationStopped()
+        {
+            _httpClient?.Dispose();
+            _httpClient = null;
         }
     }
 }
