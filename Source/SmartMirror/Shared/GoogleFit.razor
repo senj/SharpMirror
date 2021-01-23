@@ -22,12 +22,26 @@
                 <p>@CodeResponse?.verification_url</p>
             }
 
-            @if (Weight != null)
-            {
-                <div class="col-12">
-                    <canvas id="@PieElement" width="400" height="150"></canvas>
-                </div>
-            }
+        <row>
+            <div class="col-12">
+                @if (Weight != null)
+                {
+                    <div class="col-12">
+                        <canvas id="@PieElementWeight" width="400" height="150"></canvas>
+                    </div>
+                }
+            </div>
+        </row>
+        <row>
+            <div class="col-12">
+                @if (Activity != null)
+                {
+                    <div class="col-12">
+                        <canvas id="@PieElementActivity" width="400" height="150"></canvas>
+                    </div>
+                }
+            </div>
+        </row>
         </div>
     </div>
 </div>
@@ -35,25 +49,29 @@
 
 @code {
     private bool Enabled => State.Enabled;
-    private string PieElement;
+    private string PieElementWeight;
+    private string PieElementActivity;
 
     private Timer Timer { get; set; }
     private string Time { get; set; }
 
     private GoogleCodeResponse CodeResponse => State.GetGoogleCodeResponse(User);
     private IEnumerable<WeightDataPoint> Weight => State.GetWeightData(User);
+    private IEnumerable<ActivityDataPoint> Activity => State.GetActivityData(User);
     private string Token => State.GetToken(User);
 
-    private Dictionary<string, Dataset<float>> datasets { get; set; }
+    private Dictionary<string, Dataset<float>> weightDatasets { get; set; }
+    private Dictionary<string, Dataset<float>> activityDatasets { get; set; }
 
     [Parameter]
     public string User { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        PieElement = $"{User}googleFit";
+        PieElementWeight = $"{User}googleWeight";
+        PieElementActivity = $"{User}googleActivity";
         State.OnChange += StateHasChangedAsync;
-        
+
         if (string.IsNullOrEmpty(Token))
         {
             await State.StartAuthorizationAsync(User);
@@ -71,6 +89,7 @@
                     {
                         await State.UpdateWeightData(User, 30);
                         PopulateWeightDatasets($"{User} Weight");
+                        PopulateActivityDatasets();
                         StateHasChanged();
                     }
                 }
@@ -87,21 +106,27 @@
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        if (datasets?.Any() == true && Enabled)
+        if (weightDatasets?.Any() == true && Enabled)
         {
-            await JSRuntime.InvokeAsync<string>("renderChart", PieElement, Weight.Select(p => p.StartTime.ToShortDateString()), datasets.Values);
+            await JSRuntime.InvokeAsync<string>("renderChart", PieElementWeight, Weight.Select(p => p.StartTime.ToShortDateString()), weightDatasets.Values);
+        }
+
+        if (activityDatasets?.Any() == true && Enabled)
+        {
+            await JSRuntime.InvokeAsync<string>("renderChart", PieElementActivity, 
+                Activity.Where(p => p.Type == 7 || p.Type == 8).Select(p => p.StartTime.ToShortDateString()).Distinct(), activityDatasets.Values);
         }
     }
 
     private void PopulateWeightDatasets(string label)
     {
-        datasets = new Dictionary<string, Dataset<float>>();
+        weightDatasets = new Dictionary<string, Dataset<float>>();
         foreach (var weightEntry in Weight)
         {
-            if (!datasets.ContainsKey(label) && weightEntry.Value != null)
+            if (!weightDatasets.ContainsKey(label) && weightEntry.Value != null)
             {
                 int r = 255, g = 255, b = 255;
-                datasets.Add(label, new Dataset<float>
+                weightDatasets.Add(label, new Dataset<float>
                 {
                     id = label,
                     label = label,
@@ -114,8 +139,74 @@
             }
             else
             {
-                var stationDataset = datasets[label];
-                stationDataset.data.Add(weightEntry.Value.Value);
+                var tempDataset = weightDatasets[label];
+                tempDataset.data.Add(weightEntry.Value.Value);
+                weightDatasets[label] = tempDataset;
+            }
+        }
+    }
+
+    private void PopulateActivityDatasets()
+    {
+        activityDatasets = new Dictionary<string, Dataset<float>>();
+
+        var walkingActivities = Activity
+            .Where(p => p.Type == 7)
+            .GroupBy(p => p.StartTime.DayOfYear)
+            .ToDictionary(x => x.Key, y => (y.ToList().Sum(p => p.Duration.TotalMinutes)));
+
+        var runningActivities = Activity
+            .Where(p => p.Type == 8)
+            .GroupBy(p => p.StartTime.DayOfYear)
+            .ToDictionary(x => x.Key, y => (y.ToList().Sum(p => p.Duration.TotalMinutes)));
+
+        string key = "Walking";
+        foreach (var activityEntry in walkingActivities)
+        {
+            if (!activityDatasets.ContainsKey(key) && key != null)
+            {
+                int r = 255, g = 255, b = 255;
+                activityDatasets.Add(key, new Dataset<float>
+                {
+                    id = key,
+                    label = key,
+                    data = new List<float> { (float)activityEntry.Value },
+                    fill = false,
+                    backgroundColor = new string[] { $"rgba({r}, {g}, {b}, 1)" },
+                    borderColor = new string[] { $"rgba({r}, {g}, {b}, 1)" },
+                    borderWidth = 1
+                });
+            }
+            else
+            {
+                var tempDataset = activityDatasets[key];
+                tempDataset.data.Add((float)activityEntry.Value);
+                activityDatasets[key] = tempDataset;
+            }
+        }
+
+        key = "Running";
+        foreach (var activityEntry in runningActivities)
+        {
+            if (!activityDatasets.ContainsKey(key) && key != null)
+            {
+                int r = 255, g = 255, b = 255;
+                activityDatasets.Add(key, new Dataset<float>
+                {
+                    id = key,
+                    label = key,
+                    data = new List<float> { (float)activityEntry.Value },
+                    fill = false,
+                    backgroundColor = new string[] { $"rgba({r}, {g}, {b}, 1)" },
+                    borderColor = new string[] { $"rgba({r}, {g}, {b}, 1)" },
+                    borderWidth = 1
+                });
+            }
+            else
+            {
+                var tempDataset = activityDatasets[key];
+                tempDataset.data.Add((float)activityEntry.Value);
+                activityDatasets[key] = tempDataset;
             }
         }
     }
@@ -126,6 +217,7 @@
         {
             await State.UpdateWeightData(User, 30);
             PopulateWeightDatasets($"Weight");
+            PopulateActivityDatasets();
         }
 
         await InvokeAsync(StateHasChanged);

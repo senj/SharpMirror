@@ -59,7 +59,7 @@ namespace SmartMirror
             services.AddScoped<SoccerService>();
             services.AddScoped<StockDataService>();
             services.AddScoped<HueService>();
-            services.AddScoped<FitbitService>();
+            //services.AddScoped<FitbitService>();
             services.AddScoped<BringService>();
             services.AddScoped<RouteService>();
             services.AddScoped<SpeechRecognitionService>();
@@ -75,7 +75,7 @@ namespace SmartMirror
             services.AddScoped<ClockState>();
             services.AddScoped<SpotifyState>();
             services.AddScoped<VvsState>();
-            services.AddScoped<FitbitState>();
+            //services.AddScoped<FitbitState>();
             services.AddScoped<NewsState>();
             services.AddScoped<GoogleFitState>();
             services.AddScoped<SoccerState>();
@@ -108,7 +108,7 @@ namespace SmartMirror
             services.Configure<WeatherConfiguration>(_configuration.GetSection(nameof(WeatherConfiguration)));
             services.Configure<FuelConfiguration>(_configuration.GetSection(nameof(FuelConfiguration)));
             services.Configure<SpotifyConfiguration>(_configuration.GetSection(nameof(SpotifyConfiguration)));
-            services.Configure<FitbitConfiguration>(_configuration.GetSection(nameof(FitbitConfiguration)));
+            //services.Configure<FitbitConfiguration>(_configuration.GetSection(nameof(FitbitConfiguration)));
             services.Configure<CalendarConfiguration>(_configuration.GetSection(nameof(CalendarConfiguration)));
             services.Configure<NewsConfiguration>(_configuration.GetSection(nameof(NewsConfiguration)));
             services.Configure<ProfileConfiguration>(_configuration.GetSection(nameof(ProfileConfiguration)));

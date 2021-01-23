@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using SmartMirror.Data.GoogleFit.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,6 +91,34 @@ namespace SmartMirror.Data.GoogleFit
             };
         }
 
+        public async Task GetDataSources(string accessToken, int take)
+        {
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://www.googleapis.com/fitness/v1/users/me/dataSources");
+            request.Headers.Add("Authorization", $"Bearer {accessToken}");
+
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            GoogleDataSources dataSources = JsonConvert.DeserializeObject<GoogleDataSources>(content);
+        }
+
+        public async Task<IEnumerable<ActivityDataPoint>> GetActivities(string accessToken, int take)
+        {
+            string dataSourceId = "derived:com.google.activity.segment:com.google.android.gms:merge_activity_segments";
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://www.googleapis.com/fitness/v1/users/me/dataSources/{dataSourceId}/dataPointChanges");
+            request.Headers.Add("Authorization", $"Bearer {accessToken}");
+
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
+            string content = await response.Content.ReadAsStringAsync();
+
+            GoogleActivitySegments activitySegments = JsonConvert.DeserializeObject<GoogleActivitySegments>(content);
+            IEnumerable<ActivityDataPoint> activityValues = activitySegments?.insertedDataPoint?
+                .Select(p => new ActivityDataPoint(p.startTimeNanos, p.endTimeNanos, p.value.FirstOrDefault()?.intVal));
+
+            return activityValues
+                .OrderBy(p => p.StartTime);
+        }
+
         public async Task<IEnumerable<WeightDataPoint>> GetWeight(string accessToken, int take)
         {
             string dataSourceId = "derived:com.google.weight:com.google.android.gms:merge_weight";
@@ -99,7 +128,7 @@ namespace SmartMirror.Data.GoogleFit
             HttpResponseMessage response = await _httpClient.SendAsync(request);
             string content = await response.Content.ReadAsStringAsync();
 
-            GoogleDerivedWeightResponse weightResponse = JsonConvert.DeserializeObject<GoogleDerivedWeightResponse>(await response.Content.ReadAsStringAsync());
+            GoogleDerivedWeightResponse weightResponse = JsonConvert.DeserializeObject<GoogleDerivedWeightResponse>(content);
             IEnumerable<WeightDataPoint> weightValues = weightResponse?.insertedDataPoint?
                 .Select(p => new WeightDataPoint(p.startTimeNanos, p.endTimeNanos, p.value.FirstOrDefault()?.fpVal));
 

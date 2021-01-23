@@ -13,6 +13,7 @@ namespace SmartMirror.Data.GoogleFit
             _googleFitService = googleFitService;
 
             InitNewUserState<IEnumerable<WeightDataPoint>>();
+            InitNewUserState<IEnumerable<ActivityDataPoint>>();
             InitNewUserState<GoogleCodeResponse>();
             InitNewUserState<GoogleAccessToken>();
         }
@@ -20,6 +21,11 @@ namespace SmartMirror.Data.GoogleFit
         public IEnumerable<WeightDataPoint> GetWeightData(string user)
         {
             return GetUserState<IEnumerable<WeightDataPoint>>(user);
+        }
+
+        public IEnumerable<ActivityDataPoint> GetActivityData(string user)
+        {
+            return GetUserState<IEnumerable<ActivityDataPoint>>(user);
         }
 
         public GoogleCodeResponse GetGoogleCodeResponse(string user)
@@ -51,8 +57,13 @@ namespace SmartMirror.Data.GoogleFit
         public async Task UpdateWeightData(string user, int take)
         {
             string token = GetToken(user);
+
+            //await _googleFitService.GetDataSources(token, take);
+            IEnumerable<ActivityDataPoint> activities = await _googleFitService.GetActivities(token, take);
             IEnumerable<WeightDataPoint> weightData = await _googleFitService.GetWeight(token, take);
+            
             SetUserState<IEnumerable<WeightDataPoint>>(user, weightData);
+            SetUserState<IEnumerable<ActivityDataPoint>>(user, activities);
             RaiseOnChangeEvent();
         }
     }
