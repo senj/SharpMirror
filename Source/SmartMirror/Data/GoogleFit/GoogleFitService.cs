@@ -102,9 +102,8 @@ namespace SmartMirror.Data.GoogleFit
             GoogleDataSources dataSources = JsonConvert.DeserializeObject<GoogleDataSources>(content);
         }
 
-        public async Task<IEnumerable<ActivityDataPoint>> GetActivities(string accessToken, int take)
+        public async Task<IEnumerable<ActivityDataPoint>> GetActivities(string dataSourceId, string accessToken, int take)
         {
-            string dataSourceId = "derived:com.google.activity.segment:com.google.android.gms:merge_activity_segments";
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://www.googleapis.com/fitness/v1/users/me/dataSources/{dataSourceId}/dataPointChanges");
             request.Headers.Add("Authorization", $"Bearer {accessToken}");
 

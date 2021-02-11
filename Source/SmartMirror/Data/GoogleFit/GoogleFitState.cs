@@ -58,8 +58,14 @@ namespace SmartMirror.Data.GoogleFit
         {
             string token = GetToken(user);
 
-            //await _googleFitService.GetDataSources(token, take);
-            IEnumerable<ActivityDataPoint> activities = await _googleFitService.GetActivities(token, take);
+            await _googleFitService.GetDataSources(token, take);
+
+            IEnumerable<ActivityDataPoint> activities = await _googleFitService.GetActivities("derived:com.google.calories.expended:com.google.android.gms:from_activities", token, take);
+            await _googleFitService.GetActivities("derived:com.google.activity.segment:com.google.android.gms:merge_activity_segments", token, take);
+            await _googleFitService.GetActivities("derived:com.google.active_minutes:com.google.android.gms:merge_active_minutes", token, take);
+            await _googleFitService.GetActivities("derived:com.google.activity.segment:com.google.android.gms:Google:Pixel 4a:e630aff8:from_activity_samples\u003c-derived:com.google.activity.samples:com.google.android.gms:Google:Pixel 4a:e630aff8:detailed", token, take);
+            await _googleFitService.GetActivities("derived:com.google.active_minutes:com.google.android.gms:from_activity\u003c-merge_activity_segments", token, take);
+
             IEnumerable<WeightDataPoint> weightData = await _googleFitService.GetWeight(token, take);
             
             SetUserState<IEnumerable<WeightDataPoint>>(user, weightData);
