@@ -18,7 +18,7 @@ steps:
     arguments: '--build-arg PROJECT_VERSION=$(Build.SourceBranchName)'
     dockerFile: 'Dockerfile'
     imageName: '$(Build.Repository.Name):$(Build.BuildId)'
-    includeLatestTag: true
+    includeLatestTag: false
 - task: Docker@1
   displayName: 'Push application image to "container registry"'
   inputs:
