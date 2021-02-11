@@ -5,7 +5,7 @@ services:
     container_name: smartmirror
     restart: always
     ports:
-      - "80:80"
+      - "81:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=#{ASPNETCORE_ENVIRONMENT}#
       - WeatherConfiguration__ApiKey=#{WeatherConfiguration__ApiKey}#
