@@ -25,7 +25,7 @@ steps:
     azureSubscriptionEndpoint: 'Visual Studio Enterprise Any'
     azureContainerRegistry: zailregistry.azurecr.io
     command: 'Push an image'
-    imageName: '$(Build.Repository.Name)'
+    imageName: '$(Build.Repository.Name):$(Build.BuildId)'
 - task: CopyFiles@2
   inputs:
     Contents: '**/docker-compose.yml'
