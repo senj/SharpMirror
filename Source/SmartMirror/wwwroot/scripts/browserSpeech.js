@@ -50,7 +50,7 @@ recognition.onresult = (event) => {
 
 function stopRecognition() {
     recognition.abort();
-    console.log('recognition aborted');
+    //console.log('recognition aborted');
 }
 
 function stopRecognitionByKeyword() {
@@ -62,7 +62,7 @@ function stopRecognitionByKeyword() {
 }
 
 recognition.onend = (event) => {
-    console.log('recognition ended');
+    //console.log('recognition ended');
 
     document.getElementById('speechStatusImageWeb').src = '/icons/speech/mic_off.png';
     document.getElementById('speechStatusImageMobile').src = '/icons/speech/mic_off.png';
@@ -74,11 +74,11 @@ recognition.onend = (event) => {
 }
 
 recognition.onspeechstart = (event) => {
-    console.log('speech started');
+    //console.log('speech started');
 }
 
 recognition.onspeechend = (event) => {
-    console.log('speech ended');
+    //console.log('speech ended');
 
     document.getElementById('speechStatusImageWeb').src = '/icons/speech/mic_off.png';
     document.getElementById('speechStatusImageMobile').src = '/icons/speech/mic_off.png';
@@ -94,7 +94,7 @@ recognition.onspeechend = (event) => {
 }
     
 recognition.onstart = (event) => {
-    console.log('recognition started');
+    //console.log('recognition started');
 
     if (display) {
         document.getElementById('speechStatusImageWeb').src = '/icons/speech/mic_on.png';

@@ -103,6 +103,11 @@ namespace SmartMirror.Data.GoogleFit
             IEnumerable<WeightDataPoint> weightValues = weightResponse?.insertedDataPoint?
                 .Select(p => new WeightDataPoint(p.startTimeNanos, p.endTimeNanos, p.value.FirstOrDefault()?.fpVal));
 
+            if (weightValues == null)
+            {
+                return Enumerable.Empty<WeightDataPoint>();
+            }
+
             return weightValues
                 .OrderBy(p => p.StartTime)
                 .Take(take);

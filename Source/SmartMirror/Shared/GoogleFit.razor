@@ -22,7 +22,7 @@
                 <p>@CodeResponse?.verification_url</p>
             }
 
-            @if (Weight != null)
+            @if (Weight?.Any() == true)
             {
                 <div class="col-12">
                     <canvas id="@PieElement" width="400" height="150"></canvas>
@@ -122,7 +122,7 @@
 
     public async void StateHasChangedAsync()
     {
-        if (!string.IsNullOrEmpty(Token) && Weight == null)
+        if (!string.IsNullOrEmpty(Token) && Weight?.Any() != true)
         {
             await State.UpdateWeightData(User, 30);
             PopulateWeightDatasets($"Weight");
