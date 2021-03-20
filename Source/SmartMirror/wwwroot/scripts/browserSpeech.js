@@ -38,7 +38,7 @@ recognition.onresult = (event) => {
 
             validateSpeechIntent(finalTranscript);
             interimTranscript = '';
-            setTimeout(stopRecognition, 2000)
+            setTimeout(stopRecognition, 750)
         } else {
             interimTranscript += transcript;
         }
@@ -46,7 +46,7 @@ recognition.onresult = (event) => {
 
     updateScroll();
     document.getElementById('speechTextOutput').innerHTML = finalTranscript + '<i style="color:#ddd;">' + interimTranscript + '</>';
-    }
+}
 
 function stopRecognition() {
     recognition.abort();
@@ -62,7 +62,7 @@ function stopRecognitionByKeyword() {
 }
 
 recognition.onend = (event) => {
-    //console.log('recognition ended');
+    console.log('recognition ended');
 
     document.getElementById('speechStatusImageWeb').src = '/icons/speech/mic_off.png';
     document.getElementById('speechStatusImageMobile').src = '/icons/speech/mic_off.png';
@@ -92,7 +92,7 @@ recognition.onspeechend = (event) => {
     finalTranscript = '';
     document.getElementById('speechTextOutput').innerHTML = ''
 }
-    
+
 recognition.onstart = (event) => {
     //console.log('recognition started');
 
@@ -102,7 +102,7 @@ recognition.onstart = (event) => {
         document.getElementById('speechTextOutput').style.display = "block";
         //document.getElementById('speechStatusImageWeb').style.display = "block";
 
-        speak("Ja?");
+        //speak("Ja?");
     }
 }
 
@@ -116,8 +116,7 @@ function updateScroll() {
 async function validateSpeechIntent(text) {
     var input = text.toLowerCase();
 
-    if (input.includes('spiegel') || input.includes('spiegel'))
-    {
+    if (input.includes('spiegel') || input.includes('spiegel')) {
         stopRecognitionByKeyword();
     }
     else if (display === true) {
