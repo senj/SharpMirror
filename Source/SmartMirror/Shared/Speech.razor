@@ -27,7 +27,7 @@
 @inject ClockState ClockState
 @inject VvsState VvsState
 @inject HueState HueState
-@inject FitbitState FitbitState
+@*@inject FitbitState FitbitState*@
 @inject NewsState NewsState
 @inject SoccerState SoccerState
 @inject GoogleFitState GoogleFitState
@@ -56,7 +56,7 @@
             <span><img src="/icons/status/routes.png" width="25" height="25" class="icon @routesDisplay" /></span>
             <span><img src="/icons/status/clock.png" width="25" height="25" class="icon @clockDisplay" /></span>
             <span><img src="/icons/status/train.png" width="25" height="25" class="icon @vvsDisplay" /></span>
-            <span><img src="/icons/status/fitbit.png" width="25" height="25" class="icon @fitbitDisplay" /></span>
+            @*<span><img src="/icons/status/fitbit.png" width="25" height="25" class="icon @fitbitDisplay" /></span>*@
             <span><img src="/icons/status/hue.png" width="25" height="25" class="icon @hueDisplay" /></span>
             <span><img src="/icons/status/googleFit.png" width="25" height="25" class="icon @googleFitDisplay" /></span>
             <span><img src="/icons/status/soccer.png" width="25" height="25" class="icon @soccerDisplay" /></span>
@@ -81,7 +81,7 @@
     string routesDisplay;
     string clockDisplay;
     string vvsDisplay;
-    string fitbitDisplay;
+    //string fitbitDisplay;
     string hueDisplay;
     string googleFitDisplay;
     string soccerDisplay;
@@ -128,7 +128,7 @@
         routesDisplay = RouteState.Enabled ? "icon-white" : "icon-disabled";
         clockDisplay = ClockState.Enabled ? "icon-white" : "icon-disabled";
         vvsDisplay = VvsState.Enabled ? "icon-white" : "icon-disabled";
-        fitbitDisplay = FitbitState.Enabled ? "icon-white" : "icon-disabled";
+        //fitbitDisplay = FitbitState.Enabled ? "icon-white" : "icon-disabled";
         hueDisplay = HueState.Enabled ? "icon-white" : "icon-disabled";
         googleFitDisplay = GoogleFitState.Enabled ? "icon-white" : "icon-disabled";
         soccerDisplay = SoccerState.Enabled ? "icon-white" : "icon-disabled";

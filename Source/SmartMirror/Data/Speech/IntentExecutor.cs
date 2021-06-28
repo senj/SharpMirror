@@ -34,7 +34,7 @@ namespace SmartMirror.Data.Speech
         private readonly FuelState _fuelState;
         private readonly ClockState _clockState;
         private readonly VvsState _vvsState;
-        private readonly FitbitState _fitbitState;
+        //private readonly FitbitState _fitbitState;
         private readonly GoogleFitState _googleFitState;
         private readonly SoccerState _bundesligaState;
         private readonly NewsState _newsState;
@@ -50,7 +50,7 @@ namespace SmartMirror.Data.Speech
             FuelState fuelState,
             ClockState clockState,
             VvsState vvsState,
-            FitbitState fitbitState,
+            //FitbitState fitbitState,
             GoogleFitState googleFitState,
             SoccerState bundesligaState,
             NewsState newsState)
@@ -65,7 +65,7 @@ namespace SmartMirror.Data.Speech
             _fuelState = fuelState;
             _clockState = clockState;
             _vvsState = vvsState;
-            _fitbitState = fitbitState;
+            //_fitbitState = fitbitState;
             _googleFitState = googleFitState;
             _bundesligaState = bundesligaState;
             _newsState = newsState;
@@ -81,7 +81,7 @@ namespace SmartMirror.Data.Speech
                 { typeof(FuelState), fuelState },
                 { typeof(ClockState), clockState },
                 { typeof(VvsState), vvsState },
-                { typeof(FitbitState), fitbitState },
+                //{ typeof(FitbitState), fitbitState },
                 { typeof(GoogleFitState), googleFitState },
                 { typeof(SoccerState), bundesligaState },
                 { typeof(NewsState), newsState },
