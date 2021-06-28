@@ -4,7 +4,22 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "SpeechRecognitionConfiguration__LuisSubscriptionKey": "c785e9df380b4848a7c6d86a5b78bd52",
+        "FitbitConfiguration__ClientSecret": "90bae0ac96f01495258ff3173cd0e987",
+        "SpotifyConfiguration__ClientSecret": "7cce734750b14b1db06bcddaec012bbe",
+        "CalendarConfiguration__CalendarUrl": "https://calendar.google.com/calendar/ical/b95sjs0lt9tj6uleq78hjn1nks%40group.calendar.google.com/private-eef609b7de7faf5d79c606165dd4ee18/basic.ics",
+        "SpeechRecognitionConfiguration__SpeechApiSubscriptionKey": "d30127fd27014d248a0e58a1435f73af",
+        "SpeechRecognitionConfiguration__LuisEndpoint": "https://zail-cognitive-us.cognitiveservices.azure.com/",
+        "RouteConfiguration__ApiKey": "JgNMr4FMmwBD0ZQqjwU8DP5WNORl4a3yADqaZHZvEP4",
+        "WeatherConfiguration__ApiKey": "df436ae219eb2e86e676adaaa2dfbaad",
+        "FuelConfiguration__ApiKey": "17a073e3-e789-9b7e-8c91-48ba862c4881",
+        "SpeechRecognitionConfiguration__LuisAppId": "9cae9447-7ce8-41d2-a7a4-5b6ee23b04fc",
+        "RedisConfiguration__Configuration": "zail.redis.cache.windows.net:6380,password=XHSyX++VzIQUwBdlvMV8oeblFEfAvGwDEH9S9AHy80E=,ssl=True,abortConnect=False",
+        "GoogleApiConfiguration__ClientSecret": "k2zCwzLAXSoFe2q_Mj_3cu7h",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BringConfiguration__Email": "lukas.zaiser@gmail.com",
+        "GoogleApiConfiguration__ClientId": "472345869237-gnl5ksfu22rc56h8g6fl6ei30eg6pp3f.apps.googleusercontent.com",
+        "BringConfiguration__Password": "wyRloj"
       },
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }

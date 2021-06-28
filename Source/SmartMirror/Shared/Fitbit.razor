@@ -1,42 +1,43 @@
-﻿@using SmartMirror.Data.Fitbit
-@using System.ComponentModel
-@inject IJSRuntime JSRuntime
-@inject FitbitState State
-@inject IStringLocalizer<Fitbit> Localizer
-@implements IDisposable
+﻿@*
 
-@if (!Enabled)
-{
-    return;
-}
+    @using SmartMirror.Data.Fitbit
+    @using System.ComponentModel
+    @inject IJSRuntime JSRuntime
+    @inject FitbitState State
+    @inject IStringLocalizer<Fitbit> Localizer
+    @implements IDisposable
 
-<div class="container-fluid card-1">
-    <div class="row">
-        <div class="col-12">
-            <p class="box-heading">FITBIT</p>
+    @if (!Enabled)
+    {
+        return;
+    }
+
+    <div class="container-fluid card-1">
+        <div class="row">
+            <div class="col-12">
+                <p class="box-heading">FITBIT</p>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            @if (User == null)
-            {
-                <p><em>Loading...</em></p>
-            }
-            else
-            {
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1"></h5>
-                    <small>@User.displayName</small>
+        <div class="row">
+            <div class="col-12">
+                @if (User == null)
+                {
+                    <p><em>Loading...</em></p>
+                }
+                else
+                {
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1"></h5>
+                        <small>@User.displayName</small>
+                    </div>
+                    <p class="mb-1">@Localizer["Average steps"]: @User.averageDailySteps</p>
+                    <br />
+                    <div>
+<canvas id="activityChart0" width="400" height="150"></canvas>
                 </div>
-                <p class="mb-1">@Localizer["Average steps"]: @User.averageDailySteps</p>
-                <br />
-                <div>
-                    @*daily activity*@
-                    <canvas id="activityChart0" width="400" height="150"></canvas>
-                </div>
-                <br />
-                <p class="mb-1">@Localizer["Sleep efficiency"]: @Sleep.sleep.Where(p => p.isMainSleep).FirstOrDefault()?.efficiency% - @Math.Round(Sleep.summary.totalMinutesAsleep / 60f, 1) / @Math.Round(Sleep.summary.totalTimeInBed / 60f, 1) @Localizer["hours slept"]</p>
-                <small>@Device?.deviceVersion: @Device?.batteryLevel% @Localizer["charged"]</small>
+<br />
+<p class="mb-1">@Localizer["Sleep efficiency"]: @Sleep.sleep.Where(p => p.isMainSleep).FirstOrDefault()?.efficiency% - @Math.Round(Sleep.summary.totalMinutesAsleep / 60f, 1) / @Math.Round(Sleep.summary.totalTimeInBed / 60f, 1) @Localizer["hours slept"]</p>
+<small>@Device?.deviceVersion: @Device?.batteryLevel% @Localizer["charged"]</small>
             }
         </div>
     </div>
@@ -227,3 +228,5 @@
         Timer?.Dispose();
     }
 }
+
+*@
