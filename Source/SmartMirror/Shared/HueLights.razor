@@ -14,38 +14,68 @@
             <p class="box-heading">HUE LIGHTS</p>
         </div>
     </div>
-    @if (LightInfo == null)
+    @if (LightInfo.Count == 0)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
-        <div class="row">
-            <div class="col-6">
-                <p>
-                    <b>@LightInfo.name</b> &emsp;
-                    @if (LightInfo.state?.on == true)
-                    {
-                        <span class="lightIcon">&#9746;</span>
-                    }
-                    else
-                    {
-                        <span class="lightIcon">&#9744;</span>
-                    }
-                </p>
-                @if (ShowDetails)
-                {                    
-                    double bri = Math.Round(Convert.ToDouble(LightInfo.state.bri) / 254 * 100, 0);
-                    double sat = Math.Round(Convert.ToDouble(LightInfo.state.sat) / 254 * 100, 0);
-                    string color = $"hsl({ Math.Round(Convert.ToDouble(LightInfo.state.hue) / 178, 0) }, {sat}%, {bri}%)!important";
+        for (int i = 1; i < LightInfo.Count + 1; i += 2)
+        {
+            <div class="row">
+                <div class="col-6">
+                    <p>
+                        @if (LightInfo[i].state?.on == true)
+                        {
+                            <b style="box-shadow: 0px 0px 5px 2px #fff;">@LightInfo[i].name</b>
+                        }
+                        else
+                        {
+                            <b>@LightInfo[i].name</b>
+                        }
+                    </p>
 
-                    <span>@Localizer["Brightness"]: @bri%</span>
-                    <span>@Localizer["Saturation"]: @sat%</span>
-                    <br />
-                    <span>@Localizer["Color"]: <span style="background-color: @color">&emsp;&emsp;</span></span>
+                    @if (ShowDetails)
+                    {
+                        double bri = Math.Round(Convert.ToDouble(LightInfo[i].state?.bri) / 254 * 100, 0);
+                        double sat = Math.Round(Convert.ToDouble(LightInfo[i].state?.sat) / 254 * 100, 0);
+                        string color = $"hsl({ Math.Round(Convert.ToDouble(LightInfo[i].state?.hue) / 178, 0) }, {sat}%, {bri}%)!important";
+
+                        <span>@Localizer["Brightness"]: @bri%</span>
+                        <span>@Localizer["Saturation"]: @sat%</span>
+                        <br />
+                        <span>@Localizer["Color"]: <span style="background-color: @color">&emsp;&emsp;</span></span>
+                    }
+                </div>
+                @if (i + 1 < LightInfo.Count)
+                {
+                    <div class="col-6">
+                        <p>
+                            @if (LightInfo[i + 1].state?.on == true)
+                            {
+                                <b style="box-shadow: 0px 0px 5px 2px #fff;">@LightInfo[i + 1].name</b>
+                            }
+                            else
+                            {
+                                <b>@LightInfo[i + 1].name</b>
+                            }
+                        </p>
+
+                        @if (ShowDetails)
+                        {
+                            double bri = Math.Round(Convert.ToDouble(LightInfo[i + 1].state?.bri) / 254 * 100, 0);
+                            double sat = Math.Round(Convert.ToDouble(LightInfo[i + 1].state?.sat) / 254 * 100, 0);
+                            string color = $"hsl({ Math.Round(Convert.ToDouble(LightInfo[i + 1].state?.hue) / 178, 0) }, {sat}%, {bri}%)!important";
+
+                            <span>@Localizer["Brightness"]: @bri%</span>
+                            <span>@Localizer["Saturation"]: @sat%</span>
+                            <br />
+                            <span>@Localizer["Color"]: <span style="background-color: @color">&emsp;&emsp;</span></span>
+                        }
+                    </div>
                 }
             </div>
-        </div>
+        }
     }
 </div>
 <br />
@@ -54,7 +84,7 @@
 
     private bool Enabled => State.Enabled;
     private bool ShowDetails => State.ShowDetails;
-    private HueLightInfo LightInfo => State.HueLightInfo;
+    private Dictionary<int, HueLightInfo> LightInfo => State.HueLightInfo;
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,18 +92,25 @@
 
         if (Enabled)
         {
-            await State.GetLightInfoAsync(1);
+            StateHasChangedAsync();
         }
     }
 
     public async void StateHasChangedAsync()
     {
-        if (Enabled && LightInfo == null)
+        if (Enabled && LightInfo.Count == 0)
         {
-            await State.GetLightInfoAsync(1);
+            await State.GetLightInfoAsync(1); // light strip
+            await State.GetLightInfoAsync(2); // schlafzimmer
+            await State.GetLightInfoAsync(3); // lukas
+            await State.GetLightInfoAsync(4); // esszimmer oben
+            await State.GetLightInfoAsync(5); // esszimmer unten
+            await State.GetLightInfoAsync(6); // wohnzimmer
+            await State.GetLightInfoAsync(7); // gang
+            await State.GetLightInfoAsync(8); // gang 2
+            await State.GetLightInfoAsync(9); // küche
+            StateHasChanged();
         }
-
-        await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()

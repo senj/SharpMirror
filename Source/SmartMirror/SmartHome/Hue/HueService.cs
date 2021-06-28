@@ -21,7 +21,7 @@ namespace SmartMirror.SmartHome.Hue
         {
             _logger = logger;
             _httpClient = httpClient;
-            _ipAddress = "192.168.1.194"; 
+            _ipAddress = "192.168.0.81"; 
             // GetIpAddressAsync().GetAwaiter().GetResult();
             _logger.LogInformation("Got IP Address for Hue: {ipAddress}", _ipAddress);
         }

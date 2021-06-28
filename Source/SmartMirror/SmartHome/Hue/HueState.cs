@@ -1,5 +1,5 @@
 ﻿using SmartMirror.Data;
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SmartMirror.SmartHome.Hue
@@ -11,16 +11,25 @@ namespace SmartMirror.SmartHome.Hue
         public HueState(HueService hueService)
         {
             _hueService = hueService;
+            HueLightInfo = new Dictionary<int, HueLightInfo>();
         }
 
-        public HueLightInfo HueLightInfo { get; private set; }
+        public Dictionary<int, HueLightInfo> HueLightInfo { get; private set; }
 
         public async Task<HueLightInfo> GetLightInfoAsync(int lightId)
         {
-            HueLightInfo = await _hueService.GetLightInfoAsync(lightId);
-            RaiseOnChangeEvent();
+            var hueLightInfo = await _hueService.GetLightInfoAsync(lightId);
+            if (HueLightInfo.ContainsKey(lightId))
+            {
+                HueLightInfo[lightId] = hueLightInfo;
+            }
+            else
+            {
+                HueLightInfo.Add(lightId, hueLightInfo);
+            }
 
-            return HueLightInfo;
+            RaiseOnChangeEvent();
+            return hueLightInfo;
         }
 
         public async Task SetLightStateAsync(int lightId, LightState lightState)
