@@ -49,36 +49,36 @@ namespace SmartMirror
             services.AddLocalization(p => p.ResourcesPath = "Resources");
 
             // Services
-            services.AddScoped<IntentExecutor>();
-            services.AddScoped<WeatherForecastService>();
-            services.AddScoped<VvsService>();
-            services.AddScoped<FuelService>();
-            services.AddScoped<CalendarService>();
-            services.AddScoped<NewsService>();
-            services.AddScoped<JokesQuotesService>();
-            services.AddScoped<SoccerService>();
-            services.AddScoped<StockDataService>();
-            services.AddScoped<HueService>();
-            services.AddScoped<FitbitService>();
-            services.AddScoped<BringService>();
-            services.AddScoped<RouteService>();
-            services.AddScoped<SpeechRecognitionService>();
-            services.AddScoped<GoogleFitService>();
+            services.AddSingleton<IntentExecutor>();
+            services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<VvsService>();
+            services.AddSingleton<FuelService>();
+            services.AddSingleton<CalendarService>();
+            services.AddSingleton<NewsService>();
+            services.AddSingleton<JokesQuotesService>();
+            services.AddSingleton<SoccerService>();
+            services.AddSingleton<StockDataService>();
+            services.AddSingleton<HueService>();
+            services.AddSingleton<FitbitService>();
+            services.AddSingleton<BringService>();
+            services.AddSingleton<RouteService>();
+            services.AddSingleton<SpeechRecognitionService>();
+            services.AddSingleton<GoogleFitService>();
 
             // State
-            services.AddScoped<BringState>();
-            services.AddScoped<WeatherState>();
-            services.AddScoped<RouteState>();
-            services.AddScoped<HueState>();
-            services.AddScoped<CalendarState>();
-            services.AddScoped<FuelState>();
-            services.AddScoped<ClockState>();
-            services.AddScoped<SpotifyState>();
-            services.AddScoped<VvsState>();
-            //services.AddScoped<FitbitState>();
-            services.AddScoped<NewsState>();
-            services.AddScoped<GoogleFitState>();
-            services.AddScoped<SoccerState>();
+            services.AddSingleton<BringState>();
+            services.AddSingleton<WeatherState>();
+            services.AddSingleton<RouteState>();
+            services.AddSingleton<HueState>();
+            services.AddSingleton<CalendarState>();
+            services.AddSingleton<FuelState>();
+            services.AddSingleton<ClockState>();
+            services.AddSingleton<SpotifyState>();
+            services.AddSingleton<VvsState>();
+            //services.AddSingleton<FitbitState>();
+            services.AddSingleton<NewsState>();
+            services.AddSingleton<GoogleFitState>();
+            services.AddSingleton<SoccerState>();
 
             _httpClient = new HttpClient()
             {
@@ -88,7 +88,7 @@ namespace SmartMirror
             services.AddSingleton<HttpClient>(_httpClient);
 
             IConfigurationSection redisSection = _configuration.GetSection(nameof(RedisConfiguration));
-            RedisConfiguration redisConfiguration = new RedisConfiguration();
+            RedisConfiguration redisConfiguration = new();
             redisSection.Bind(redisConfiguration);
 
             if (redisConfiguration.DisableCache)

@@ -36,13 +36,13 @@ namespace SmartMirror.Data.Bring
 
         public async Task BringAuth()
         {
-            List<KeyValuePair<string, string>> content = new List<KeyValuePair<string, string>>
+            List<KeyValuePair<string, string>> content = new()
             {
                 new KeyValuePair<string, string>("email", _options.Value.Email),
                 new KeyValuePair<string, string>("password", _options.Value.Password)
             };
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://api.getbring.com/rest/v2/bringauth");
+            using HttpRequestMessage request = new(HttpMethod.Post, "https://api.getbring.com/rest/v2/bringauth");
             request.Headers.Add("X-BRING-API-KEY", "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp");
             request.Headers.Add("X-BRING-CLIENT", "webApp");
             request.Headers.Add("X-BRING-USER-UUID", "1d803f70-ab3e-4420-8c97-f08e0efe7fbf");
@@ -53,7 +53,7 @@ namespace SmartMirror.Data.Bring
             HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             BringAuthResponse bringAuthResponse = JsonSerializer.Deserialize<BringAuthResponse>(stringResponse, options);
 
             _accessToken = bringAuthResponse.access_token;
@@ -73,7 +73,7 @@ namespace SmartMirror.Data.Bring
                 await BringAuth();
             }
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://api.getbring.com/rest/v2/bringlists/{_options.Value.ListId}");
+            using HttpRequestMessage request = new(HttpMethod.Get, $"https://api.getbring.com/rest/v2/bringlists/{_options.Value.ListId}");
             request.Headers.Add("Authorization", $"Bearer {_accessToken}");
             request.Headers.Add("X-BRING-API-KEY", "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp");
             request.Headers.Add("X-BRING-CLIENT", "webApp");
@@ -89,7 +89,7 @@ namespace SmartMirror.Data.Bring
             }
 
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             bringItemResponse = JsonSerializer.Deserialize<BringItemResponse>(stringResponse, options);
 
             if (bringItemResponse != null)
@@ -111,7 +111,7 @@ namespace SmartMirror.Data.Bring
                 await BringAuth();
             }
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"https://api.getbring.com/rest/v2/bringlists/{_options.Value.ListId}");
+            using HttpRequestMessage request = new(HttpMethod.Put, $"https://api.getbring.com/rest/v2/bringlists/{_options.Value.ListId}");
             request.Content = new StringContent($"purchase={itemName}&recently=&specification={details}&remove=&sender=null", Encoding.UTF8, "application/x-www-form-urlencoded");
 
             request.Headers.Add("Authorization", $"Bearer {_accessToken}");
@@ -137,7 +137,7 @@ namespace SmartMirror.Data.Bring
                 await BringAuth();
             }
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"https://api.getbring.com/rest/v2/bringlists/{_options.Value.ListId}");
+            using HttpRequestMessage request = new(HttpMethod.Put, $"https://api.getbring.com/rest/v2/bringlists/{_options.Value.ListId}");
             request.Content = new StringContent($"purchase=&recently=&specification=&remove={itemName}&sender=null", Encoding.UTF8, "application/x-www-form-urlencoded");
 
             request.Headers.Add("Authorization", $"Bearer {_accessToken}");

@@ -1,0 +1,82 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using SmartMirror.Data.Bring
+@using SmartMirror.Data.Calendar
+@using SmartMirror.Data.Clock
+@using SmartMirror.Data.Fitbit
+@using SmartMirror.Data.Fuel
+@using SmartMirror.Data.GoogleFit
+@using SmartMirror.Data.News
+@using SmartMirror.Data.Routes
+@using SmartMirror.Data.Soccer
+@using SmartMirror.Data.Spotify
+@using SmartMirror.Data.VVS
+@using SmartMirror.Data.WeatherForecast
+@using SmartMirror.SmartHome.Hue
+@using Microsoft.AspNetCore.Components
+
+@inject ClockState _clockState;
+@inject CalendarState _calendarState;
+@inject NewsState _newsState;
+@inject VvsState _vvsState;
+@inject BringState _bringState;
+@inject RouteState _routeState;
+@inject SpotifyState _spotifyState;
+@inject HueState _hueState;
+@inject WeatherState _weatherState;
+@inject FuelState _fuelState;
+@*@inject FitbitState _fitbitState;*@
+@inject GoogleFitState _googleFitState;
+@inject SoccerState _bundesligaState;
+
+<div class="container-fluid" style="font-size: 0.9rem">
+    <br />
+    <div class="row">
+        <CascadingValue Value="User" Name="User">
+            <div class="col-6">                
+                <h2>Clock (@_clockState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_clockState)">Toggle visibility</button>                
+                <h2>Calendar (@_calendarState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_calendarState)">Toggle visibility</button>
+                <h2>News (@_newsState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_newsState)">Toggle visibility</button>
+                <h2>VVS (@_vvsState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_vvsState)">Toggle visibility</button>
+                <h2>Bring (@_bringState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_bringState)">Toggle visibility</button>                
+                <h2>Route (@_routeState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_routeState)">Toggle visibility</button>                
+                <h2>Spotify (@_spotifyState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_spotifyState)">Toggle visibility</button>                
+                <h2>Hue (@_hueState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_hueState)">Toggle visibility</button>                
+                <h2>Weather (@_weatherState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_weatherState)">Toggle visibility</button>                
+                <h2>Fuel (@_fuelState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_fuelState)">Toggle visibility</button>          
+                <h2>Google Fit (@_googleFitState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_googleFitState)">Toggle visibility</button>          
+                <h2>Soccer (@_bundesligaState.Enabled)</h2>
+                <button class="btn btn-primary" @onclick="() => ToggleState(_bundesligaState)">Toggle visibility</button>
+            </div>
+        </CascadingValue>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private System.Security.Claims.ClaimsPrincipal User { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var authState = await authenticationStateTask;
+        User = authState.User;
+    }    
+
+    private EventCallback ToggleState(Displayable state)
+    {
+        state.SetEnabled(!state.Enabled);
+        StateHasChanged();
+        return new EventCallback();
+    }
+}

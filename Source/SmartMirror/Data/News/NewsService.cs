@@ -23,7 +23,7 @@ namespace SmartMirror.Data.News
 
         public async Task<List<NewsResponse>> GetFeeds()
         {
-            List<NewsResponse> news = new List<NewsResponse>();
+            List<NewsResponse> news = new();
             foreach (string feedUrl in _newsConfiguration.Feeds)
             {
                 news.AddRange(await GetNews(feedUrl));
@@ -34,15 +34,15 @@ namespace SmartMirror.Data.News
 
         private async Task<List<NewsResponse>> GetNews(string feedUrl)
         {
-            List<NewsResponse> news = new List<NewsResponse>();
-            Uri feedUri = new Uri(feedUrl);
+            List<NewsResponse> news = new();
+            Uri feedUri = new(feedUrl);
 
             using (XmlReader xmlReader = XmlReader.Create(feedUri.ToString(),
                    new XmlReaderSettings { Async = true }))
             {
                 try
                 {
-                    RssFeedReader feedReader = new RssFeedReader(xmlReader);
+                    RssFeedReader feedReader = new(xmlReader);
 
                     while (await feedReader.Read())
                     {

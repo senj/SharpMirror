@@ -20,7 +20,7 @@ namespace SmartMirror.Data.Fuel
         private readonly HttpClient _httpClient;
         private readonly IDistributedCache _cache;
         private readonly FuelConfiguration _fuelConfiguration;
-        private static FuelResponse fuelResponse = new FuelResponse();
+        private static FuelResponse fuelResponse = new();
 
         public FuelService(ILogger<FuelService> logger, HttpClient httpClient, IDistributedCache cache, IOptions<FuelConfiguration> fuelConfiguration)
         {
@@ -33,7 +33,7 @@ namespace SmartMirror.Data.Fuel
         public async Task<FuelResponse> GetFuelResponseAsync(int limit, bool useCache)
         {
             FuelStationResponse stationJsonResponse;
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
 
             if (useCache && _cache.TryGetValue(FUEL_PRICES_CACHE_KEY, out FuelResponse cachedFuelResponse))
             {
@@ -83,7 +83,7 @@ namespace SmartMirror.Data.Fuel
                 return fuelResponse;
             }
 
-            List<FuelResult> fuelResults = new List<FuelResult>();
+            List<FuelResult> fuelResults = new();
             foreach (Station station in stationJsonResponse.Stations)
             {
                 if (station.IsOpen) 
@@ -135,7 +135,7 @@ namespace SmartMirror.Data.Fuel
             }
 
             string stringStationResponse = await stationResponse.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             FuelStationResponse stationJsonResponse = JsonSerializer.Deserialize<FuelStationResponse>(stringStationResponse, options);
 
             if (stationJsonResponse == null || stationJsonResponse.Ok == false)

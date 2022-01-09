@@ -8,7 +8,7 @@ namespace SmartMirror.FakeAspNetIdentity
 {
     public class InMemoryUserStore : IUserStore<IdentityUser>
     {
-        private static Dictionary<string, IdentityUser> Store = new Dictionary<string, IdentityUser>();
+        private static Dictionary<string, IdentityUser> Store = new();
 
         public Task<IdentityResult> CreateAsync(IdentityUser user, CancellationToken cancellationToken)
         {

@@ -52,6 +52,7 @@
     protected override async Task OnInitializedAsync()
     {
         PieElement = $"{User}googleFit";
+        State.SetCurrentUser(User);
         State.OnChange += StateHasChangedAsync;
         
         if (string.IsNullOrEmpty(Token))

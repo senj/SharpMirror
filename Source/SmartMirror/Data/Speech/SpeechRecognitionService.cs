@@ -36,7 +36,7 @@ namespace SmartMirror.Data.Speech
             _intentExecutor = intentExecutor;
             _config = speechRecognitionConfiguration.Value;
 
-            ApiKeyServiceClientCredentials credentials = new ApiKeyServiceClientCredentials(_config.LuisSubscriptionKey);
+            ApiKeyServiceClientCredentials credentials = new(_config.LuisSubscriptionKey);
             _luisClient = new LUISRuntimeClient(credentials)
             {
                 Endpoint = _config.LuisEndpoint
@@ -51,7 +51,7 @@ namespace SmartMirror.Data.Speech
             }
 
             PredictionResponse prediction = null;
-            SpeechOutputResult speechOutputResult = new SpeechOutputResult();
+            SpeechOutputResult speechOutputResult = new();
             try
             {
                 prediction = await _luisClient.Prediction.GetSlotPredictionAsync(Guid.Parse(_config.LuisAppId), _config.LuisAppSlot,
@@ -137,7 +137,7 @@ namespace SmartMirror.Data.Speech
                     await _intentExecutor.Handle<BringState>(new BringDisplayDetails(false));
                     return new SpeechOutputResult();
                 case "Routes.GetRoute":
-                    (RouteResponse route, GeosearchResponse source, GeosearchResponse destination) routeResponse = await _intentExecutor.Handle(new RoutesGetRoute(predictionResponse.Prediction.Entities));
+                    (RouteResponse route, GeosearchResponse source, GeosearchResponse destination) = await _intentExecutor.Handle(new RoutesGetRoute(predictionResponse.Prediction.Entities));
                         return new SpeechOutputResult("Route gefunden");
                 case "Routes.DisplayDetails":
                     await _intentExecutor.Handle<RouteState>(new RoutesDisplayDetails(true));

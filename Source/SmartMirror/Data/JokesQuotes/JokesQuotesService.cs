@@ -28,7 +28,7 @@ namespace SmartMirror.Data.Jokes
             }
 
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             ChuckNorrisJokesModel chuckNorrisResponse = JsonSerializer.Deserialize<ChuckNorrisJokesModel>(stringResponse, options);
 
             _logger.LogInformation("Got joke from chuck norris api");

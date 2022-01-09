@@ -55,7 +55,7 @@ namespace SmartMirror.Data.WeatherForecast
 
             string responseObj = await response.Content.ReadAsStringAsync();
 
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             OneCallWeatherForecast oneCallWeatherForecast = JsonSerializer.Deserialize<OneCallWeatherForecast>(responseObj, options);
 
             if (oneCallWeatherForecast?.Current == null)

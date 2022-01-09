@@ -50,7 +50,7 @@ namespace SmartMirror.Data.StockData
 
             string stringResponse = await response.Content.ReadAsStringAsync();
             stringResponse = stringResponse.Replace(" ", "");
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             StockDataModel stockResponse = JsonSerializer.Deserialize<StockDataModel>(stringResponse, options);
 
             if (stockResponse == null || !stockResponse.TimeSeries.HasValue)
@@ -64,7 +64,7 @@ namespace SmartMirror.Data.StockData
                 .Where(p => DateTime.ParseExact(p.Name, "yyyy-MM-ddHH:mm:ss", null).ToString("dd.MM.") == DateTime.Now.ToString("dd.MM."))
                 .Select(p => p);
 
-            StockViewModel stockViewModel = new StockViewModel { StockData = stockData };
+            StockViewModel stockViewModel = new() { StockData = stockData };
 
             _cache.Set(symbol, stockViewModel, new DistributedCacheEntryOptions
             {

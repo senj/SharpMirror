@@ -59,7 +59,7 @@ namespace SmartMirror.Data.Spotify
                 return new StatusCodeResult(500);
             }
 
-            List<KeyValuePair<string, string>> content = new List<KeyValuePair<string, string>>
+            List<KeyValuePair<string, string>> content = new()
             {
                 KeyValuePair.Create("grant_type", "authorization_code"),
                 KeyValuePair.Create("code", code),
@@ -68,7 +68,7 @@ namespace SmartMirror.Data.Spotify
                 KeyValuePair.Create("client_secret", _spotifyConfiguration.ClientSecret)
             };
 
-            FormUrlEncodedContent formContent = new FormUrlEncodedContent(content);
+            FormUrlEncodedContent formContent = new(content);
             HttpResponseMessage response = await _httpClient.PostAsync("https://accounts.spotify.com/api/token", formContent);
             
             if (!response.IsSuccessStatusCode)
@@ -78,10 +78,10 @@ namespace SmartMirror.Data.Spotify
             }
 
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             SpotifyAuthResponse authResponse = JsonSerializer.Deserialize<SpotifyAuthResponse>(stringResponse, options);
 
-            IdentityUser user = new IdentityUser("spotify");
+            IdentityUser user = new("spotify");
             await _signInManager.SignInAsync(user, true, "spotify");
 
             _cache.SetString("spotify_access_token", authResponse.access_token, new DistributedCacheEntryOptions
@@ -112,13 +112,13 @@ namespace SmartMirror.Data.Spotify
                 return string.Empty;
             }
 
-            List<KeyValuePair<string, string>> content = new List<KeyValuePair<string, string>>
+            List<KeyValuePair<string, string>> content = new()
             {
                 new KeyValuePair<string, string>("refresh_token", refreshToken),
                 new KeyValuePair<string, string>("grant_type", "refresh_token")
             };
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://api.fitbit.com/oauth2/token")
+            using HttpRequestMessage request = new(HttpMethod.Post, "https://api.fitbit.com/oauth2/token")
             {
                 Content = new FormUrlEncodedContent(content)
             };
@@ -127,7 +127,7 @@ namespace SmartMirror.Data.Spotify
 
             HttpResponseMessage response = await _httpClient.SendAsync(request);
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             SpotifyAuthResponse authResponse = JsonSerializer.Deserialize<SpotifyAuthResponse>(stringResponse, options);
 
             _cache.SetString("spotify_access_token", authResponse.access_token, new DistributedCacheEntryOptions

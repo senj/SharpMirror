@@ -49,7 +49,7 @@ namespace SmartMirror.Data.Fitbit
                 return new StatusCodeResult(500);
             }
 
-            List<KeyValuePair<string, string>> content = new List<KeyValuePair<string, string>>
+            List<KeyValuePair<string, string>> content = new()
             {
                 KeyValuePair.Create("grant_type", "authorization_code"),
                 KeyValuePair.Create("code", code),
@@ -58,9 +58,9 @@ namespace SmartMirror.Data.Fitbit
                 KeyValuePair.Create("client_secret", _fitbitConfiguration.ClientSecret)
             };
 
-            FormUrlEncodedContent formContent = new FormUrlEncodedContent(content);
+            FormUrlEncodedContent formContent = new(content);
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://api.fitbit.com/oauth2/token");
+            using HttpRequestMessage request = new(HttpMethod.Post, "https://api.fitbit.com/oauth2/token");
             request.Headers.Add("Authorization", "Basic " + Base64Encode($"{_fitbitConfiguration.ClientId}:{_fitbitConfiguration.ClientSecret}"));
             request.Content = formContent;
             HttpResponseMessage response = await _httpClient.SendAsync(request);
@@ -71,10 +71,10 @@ namespace SmartMirror.Data.Fitbit
             }
 
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             FitbitAuthResponse authResponse = JsonSerializer.Deserialize<FitbitAuthResponse>(stringResponse, options);
 
-            IdentityUser user = new IdentityUser("fitbit");
+            IdentityUser user = new("fitbit");
             await _signInManager.SignInAsync(user, true, "fitbit");
 
             return View("FitbitCallback", authResponse);

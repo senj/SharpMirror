@@ -49,7 +49,7 @@ namespace SmartMirror.Data.VVS
 
             string stringResponse = await response.Content.ReadAsStringAsync();
 
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             VvsResponse vvsJsonResponse = JsonSerializer.Deserialize<VvsResponse>(stringResponse, options);
 
             if (vvsJsonResponse == null)

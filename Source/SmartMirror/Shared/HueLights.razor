@@ -86,14 +86,10 @@
     private bool ShowDetails => State.ShowDetails;
     private Dictionary<int, HueLightInfo> LightInfo => State.HueLightInfo;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         State.OnChange += StateHasChangedAsync;
-
-        if (Enabled)
-        {
-            StateHasChangedAsync();
-        }
+        StateHasChangedAsync();
     }
 
     public async void StateHasChangedAsync()

@@ -95,7 +95,7 @@ namespace SmartMirror.Data.Speech
 
         internal async Task Handle(HueTurnOn notification)
         {
-            LightState lightState = new LightState
+            LightState lightState = new()
             {
                 on = true,
                 sat = 0,
@@ -107,7 +107,7 @@ namespace SmartMirror.Data.Speech
 
         internal async Task Handle(HueTurnOff notification)
         {
-            LightState lightState = new LightState
+            LightState lightState = new()
             {
                 on = false
             };

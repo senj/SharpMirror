@@ -13,7 +13,7 @@ namespace SmartMirror.SmartHome.Hue
         private readonly ILogger<HueService> _logger;
         private readonly string _ipAddress;
         private readonly HttpClient _httpClient;
-        private string _userToken = "T165psyqi-UxsIcRQe0TIK5cu2MinJbJtZsVDKKD";
+        private readonly string _userToken = "T165psyqi-UxsIcRQe0TIK5cu2MinJbJtZsVDKKD";
 
         public event EventHandler<LightStateChangedEventArgs> LightStateChanged;
 
@@ -53,7 +53,7 @@ namespace SmartMirror.SmartHome.Hue
 
             string stringResponse = await response.Content.ReadAsStringAsync();
 
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             HueLightInfo lightInfo = JsonSerializer.Deserialize<HueLightInfo>(stringResponse, options);
 
             return lightInfo;
@@ -61,11 +61,11 @@ namespace SmartMirror.SmartHome.Hue
 
         public async Task<string> GetIpAddressAsync()
         {
-            using HttpClient httpClient = new HttpClient();
+            using HttpClient httpClient = new();
             HttpResponseMessage response = await httpClient.GetAsync("https://discovery.meethue.com/");
             string stringResponse = await response.Content.ReadAsStringAsync();
 
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             HueDiscoveryResponse discoveryResponse = JsonSerializer.Deserialize<HueDiscoveryResponse>(stringResponse, options);
 
             string ipAddress = discoveryResponse.FirstOrDefault()?.internalipaddress;

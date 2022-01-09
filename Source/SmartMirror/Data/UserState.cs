@@ -5,42 +5,42 @@ namespace SmartMirror.Data
 {
     public class UserState : Displayable
     {
-        private readonly Dictionary<string, Dictionary<string, object>> UserStateDictionary = new Dictionary<string, Dictionary<string, object>>();
+        private readonly Dictionary<string, Dictionary<string, object>> _userStateDictionary = new();
 
         public void InitNewUserState<T>()
         {
-            UserStateDictionary.Add(typeof(T).FullName, new Dictionary<string, object>());
+            _userStateDictionary.Add(typeof(T).FullName, new Dictionary<string, object>());
         }
 
         public void SetUserState<T>(string user, object value)
         {
-            if (!UserStateDictionary.ContainsKey(typeof(T).FullName))
+            if (!_userStateDictionary.ContainsKey(typeof(T).FullName))
             {
                 throw new InvalidOperationException("Initalize state first");
             }
 
-            Dictionary<string, object> currentStateDictionary = UserStateDictionary[typeof(T).FullName];
+            Dictionary<string, object> currentStateDictionary = _userStateDictionary[typeof(T).FullName];
             SetDictionaryData(user, currentStateDictionary, value);
         }
 
         public T GetUserState<T>(string user)
         {
-            if (!UserStateDictionary.ContainsKey(typeof(T).FullName))
+            if (!_userStateDictionary.ContainsKey(typeof(T).FullName))
             {
                 throw new InvalidOperationException("Purpose not found");
             }
 
-            Dictionary<string, object> currentStateDictionary = UserStateDictionary[typeof(T).FullName];
+            Dictionary<string, object> currentStateDictionary = _userStateDictionary[typeof(T).FullName];
 
             if (!currentStateDictionary.ContainsKey(user))
             {
-                return default(T);
+                return default;
             }
 
             return (T) currentStateDictionary[user];
         }
 
-        private void SetDictionaryData<T>(string user, Dictionary<string, T> dictionary, T newValue)
+        private static void SetDictionaryData<T>(string user, Dictionary<string, T> dictionary, T newValue)
         {
             if (dictionary.ContainsKey(user))
             {

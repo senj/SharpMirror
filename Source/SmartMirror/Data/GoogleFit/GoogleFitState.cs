@@ -7,6 +7,7 @@ namespace SmartMirror.Data.GoogleFit
     public class GoogleFitState : UserState
     {
         private readonly GoogleFitService _googleFitService;
+        private string _user;
 
         public GoogleFitState(GoogleFitService googleFitService)
         {
@@ -15,6 +16,22 @@ namespace SmartMirror.Data.GoogleFit
             InitNewUserState<IEnumerable<WeightDataPoint>>();
             InitNewUserState<GoogleCodeResponse>();
             InitNewUserState<GoogleAccessToken>();
+
+            OnChange += () => StartAuthorizationWithCurrentUserAsync();
+        }
+
+        private async Task StartAuthorizationWithCurrentUserAsync()
+        {
+            if (string.IsNullOrEmpty(GetToken(_user)))
+            {
+                await StartAuthorizationAsync(_user);
+                AuthorizationPollingAsync(_user);
+            }
+        }
+
+        public void SetCurrentUser(string user)
+        {
+            _user = user;
         }
 
         public IEnumerable<WeightDataPoint> GetWeightData(string user)
@@ -34,18 +51,24 @@ namespace SmartMirror.Data.GoogleFit
 
         public async Task StartAuthorizationAsync(string user)
         {
-            GoogleCodeResponse googleCodeResponse = await _googleFitService.StartAuthorizationAsync();
-            SetUserState<GoogleCodeResponse>(user, googleCodeResponse);
-            RaiseOnChangeEvent();
+            if (Enabled)
+            {
+                GoogleCodeResponse googleCodeResponse = await _googleFitService.StartAuthorizationAsync();
+                SetUserState<GoogleCodeResponse>(user, googleCodeResponse);
+                RaiseOnChangeEvent();
+            }
         }
 
         public async Task AuthorizationPollingAsync(string user)
         {
-            GoogleCodeResponse googleCodeResponse = GetGoogleCodeResponse(user);
-            GoogleAuthResponse googleAuthResponse = await _googleFitService.AuthorizationPolling(user, googleCodeResponse);
-            string token = googleAuthResponse?.access_token;
-            SetUserState<GoogleAccessToken>(user, new GoogleAccessToken(token));
-            RaiseOnChangeEvent();
+            if (Enabled)
+            {
+                GoogleCodeResponse googleCodeResponse = GetGoogleCodeResponse(user);
+                GoogleAuthResponse googleAuthResponse = await _googleFitService.AuthorizationPolling(user, googleCodeResponse);
+                string token = googleAuthResponse?.access_token;
+                SetUserState<GoogleAccessToken>(user, new GoogleAccessToken(token));
+                RaiseOnChangeEvent();
+            }
         }
 
         public async Task UpdateWeightData(string user, int take)

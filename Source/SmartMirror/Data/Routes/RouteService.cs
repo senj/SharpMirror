@@ -62,7 +62,7 @@ namespace SmartMirror.Data.Routes
                $"&api-version={_configuration.ApiVersion}" +
                $"&query={query}";
                 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            using HttpRequestMessage request = new(HttpMethod.Get, requestUri);
             HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
@@ -73,7 +73,7 @@ namespace SmartMirror.Data.Routes
 
             string stringResponse = await response.Content.ReadAsStringAsync();
 
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             GeosearchResponse geoJsonResponse = JsonSerializer.Deserialize<GeosearchResponse>(stringResponse, options);
 
             if (geoJsonResponse == null)
@@ -95,7 +95,7 @@ namespace SmartMirror.Data.Routes
                 $"&computeTravelTimeFor=all" +
                 $"&traffic=true";
             
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            using HttpRequestMessage request = new(HttpMethod.Get, requestUri);
             HttpResponseMessage response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
@@ -106,7 +106,7 @@ namespace SmartMirror.Data.Routes
 
             string stringResponse = await response.Content.ReadAsStringAsync();
 
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             RouteResponse routeJsonResponse = JsonSerializer.Deserialize<RouteResponse>(stringResponse, options);
 
             if (routeJsonResponse == null)

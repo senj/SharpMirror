@@ -40,7 +40,7 @@ namespace SmartMirror.Data.Soccer
             }
 
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             BundesligaModel playDayResponse = JsonSerializer.Deserialize<BundesligaModel>(stringResponse, options);
 
             if (playDayResponse == null)

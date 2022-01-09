@@ -64,6 +64,10 @@ function stopRecognitionByKeyword() {
 recognition.onend = (event) => {
     console.log('recognition ended');
 
+    if (document.getElementById('speechStatusImageWeb') == null) {
+        return;
+    }
+
     document.getElementById('speechStatusImageWeb').src = '/icons/speech/mic_off.png';
     document.getElementById('speechStatusImageMobile').src = '/icons/speech/mic_off.png';
 
@@ -80,6 +84,10 @@ recognition.onspeechstart = (event) => {
 recognition.onspeechend = (event) => {
     //console.log('speech ended');
 
+    if (document.getElementById('speechStatusImageWeb') == null) {
+        return;
+    }
+
     document.getElementById('speechStatusImageWeb').src = '/icons/speech/mic_off.png';
     document.getElementById('speechStatusImageMobile').src = '/icons/speech/mic_off.png';
 
@@ -95,6 +103,10 @@ recognition.onspeechend = (event) => {
 
 recognition.onstart = (event) => {
     //console.log('recognition started');
+
+    if (document.getElementById('speechStatusImageWeb') == null) {
+        return;
+    }
 
     if (display) {
         document.getElementById('speechStatusImageWeb').src = '/icons/speech/mic_on.png';

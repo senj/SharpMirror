@@ -33,7 +33,7 @@ namespace SmartMirror.Data.Fitbit
                 return user;
             }
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://api.fitbit.com/1/user/-/profile.json");
+            using HttpRequestMessage request = new(HttpMethod.Get, "https://api.fitbit.com/1/user/-/profile.json");
             request.Headers.Add("Authorization", $"Bearer {token}");
 
             HttpResponseMessage response = await _httpClient.SendAsync(request);
@@ -45,7 +45,7 @@ namespace SmartMirror.Data.Fitbit
             }
 
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             FitbitUserResponse userResponse;
             try
             {
@@ -76,7 +76,7 @@ namespace SmartMirror.Data.Fitbit
                 return sleep;
             }
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://api.fitbit.com/1.2/user/-/sleep/date/{dateTime.ToString("yyyy-MM-dd")}.json");
+            using HttpRequestMessage request = new(HttpMethod.Get, $"https://api.fitbit.com/1.2/user/-/sleep/date/{dateTime.ToString("yyyy-MM-dd")}.json");
             request.Headers.Add("Authorization", $"Bearer {token}");
 
             HttpResponseMessage response = await _httpClient.SendAsync(request);
@@ -88,7 +88,7 @@ namespace SmartMirror.Data.Fitbit
             }
 
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             FitbitSleepResponse sleepResponse = JsonSerializer.Deserialize<FitbitSleepResponse>(stringResponse, options);
             
             if (sleepResponse != null)
@@ -110,7 +110,7 @@ namespace SmartMirror.Data.Fitbit
                 return device;
             }
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://api.fitbit.com/1/user/-/devices.json");
+            using HttpRequestMessage request = new(HttpMethod.Get, "https://api.fitbit.com/1/user/-/devices.json");
             request.Headers.Add("Authorization", $"Bearer {token}");
 
             HttpResponseMessage response = await _httpClient.SendAsync(request);
@@ -122,7 +122,7 @@ namespace SmartMirror.Data.Fitbit
             }
 
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             FitbitDeviceResponse deviceResponse = JsonSerializer.Deserialize<FitbitDeviceResponse>(stringResponse, options);
 
             if (deviceResponse != null)
@@ -144,7 +144,7 @@ namespace SmartMirror.Data.Fitbit
                 return active;
             }
 
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://api.fitbit.com/1/user/-/activities/{type}/date/{date}/{time}.json");
+            using HttpRequestMessage request = new(HttpMethod.Get, $"https://api.fitbit.com/1/user/-/activities/{type}/date/{date}/{time}.json");
             request.Headers.Add("Authorization", $"Bearer {token}");
 
             HttpResponseMessage response = await _httpClient.SendAsync(request);
@@ -156,7 +156,7 @@ namespace SmartMirror.Data.Fitbit
             }
 
             string stringResponse = await response.Content.ReadAsStringAsync();
-            JsonSerializerOptions options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
             ActiveMinutes activeMinutesResponse = JsonSerializer.Deserialize<ActiveMinutes>(stringResponse, options);
             
             if (activeMinutesResponse != null)
