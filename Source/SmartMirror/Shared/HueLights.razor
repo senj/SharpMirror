@@ -105,8 +105,9 @@
             await State.GetLightInfoAsync(7); // gang
             await State.GetLightInfoAsync(8); // gang 2
             await State.GetLightInfoAsync(9); // küche
-            StateHasChanged();
         }
+        
+        InvokeAsync(() => StateHasChanged());
     }
 
     public void Dispose()
