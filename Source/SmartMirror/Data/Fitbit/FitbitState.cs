@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Fitbit
 {
-    public class FitbitState : Displayable
+    public class FitbitState : StateBase
     {
         private readonly FitbitService _fitbitService;
 
-        public FitbitState(FitbitService fitbitService)
+        public FitbitState(FitbitService fitbitService) : base("Fitbit", typeof(Shared.Fitbit))
         {
             _fitbitService = fitbitService;
         }

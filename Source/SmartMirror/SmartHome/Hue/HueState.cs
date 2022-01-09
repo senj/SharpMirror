@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace SmartMirror.SmartHome.Hue
 {
-    public class HueState : Displayable
+    public class HueState : StateBase
     {
         private readonly HueService _hueService;
 
-        public HueState(HueService hueService)
+        public HueState(HueService hueService) : base("Hue", typeof(Shared.HueLights))
         {
             _hueService = hueService;
             HueLightInfo = new Dictionary<int, HueLightInfo>();

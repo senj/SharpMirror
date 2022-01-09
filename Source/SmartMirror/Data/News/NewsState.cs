@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace SmartMirror.Data.News
 {
-    public class NewsState : Displayable
+    public class NewsState : StateBase
     {
         private readonly NewsService _newsService;
 
-        public NewsState(NewsService newsService)
+        public NewsState(NewsService newsService) : base("News", typeof(Shared.News))
         {
             _newsService = newsService;
         }

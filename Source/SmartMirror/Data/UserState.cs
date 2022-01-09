@@ -3,9 +3,14 @@ using System.Collections.Generic;
 
 namespace SmartMirror.Data
 {
-    public class UserState : Displayable
+    public class UserState : StateBase
     {
         private readonly Dictionary<string, Dictionary<string, object>> _userStateDictionary = new();
+
+        public UserState(string name, Type type) : base(name, type)
+        {
+            // NOP
+        }
 
         public void InitNewUserState<T>()
         {

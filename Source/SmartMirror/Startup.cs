@@ -13,6 +13,7 @@ using SmartMirror.Data.Fitbit;
 using SmartMirror.Data.Fuel;
 using SmartMirror.Data.GoogleFit;
 using SmartMirror.Data.Jokes;
+using SmartMirror.Data.Layout;
 using SmartMirror.Data.News;
 using SmartMirror.Data.Routes;
 using SmartMirror.Data.Soccer;
@@ -79,6 +80,7 @@ namespace SmartMirror
             services.AddSingleton<NewsState>();
             services.AddSingleton<GoogleFitState>();
             services.AddSingleton<SoccerState>();
+            services.AddSingleton<LayoutState>();
 
             _httpClient = new HttpClient()
             {

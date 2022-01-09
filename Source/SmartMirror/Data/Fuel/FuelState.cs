@@ -2,11 +2,11 @@
 
 namespace SmartMirror.Data.Fuel
 {
-    public class FuelState : Displayable
+    public class FuelState : StateBase
     {
         private readonly FuelService _fuelService;
 
-        public FuelState(FuelService fuelService)
+        public FuelState(FuelService fuelService) : base("Fuel", typeof(Shared.Fuel))
         {
             _fuelService = fuelService;
         }

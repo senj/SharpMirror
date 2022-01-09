@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Routes
 {
-    public class RouteState : Displayable
+    public class RouteState : StateBase
     {
         private readonly RouteService _routeService;
 
-        public RouteState(RouteService routeService)
+        public RouteState(RouteService routeService) : base("Routes", typeof(Shared.RouteTraffic))
         {
             _routeService = routeService;
         }

@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace SmartMirror.Data.Calendar
 {
-    public class CalendarState : Displayable
+    public class CalendarState : StateBase
     {
         private readonly CalendarService _calendarService;
 
-        public CalendarState(CalendarService calendarService)
+        public CalendarState(CalendarService calendarService) : base("Calendar", typeof(Shared.Calendar))
         {
             _calendarService = calendarService;
         }

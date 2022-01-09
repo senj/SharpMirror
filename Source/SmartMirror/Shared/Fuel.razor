@@ -73,6 +73,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Limit = 5;
+
         State.OnChange += StateHasChangedAsync;
         datasets = new Dictionary<string, Dataset<float>>();
         State.SetShowDetails(true);

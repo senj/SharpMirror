@@ -2,11 +2,11 @@
 
 namespace SmartMirror.Data.Bring
 {
-    public class BringState : Displayable
+    public class BringState : StateBase
     {
         private readonly BringService _bringService;
 
-        public BringState(BringService bringService)
+        public BringState(BringService bringService) : base("Bring", typeof(Shared.Bring))
         {
             _bringService = bringService;
         }

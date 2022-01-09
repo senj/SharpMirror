@@ -7,31 +7,14 @@ namespace SmartMirror.Data.GoogleFit
     public class GoogleFitState : UserState
     {
         private readonly GoogleFitService _googleFitService;
-        private string _user;
-
-        public GoogleFitState(GoogleFitService googleFitService)
+        
+        public GoogleFitState(GoogleFitService googleFitService) : base("GoogleFit", typeof(Shared.GoogleFit))
         {
             _googleFitService = googleFitService;
 
             InitNewUserState<IEnumerable<WeightDataPoint>>();
             InitNewUserState<GoogleCodeResponse>();
             InitNewUserState<GoogleAccessToken>();
-
-            OnChange += () => StartAuthorizationWithCurrentUserAsync();
-        }
-
-        private async Task StartAuthorizationWithCurrentUserAsync()
-        {
-            if (string.IsNullOrEmpty(GetToken(_user)))
-            {
-                await StartAuthorizationAsync(_user);
-                AuthorizationPollingAsync(_user);
-            }
-        }
-
-        public void SetCurrentUser(string user)
-        {
-            _user = user;
         }
 
         public IEnumerable<WeightDataPoint> GetWeightData(string user)

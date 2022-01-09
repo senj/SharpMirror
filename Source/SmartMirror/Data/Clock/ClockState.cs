@@ -3,8 +3,13 @@ using System.Threading;
 
 namespace SmartMirror.Data.Clock
 {
-    public class ClockState : Displayable, IDisposable
+    public class ClockState : StateBase, IDisposable
     {
+        public ClockState() : base("Clock", typeof(Shared.Clock))
+        {
+            // NOP
+        }
+
         public TimeSpan TimerDuration { get; private set; }
 
         public string TimerName { get; private set; }

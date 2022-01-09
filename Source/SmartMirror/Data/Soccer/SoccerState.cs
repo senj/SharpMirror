@@ -2,11 +2,11 @@
 
 namespace SmartMirror.Data.Soccer
 {
-    public class SoccerState : Displayable
+    public class SoccerState : StateBase
     {
         private readonly SoccerService _soccerService;
 
-        public SoccerState(SoccerService soccerService)
+        public SoccerState(SoccerService soccerService) : base("Soccer", typeof(Shared.Bundesliga))
         {
             _soccerService = soccerService;
         }

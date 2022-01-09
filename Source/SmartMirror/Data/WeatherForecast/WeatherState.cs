@@ -2,11 +2,11 @@
 
 namespace SmartMirror.Data.WeatherForecast
 {
-    public class WeatherState : Displayable
+    public class WeatherState : StateBase
     {
         private readonly WeatherForecastService _weatherForecastService;
 
-        public WeatherState(WeatherForecastService weatherForecastService)
+        public WeatherState(WeatherForecastService weatherForecastService) : base("Weather", typeof(Shared.CurrentWeather))
         {
             _weatherForecastService = weatherForecastService;
         }

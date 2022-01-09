@@ -1,26 +1,27 @@
-﻿<div class="container-fluid" style="font-size: 0.9rem">
+﻿@using SmartMirror.Data.Layout
+@inject LayoutState LayoutState
+
+<div class="container-fluid" style="font-size: 0.9rem">
     <br />
     <div class="row">
         <div class="col-lg-3 col-sm-12">
-            <Clock></Clock>
-            <Calendar></Calendar>
-            <Vvs></Vvs>
-            <RouteTraffic></RouteTraffic>
+            @foreach (var widget in _components.Take(4))
+            {
+                <DynamicComponent Type="@widget" />
+            }
         </div>
+
         <div class="col-lg-6">
-            <News RefreshIntervalSeconds="30"></News>
-            <Bring></Bring>
-            <Bundesliga></Bundesliga>
+            @foreach (var widget in _components.Skip(4).Take(3))
+            {
+                <DynamicComponent Type="@widget" />
+            }
         </div>
         <div class="col-lg-3">
-            <CurrentWeather NumberOfDays="5"></CurrentWeather>
-            <Spotify></Spotify>
-            <HueLights></HueLights>
-            <Fuel Limit="5"></Fuel>
-            @*<Space Show="true"></Space>*@
-            <Fitbit></Fitbit>
-            <GoogleFit User="Lukas"></GoogleFit>
-            <GoogleFit User="Alisa"></GoogleFit>
+           @foreach (var widget in _components.Skip(7))
+            {
+                <DynamicComponent Type="@widget" />
+            }
         </div>
     </div>
     <div class="row">
@@ -32,4 +33,35 @@
 
 @code {
     [CascadingParameter(Name = "Profile")] protected string Profile { get; set; }
+    private IEnumerable<Type> _components => LayoutState.GetOrderedComponents();
+    private int count = 0;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        LayoutState.OnChange += StateHasChangedAsync;
+
+        LayoutState.AddComponents(new List<Type>
+        {
+            typeof(Clock),
+            typeof(Calendar),
+            typeof(Vvs),
+            typeof(RouteTraffic),
+            typeof(News),
+            typeof(Bring),
+            typeof(Bundesliga),
+            typeof(CurrentWeather),
+            typeof(Spotify),
+            typeof(HueLights),
+            typeof(Fuel),
+            //typeof(Space),
+            //typeof(Fitbit),
+            typeof(GoogleFit),
+        });
+    }
+
+    public async void StateHasChangedAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
 }

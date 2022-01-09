@@ -2,11 +2,11 @@
 
 namespace SmartMirror.Data.VVS
 {
-    public class VvsState : Displayable
+    public class VvsState : StateBase
     {
         private readonly VvsService _vvsService;
 
-        public VvsState(VvsService vvsService)
+        public VvsState(VvsService vvsService) : base("Vvs", typeof(Shared.Vvs))
         {
             _vvsService = vvsService;
         }
