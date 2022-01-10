@@ -12,6 +12,7 @@
 @using SmartMirror.Data.Spotify
 @using SmartMirror.Data.VVS
 @using SmartMirror.Data.WeatherForecast
+@using SmartMirror.HostConnection
 @using SmartMirror.SmartHome.Hue
 @using Microsoft.AspNetCore.Components
 
@@ -35,7 +36,7 @@
     <h1>Toggle visibility</h1>
     <div class="row">
         <CascadingValue Value="User" Name="User">
-            <div class="col-3">
+            <div class="col-10">
                 @foreach (StateBase entry in _statesCollection)
                 {
                     <h2>@entry.Name (@entry.Enabled)</h2>
@@ -47,10 +48,31 @@
                     <span>@GetComponentOrder(entry.Type)</span>
                 }
             </div>
-            <div class="col-3">
-                <p>Hallo :)</p>
-            </div>
         </CascadingValue>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <h2>Left count</h2>
+            <button class="btn btn-primary" @onclick="() => _layoutState.RaiseLeftCount()">+</button>
+            <button class="btn btn-primary" @onclick="() => _layoutState.LowerLeftCount()">-</button>
+            <p>@_layoutState.LeftCount</p>
+
+            <h2>Mid count</h2>
+            <button class="btn btn-primary" @onclick="() => _layoutState.RaiseMidCount()">+</button>
+            <button class="btn btn-primary" @onclick="() => _layoutState.LowerMidCount()">-</button>
+            <p>@_layoutState.MidCount</p>
+
+            <h2>Right count</h2>
+            <button class="btn btn-primary" @onclick="() => _layoutState.RaiseRightCount()">+</button>
+            <button class="btn btn-primary" @onclick="() => _layoutState.LowerRightCount()">-</button>
+            <p>@_layoutState.RightCount</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-10">
+            <button class="btn btn-danger" @onclick="() => ScriptRunner.RunScript()">Shutdown</button>
+        </div>
     </div>
 </div>
 
@@ -76,7 +98,7 @@
             _weatherState,
             _fuelState,
             _googleFitState,
-            _bundesligaState            
+            _bundesligaState
         };
     }
 

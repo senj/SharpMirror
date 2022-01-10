@@ -7,7 +7,11 @@ namespace SmartMirror.Data.Layout
     public class LayoutState
     {
         public event Action OnChange;
-        private Dictionary<Type, int> _components;
+        private readonly Dictionary<Type, int> _components;
+
+        public int LeftCount { get; private set; } = 4;
+        public int MidCount { get; private set; } = 3;
+        public int RightCount { get; private set; } = 10;
 
         public LayoutState()
         { 
@@ -72,5 +76,41 @@ namespace SmartMirror.Data.Layout
             .Select(p => p.Key);
 
         public Dictionary<Type, int> GetComponents() => _components;
+
+        public void RaiseLeftCount() 
+        {
+            LeftCount++;
+            OnChange?.Invoke();
+        }
+
+        public void LowerLeftCount()
+        {
+            LeftCount--;
+            OnChange?.Invoke();
+        }
+
+        public void RaiseMidCount()
+        {
+            MidCount++;
+            OnChange?.Invoke();
+        }
+
+        public void LowerMidCount()
+        {
+            MidCount--;
+            OnChange?.Invoke();
+        }
+
+        public void RaiseRightCount()
+        {
+            RightCount++;
+            OnChange?.Invoke();
+        }
+
+        public void LowerRightCount()
+        {
+            RightCount--;
+            OnChange?.Invoke();
+        }
     }
 }

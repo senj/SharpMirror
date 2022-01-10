@@ -5,20 +5,20 @@
     <br />
     <div class="row">
         <div class="col-lg-3 col-sm-12">
-            @foreach (var widget in _components.Take(4))
+            @foreach (var widget in _components.Take(LayoutState.LeftCount))
             {
                 <DynamicComponent Type="@widget" />
             }
         </div>
 
         <div class="col-lg-6">
-            @foreach (var widget in _components.Skip(4).Take(3))
+            @foreach (var widget in _components.Skip(LayoutState.LeftCount).Take(LayoutState.MidCount))
             {
                 <DynamicComponent Type="@widget" />
             }
         </div>
         <div class="col-lg-3">
-           @foreach (var widget in _components.Skip(7))
+           @foreach (var widget in _components.Skip(LayoutState.LeftCount + LayoutState.MidCount).Take(LayoutState.RightCount))
             {
                 <DynamicComponent Type="@widget" />
             }
