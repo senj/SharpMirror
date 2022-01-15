@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Logging;
 @using SmartMirror.Data.Speech;
+@using SmartMirror.Data.TempSensor
 @using SmartMirror.Data.WeatherForecast;
 @using SmartMirror.Data.Fuel;
 @using SmartMirror.Data.Bring;
@@ -31,6 +32,7 @@
 @inject NewsState NewsState
 @inject SoccerState SoccerState
 @inject GoogleFitState GoogleFitState
+@inject TempState TempState
 
 <div class="container-fluid card-1 speech">
     <div class="row">
@@ -149,5 +151,6 @@
 
         SpotifyState.SetEnabled(true);
         SpotifyState.SetShowDetails(true);
+        TempState.SetEnabled(true);
     }
 }

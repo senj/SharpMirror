@@ -20,6 +20,7 @@ using SmartMirror.Data.Soccer;
 using SmartMirror.Data.Speech;
 using SmartMirror.Data.Spotify;
 using SmartMirror.Data.StockData;
+using SmartMirror.Data.TempSensor;
 using SmartMirror.Data.VVS;
 using SmartMirror.Data.WeatherForecast;
 using SmartMirror.FakeAspNetIdentity;
@@ -81,6 +82,7 @@ namespace SmartMirror
             services.AddSingleton<GoogleFitState>();
             services.AddSingleton<SoccerState>();
             services.AddSingleton<LayoutState>();
+            services.AddSingleton<TempState>();
 
             _httpClient = new HttpClient()
             {

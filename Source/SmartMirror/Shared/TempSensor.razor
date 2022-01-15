@@ -1,0 +1,53 @@
+﻿@using SmartMirror.Data.TempSensor;
+@inject TempState State
+@implements IDisposable
+
+@if (!Enabled)
+{
+    return;
+}
+
+<div class="container-fluid card-1">
+    <div class="row">
+        <div class="col-12">
+            <p class="box-heading">TEMP SENSOR</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            @if (DHTData == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <p>@DHTData.TempCelcius °C / @DHTData.Humidity %</p>
+                <small>Last update: @DHTData.DateTime.ToString("HH:mm:ss")</small>
+            }
+        </div>
+    </div>
+</div>
+<br />
+
+@code {
+    private bool Enabled => State.Enabled;
+    public DHTData DHTData => State.DHTData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        State.OnChange += StateHasChangedAsync;
+        State.OnDataChange += StateHasChangedAsync;
+        State.StartSensor();
+    }
+
+    public async void StateHasChangedAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChangedAsync;
+        State.OnDataChange += StateHasChangedAsync;
+    }
+}

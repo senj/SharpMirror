@@ -20,6 +20,8 @@
     <PackageReference Include="Microsoft.SyndicationFeed.ReaderWriter" Version="1.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0" />
+    <PackageReference Include="Unosquare.RaspberryIO.Peripherals" Version="0.5.0" />
+    <PackageReference Include="Unosquare.WiringPi" Version="0.5.1" />
   </ItemGroup>
 
   <ItemGroup>
