@@ -1,7 +1,7 @@
 ## SharpMirror
 ### A smart mirror project built on .NET 6 & Blazor
 
-![screenshot example](https://github.com/senj/SharpMirror/blob/master/Documentation/example_2.png "Screenhot example")
+![screenshot example](https://github.com/senj/SharpMirror/blob/master/Documentation/example_3.png "Screenhot example")
 
 This is a blazor (server-side) web application.
 It's a development project and no out of the box product.
