@@ -8,6 +8,7 @@ services:
     ports:
       - "81:80"
     environment:
+      - TZ=Europe/Berlin
       - ASPNETCORE_ENVIRONMENT=#{ASPNETCORE_ENVIRONMENT}#
       - WeatherConfiguration__ApiKey=#{WeatherConfiguration__ApiKey}#
       - FuelConfiguration__ApiKey=#{FuelConfiguration__ApiKey}#
