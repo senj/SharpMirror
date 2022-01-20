@@ -12,7 +12,6 @@
 @using SmartMirror.Data.Spotify
 @using SmartMirror.Data.VVS
 @using SmartMirror.Data.WeatherForecast
-@using SmartMirror.HostConnection
 @using SmartMirror.SmartHome.Hue
 @using Microsoft.AspNetCore.Components
 
@@ -66,12 +65,6 @@
             <button class="btn btn-primary" @onclick="() => _layoutState.RaiseRightCount()">+</button>
             <button class="btn btn-primary" @onclick="() => _layoutState.LowerRightCount()">-</button>
             <p>@_layoutState.RightCount</p>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-10">
-            <button class="btn btn-danger" @onclick="() => ScriptRunner.RunScript()">Shutdown</button>
         </div>
     </div>
 </div>

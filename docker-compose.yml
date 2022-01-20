@@ -4,6 +4,7 @@ services:
     image: zailregistry.azurecr.io/senj/sharpmirror:#{BUILD_ID}#
     container_name: smartmirror
     restart: always
+    privileged: true
     ports:
       - "81:80"
     environment:
