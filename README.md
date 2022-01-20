@@ -66,8 +66,8 @@ Speech input / output only works using HTTPS, right now the container must be de
 There is also no concept of different users/logins right now, so your network should not be reachable from the outside.
 
 ## Software Design
-- Each component must work on it's own and can be (de)activated at every time using speach input
-- There is no user input except speech. Therefore components must refresh themselfes on a regular basis or support speech commands.  
+- Each component must work on it's own and can be (de)activated at every time using speech input
+- There is no user input except speech. Therefore components must refresh themselfes on a regular basis or support speech commands.
 
 ## Interface Design
 - Inspired by: https://material.io/design/
