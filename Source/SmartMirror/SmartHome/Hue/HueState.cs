@@ -18,18 +18,19 @@ namespace SmartMirror.SmartHome.Hue
 
         public async Task<HueLightInfo> GetLightInfoAsync(int lightId)
         {
-            var hueLightInfo = await _hueService.GetLightInfoAsync(lightId);
-            if (HueLightInfo.ContainsKey(lightId))
-            {
-                HueLightInfo[lightId] = hueLightInfo;
-            }
-            else
-            {
-                HueLightInfo.Add(lightId, hueLightInfo);
-            }
+            //var hueLightInfo = await _hueService.GetLightInfoAsync(lightId);
+            //if (HueLightInfo.ContainsKey(lightId))
+            //{
+            //    HueLightInfo[lightId] = hueLightInfo;
+            //}
+            //else
+            //{
+            //    HueLightInfo.Add(lightId, hueLightInfo);
+            //}
 
-            RaiseOnChangeEvent();
-            return hueLightInfo;
+            //RaiseOnChangeEvent();
+            //return hueLightInfo;
+            return new();
         }
 
         public async Task SetLightStateAsync(int lightId, LightState lightState)

@@ -50,6 +50,11 @@ namespace SmartMirror
             services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
             services.AddLocalization(p => p.ResourcesPath = "Resources");
 
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(Startup).Assembly);
+            });
+
             // Services
             services.AddSingleton<IntentExecutor>();
             services.AddSingleton<WeatherForecastService>();
@@ -89,7 +94,7 @@ namespace SmartMirror
                 Timeout = TimeSpan.FromSeconds(10)
             };
 
-            services.AddSingleton<HttpClient>(_httpClient);
+            services.AddSingleton(_httpClient);
 
             IConfigurationSection redisSection = _configuration.GetSection(nameof(RedisConfiguration));
             RedisConfiguration redisConfiguration = new();
@@ -136,7 +141,6 @@ namespace SmartMirror
 
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
             }
             else

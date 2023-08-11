@@ -59,7 +59,7 @@ namespace SmartMirror.Data.VVS
             }
 
             vvsJsonResponse.StopEvents = vvsJsonResponse.StopEvents
-                .Where(p => filter.Contains(p.Transportation.product.id))
+                .Where(p => filter.Contains(p.Transportation.Product.Id))
                 .Take(limit)
                 .ToArray();
 

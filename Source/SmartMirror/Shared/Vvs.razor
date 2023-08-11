@@ -53,19 +53,19 @@
                             }
                         }
                     }:
-                    @if (stop.Transportation.name.StartsWith("Bus"))
+                    @if (stop.Transportation.Name.StartsWith("Bus"))
                     {
-                        @stop.Transportation.name
+                        @stop.Transportation.Name
                     }
                     else
                     {
-                        @stop.Transportation.disassembledName
+                        @stop.Transportation.DisassembledName
                     }
                     <small>@stop.Location.DisassembledName</small>
 
                     <p>
-                        @stop.Transportation.origin.name - @stop.Transportation.destination.name
-                        @if (SpecialDestinations.Any(s => stop.Transportation.destination.name.ToLower().Contains(s)))
+                        @stop.Transportation.Origin.Name - @stop.Transportation.Destination.Name
+                        @if (SpecialDestinations.Any(s => stop.Transportation.Destination.Name.ToLower().Contains(s)))
                         {
                             <span> &#9734;</span>
                         }
