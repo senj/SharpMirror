@@ -1,7 +1,7 @@
 ## SharpMirror
-### A smart mirror project built on ASP.NET Core 3.1 & Blazor
+### A smart mirror project built on .NET 6 & Blazor
 
-![screenshot example](https://github.com/senj/SharpMirror/blob/master/Documentation/example_2.png "Screenhot example")
+![screenshot example](https://github.com/senj/SharpMirror/blob/master/Documentation/example_3.png "Screenhot example")
 
 This is a blazor (server-side) web application.
 It's a development project and no out of the box product.
@@ -66,8 +66,8 @@ Speech input / output only works using HTTPS, right now the container must be de
 There is also no concept of different users/logins right now, so your network should not be reachable from the outside.
 
 ## Software Design
-- Each component must work on it's own and can be (de)activated at every time using speach input
-- There is no user input except speech. Therefore components must refresh themselfes on a regular basis or support speech commands.  
+- Each component must work on it's own and can be (de)activated at every time using speech input
+- There is no user input except speech. Therefore components must refresh themselfes on a regular basis or support speech commands.
 
 ## Interface Design
 - Inspired by: https://material.io/design/
