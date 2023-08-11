@@ -10,22 +10,28 @@ trigger:
     - /
 
 steps:
-- task: Docker@1
-  displayName: 'Build application image'
+# - task: Docker@1
+#   displayName: 'Build application image'
+#   inputs:
+#     azureSubscriptionEndpoint: 'Visual Studio Enterprise Any'
+#     azureContainerRegistry: zailregistry.azurecr.io
+#     arguments: '--build-arg PROJECT_VERSION=$(Build.SourceBranchName)'
+#     dockerFile: 'Dockerfile'
+#     imageName: '$(Build.Repository.Name):$(Build.BuildId)'
+#     includeLatestTag: false
+- task: Docker@2
   inputs:
-    azureSubscriptionEndpoint: 'Visual Studio Enterprise Any'
-    azureContainerRegistry: zailregistry.azurecr.io
-    arguments: '--build-arg PROJECT_VERSION=$(Build.SourceBranchName)'
-    dockerFile: 'Dockerfile'
-    imageName: '$(Build.Repository.Name):$(Build.BuildId)'
-    includeLatestTag: false
-- task: Docker@1
-  displayName: 'Push application image to "container registry"'
-  inputs:
-    azureSubscriptionEndpoint: 'Visual Studio Enterprise Any'
-    azureContainerRegistry: zailregistry.azurecr.io
-    command: 'Push an image'
-    imageName: '$(Build.Repository.Name):$(Build.BuildId)'
+    containerRegistry: 'zail registry'
+    repository: 'senj/sharpmirror'
+    command: 'buildAndPush'
+    Dockerfile: 'Dockerfile'
+# - task: Docker@1
+#   displayName: 'Push application image to "container registry"'
+#   inputs:
+#     azureSubscriptionEndpoint: 'Visual Studio Enterprise Any'
+#     azureContainerRegistry: zailregistry.azurecr.io
+#     command: 'Push an image'
+#     imageName: '$(Build.Repository.Name):$(Build.BuildId)'
 - task: CopyFiles@2
   inputs:
     Contents: '**/docker-compose.yml'
